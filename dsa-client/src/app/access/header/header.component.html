@@ -1,0 +1,23 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <span>
+      <a class="navbar-brand" [routerLink]="isLoggedIn() ? '/data-sharing-agreements' : '/'">DSA Service</a>
+    </span>
+    <span class="space-buttons"></span>
+
+    <button *ngIf="isLoggedIn()" mat-flat-button color="primary" (click)="viewUserProfile()">
+      My Profile
+    </button>
+
+    <button *ngIf="!isLoggedIn()" mat-flat-button color="primary" routerLink="/login">Sign in</button>
+    <button *ngIf="!isLoggedIn()" mat-flat-button color="primary" (click)="signUp()">Sign up</button>
+    <button *ngIf="isLoggedIn()" mat-flat-button color="primary" (click)="logout()">Sign out</button>
+  </mat-toolbar-row>
+
+  <mat-toolbar-row>
+    <a mat-flat-button color="primary" href="/data-sharing-agreements" target="_self" *ngIf="isLoggedIn()">Agreements</a>
+    <a mat-flat-button color="primary" href="/customer-account-details" target="_self" *ngIf="isLoggedIn()">Account</a>
+    <a mat-flat-button color="primary" href="/data-sharing-parties" target="_self" *ngIf="isLoggedIn()">Partners</a>
+    <a mat-flat-button color="primary" href="/user-accounts" target="_self" *ngIf="roleMatch(['ACCOUNT_ADMIN', 'SUPER_ADMIN'])">Team</a>
+  </mat-toolbar-row>
+</mat-toolbar>

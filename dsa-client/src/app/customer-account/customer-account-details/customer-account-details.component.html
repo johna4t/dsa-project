@@ -1,0 +1,57 @@
+<div class="container" mt-5>
+  <h2 style="display: inline-block; margin-right: 57%;">Account details</h2>
+  <!--  <button mat-flat-button color="primary" (click)="updateCustomerAccount(customerAccount.id)">Edit</button>
+    <button mat-flat-button color="accent" style="margin:5px;" routerLink="/data-sharing-parties">Back</button>-->
+  <div class="card p-2">
+    <div class="row" mt-5 style="margin-bottom: 5px;">
+      <div class="col-3">
+        <p class="text-secondary"><small>Organisation name</small></p>
+      </div>
+      <div class="col-9">
+        {{customerAccount.name}}
+      </div>
+    </div>
+    <div class="row" mt-5 style="margin-bottom: 5px;">
+      <div class="col-3">
+        <p class="text-secondary"><small>Organisation branch name</small></p>
+      </div>
+      <div class="col-9">
+        {{customerAccount.branchName}}
+      </div>
+    </div>
+    <div class="row" mt-5 style="margin-bottom: 5px;">
+      <div class="col-3">
+        <p class="text-secondary"><small>Department / team name</small></p>
+      </div>
+      <div class="col-9">
+        {{customerAccount.departmentName}}
+      </div>
+    </div>
+    <div class="row" mt-5 style="margin-bottom: 5px;">
+      <div class="col-3">
+        <p class="text-secondary"><small>Address</small></p>
+      </div>
+      <div class="col-9">
+        {{customerAccount.address.addressLine1}}
+      </div>
+    </div>
+    <div class="row" mt-5 style="margin-bottom: 5px;">
+      <div class="col-3">
+        <p class="text-secondary"><small>Postal code</small></p>
+      </div>
+      <div class="col-9">
+        {{customerAccount.address.postalCode}}
+      </div>
+    </div>
+    <div class="row" mt-5 style="margin-bottom: 5px;">
+      <div class="col-3">
+        <p class="text-secondary"><small>Web address</small></p>
+      </div>
+      <div class="col-9">
+        {{customerAccount.url}}
+      </div>
+    </div>
+  </div>
+</div>
+
+

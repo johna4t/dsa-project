@@ -1,0 +1,66 @@
+<div class="container" mt-5 >
+  <h2 style="display: inline-block; margin-right: 70%; ">Partner organisations</h2>
+  <button mat-flat-button color="primary"  routerLink="/create-data-sharing-party">Add</button>
+  <table mat-table [dataSource]="dataSharingParties" class="mat-elevation-z8">
+
+    <!-- Name column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
+    </ng-container>
+
+    <!-- Description column -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef> Description </th>
+      <td mat-cell *matCellDef="let element"> {{ element.description }} </td>
+    </ng-container>
+
+    <!-- Web address column -->
+    <ng-container matColumnDef="url">
+      <th mat-header-cell *matHeaderCellDef> Web address </th>
+      <td mat-cell *matCellDef="let element">
+        <a [href]="'//' + element.url" target="_blank">{{ element.url }}</a>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="btnView">
+      <th mat-header-cell *matHeaderCellDef> </th>
+      <td mat-cell *matCellDef="let element">
+        <button (click)="viewDataSharingParty(element.id)"
+                mat-flat-button
+                color="primary">
+          View
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="btnEdit">
+      <th mat-header-cell *matHeaderCellDef> </th>
+      <td mat-cell *matCellDef="let element">
+        <button (click)="updateDataSharingParty(element.id)"
+                mat-flat-button
+                color="primary">
+          Edit
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="btnDelete">
+      <th mat-header-cell *matHeaderCellDef> </th>
+      <td mat-cell *matCellDef="let element">
+        <button (click)="deleteDataSharingParty(element.id)"
+                mat-flat-button color="warn"
+                *ngIf="getAccessService().roleMatch(['ACCOUNT_ADMIN'])
+                && (!element.dataFlowProvider && !element.dataFlowConsumer)">
+          Delete
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>
+
+
+

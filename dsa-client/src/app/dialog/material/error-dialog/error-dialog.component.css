@@ -1,0 +1,10 @@
+/* error-dialog.component.css */
+.dialog-content {
+  font-size: 18px;
+  color: red;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+}

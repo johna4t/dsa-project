@@ -1,0 +1,17 @@
+# Node
+dsa-client/node_modules/
+dsa-client/dist/
+dsa-client/.angular/
+dsa-client/.env
+
+# Java
+dsa-service/target/
+dsa-service/logs/
+dsa-service/bin/
+
+# System
+*.log
+.DS_Store
+*.iml
+.idea/
+.vscode/

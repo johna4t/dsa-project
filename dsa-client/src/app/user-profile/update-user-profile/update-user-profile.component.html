@@ -1,0 +1,82 @@
+<div class="container" mt-5>
+  <h2>Update user profile: {{ userProfile.user.firstName }} {{ userProfile.user.lastName }}</h2>
+  <div class="card p-2">
+    <form [formGroup]="userProfileForm" (ngSubmit)="onSubmit()">
+
+      <!-- First Name -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>First name</mat-label>
+        <input matInput formControlName="firstName" placeholder="Edit first name">
+        <mat-error *ngIf="userProfileForm.get('firstName')?.invalid">First name required (min 2 chars)</mat-error>
+      </mat-form-field>
+
+      <!-- Last Name -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Last name</mat-label>
+        <input matInput formControlName="lastName" placeholder="Edit last name">
+        <mat-error *ngIf="userProfileForm.get('lastName')?.invalid">Last name required (min 2 chars)</mat-error>
+      </mat-form-field>
+
+      <!-- Email (readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Email Address</mat-label>
+        <input matInput [value]="userProfile.user.email" readonly>
+      </mat-form-field>
+
+      <!-- Contact Number -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Contact number</mat-label>
+        <input matInput formControlName="contactNumber" placeholder="Edit contact number">
+      </mat-form-field>
+
+      <!-- Job Title -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Job title</mat-label>
+        <input matInput formControlName="jobTitle" placeholder="Edit job title">
+      </mat-form-field>
+
+      <!-- Password Change Fields -->
+      <h3>Change Password</h3>
+
+      <!-- Original Password -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Original password</mat-label>
+        <input matInput type="password" placeholder="Enter current password" formControlName="originalPassword">
+        <mat-error *ngIf="userProfileForm.get('originalPassword')?.invalid && userProfileForm.get('password')?.value.trim() !== ''">
+          Original password is required when changing password.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- New Password -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>New password</mat-label>
+        <input type="password"
+               matInput
+               formControlName="password"
+               placeholder="Enter new password">
+        <mat-error *ngIf="userProfileForm.get('password')?.hasError('minlength')">
+          Password must be minimum of 5 characters.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Confirm Password -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Confirm password</mat-label>
+        <input type="password"
+               matInput
+               formControlName="confirmPassword"
+               placeholder="Confirm password">
+        <mat-error *ngIf="userProfileForm.get('confirmPassword')?.value !== userProfileForm.get('password')?.value">
+          Passwords do not match.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Submit Button -->
+      <div align="right">
+        <button mat-flat-button color="primary" type="submit" style="margin:5px;" [disabled]="formIsValid()">Submit</button>
+        <button mat-flat-button color="accent" style="margin:5px;" routerLink="/view-user-profile">Cancel</button>
+      </div>
+
+    </form>
+  </div>
+</div>

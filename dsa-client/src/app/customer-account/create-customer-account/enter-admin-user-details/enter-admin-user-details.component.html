@@ -1,0 +1,73 @@
+<div class="container" mt-5>
+  <h2>Enter user details</h2>
+  <div class="card p-2">
+    <form #adminUserDetailsForm="ngForm" (ngSubmit)="onSubmit()">
+
+      <!--Enter first name-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>First name</mat-label>
+        <input matInput
+               placeholder="Enter first name"
+               [(ngModel)]="adminUserDetails.firstName"
+               [formControl]="firstName"
+               required
+               minlength="2">
+        <mat-error [hidden]="!firstName.hasError('required')">First name required.</mat-error>
+        <mat-error [hidden]="!firstName.hasError('minlength')">First name must be minimum of 2 characters.</mat-error>
+      </mat-form-field>
+
+      <!--Enter last name-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Last name</mat-label>
+        <input matInput
+               placeholder="Enter lastname"
+               [(ngModel)]="adminUserDetails.lastName"
+               [formControl]="lastName"
+               required
+               minlength="2">
+        <mat-error [hidden]="!lastName.hasError('required')">Last name required.</mat-error>
+        <mat-error [hidden]="!lastName.hasError('minlength')">Last name must be minimum of 2 characters.</mat-error>
+      </mat-form-field>
+
+      <!--Enter job title-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Job title</mat-label>
+        <input matInput
+               placeholder="Enter job title"
+               [(ngModel)]="adminUserDetails.jobTitle"
+               [formControl]="jobTitle">
+      </mat-form-field>
+
+      <!--Enter email-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Email</mat-label>
+        <input matInput
+               placeholder="Enter email"
+               [(ngModel)]="adminUserDetails.email"
+               [formControl]="email"
+               required>
+        <mat-error [hidden]="!email.hasError('required')">Valid email address required.</mat-error>
+        <mat-error [hidden]="!email.hasError('pattern')">Valid email address required.</mat-error>
+      </mat-form-field>
+
+      <!--Enter contact number-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Contact number</mat-label>
+        <input matInput
+               placeholder="Enter contact number"
+               [(ngModel)]="adminUserDetails.contactNumber"
+               [formControl]="contactNumber"
+               required
+               minlength="3">
+        <mat-error [hidden]="!contactNumber.hasError('required')">Contact number required.</mat-error>
+        <mat-error [hidden]="!contactNumber.hasError('minlength')">Contact number must be minimum of 3 characters.</mat-error>
+      </mat-form-field>
+
+      <div align="right">
+        <button mat-flat-button color="primary" type="submit" style="margin:5px;" [disabled]="formIsValid()">Next</button>
+        <button mat-flat-button color="primary" style="margin:5px;" (click)="back()">Back</button>
+        <button mat-flat-button color="accent" style="margin:5px;" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

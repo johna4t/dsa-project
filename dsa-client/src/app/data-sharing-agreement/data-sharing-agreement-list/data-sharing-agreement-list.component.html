@@ -1,0 +1,25 @@
+<!--<div class="container mt-5">
+  <div class="card text-center" style="padding: 20px; color: green;">
+    <h1>Agreements page</h1>
+  </div>
+</div>-->
+<div class="container" mt-5>
+  <h2>Data sharing agreements</h2>
+  <table mat-table [dataSource]="dataSharingAgreements" class="mat-elevation-z8">
+
+    <!-- Name column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
+    </ng-container>
+
+    <!-- Controller Relationship column -->
+    <ng-container matColumnDef="controllerRelationship">
+      <th mat-header-cell *matHeaderCellDef> Data Controller type </th>
+      <td mat-cell *matCellDef="let element"> {{ element.controllerRelationship }} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>

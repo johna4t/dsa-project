@@ -1,0 +1,98 @@
+package com.sharedsystemshome.dsa.security.enums;
+
+import com.sharedsystemshome.dsa.security.enums.Permission;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.sharedsystemshome.dsa.security.enums.Permission.*;
+
+@RequiredArgsConstructor
+public enum UserRole {
+
+    USER(Collections.emptySet()),
+    GUEST(
+            Set.of(
+                    READ,
+                    UPDATE,
+                    CREATE,
+                    DELETE
+            )
+    ),
+    MEMBER(
+            Set.of(
+                    READ,
+                    UPDATE,
+                    CREATE,
+                    DELETE
+            )
+    ),
+    ACCOUNT_ADMIN(
+            Set.of(
+                    READ,
+                    UPDATE,
+                    CREATE,
+                    DELETE
+            )
+    );
+
+/*    USER(Collections.emptySet()),
+    GUEST(
+            Set.of(
+                    GUEST_READ,
+                    GUEST_UPDATE,
+                    GUEST_CREATE,
+                    GUEST_DELETE
+            )
+    ),
+    MEMBER(
+            Set.of(
+                    GUEST_READ,
+                    GUEST_UPDATE,
+                    GUEST_CREATE,
+                    GUEST_DELETE,
+                    MEMBER_READ,
+                    MEMBER_UPDATE,
+                    MEMBER_CREATE,
+                    MEMBER_DELETE
+            )
+    ),
+    ADMIN(
+            Set.of(
+                    ADMIN_READ,
+                    ADMIN_UPDATE,
+                    ADMIN_CREATE,
+                    ADMIN_DELETE,
+                    MEMBER_READ,
+                    MEMBER_UPDATE,
+                    MEMBER_CREATE,
+                    MEMBER_DELETE,
+                    GUEST_READ,
+                    GUEST_UPDATE,
+                    GUEST_CREATE,
+                    GUEST_DELETE
+            )
+    );*/
+
+    @Getter
+    private final Set<Permission> permissions;
+    // constructor
+    public List<SimpleGrantedAuthority> getAuthorities(){
+
+        List<SimpleGrantedAuthority> authorities = this.getPermissions()
+                .stream()
+                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
+                .collect(Collectors.toList());
+
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
+
+        return authorities;
+
+    }
+
+}

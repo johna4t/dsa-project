@@ -1,0 +1,47 @@
+
+<div class="container" mt-5>
+  <h2>Edit partner organisation details</h2>
+  <div class="card p-2">
+    <form #dataSharingPartyForm="ngForm" (ngSubmit)="onSubmit()">
+
+      <!--Edit organisation name-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Partner organisation name</mat-label>
+        <input matInput
+               placeholder="Edit organisation name"
+               [(ngModel)]="dataSharingParty.name"
+               [formControl]="name"
+               required
+               minlength="3">
+        <mat-error [hidden]="!name.hasError('required')">Name of partner organisation required.</mat-error>
+        <mat-error [hidden]="!name.hasError('minlength')">Name of partner organisation must be minimum of 3 characters.</mat-error>
+      </mat-form-field>
+
+      <!--Edit organisation descriptione-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Partner organisation description</mat-label>
+        <textarea matInput
+                  placeholder="Edit organisation description"
+                  [(ngModel)]="dataSharingParty.description"
+                  name="desc">
+        </textarea>
+      </mat-form-field>
+
+      <!--Edit organisation url-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Partner organisation web address</mat-label>
+        <input matInput
+               placeholder="Edit organisation web address"
+               [(ngModel)]="dataSharingParty.url"
+               [formControl]="url">
+        <mat-error [hidden]="!url.hasError('required')">Web address of partner organisation required.</mat-error>
+        <mat-error [hidden]="!url.hasError('pattern')">Invalid web address.</mat-error>
+      </mat-form-field>
+
+      <div align="right">
+        <button mat-flat-button color="primary" type="submit" style="margin:5px;" [disabled]="formIsValid()">Submit</button>
+        <button mat-flat-button color="accent" style="margin:5px;" routerLink="/data-sharing-parties">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

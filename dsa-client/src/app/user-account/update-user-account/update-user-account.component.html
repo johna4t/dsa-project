@@ -1,0 +1,81 @@
+<div class="container" mt-5>
+  <h2>Update user details: {{ userAccount.firstName }} {{ userAccount.lastName }}</h2>
+  <div class="card p-2">
+    <form [formGroup]="userAccountForm" (ngSubmit)="onSubmit()">
+
+      <!-- First name -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>First name</mat-label>
+        <input matInput formControlName="firstName" placeholder="Edit first name">
+        <mat-error *ngIf="userAccountForm.get('firstName')?.invalid">First name required (min 2 chars)</mat-error>
+      </mat-form-field>
+
+      <!-- Last name -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Last name</mat-label>
+        <input matInput formControlName="lastName" placeholder="Edit last name">
+        <mat-error *ngIf="userAccountForm.get('lastName')?.invalid">Last name required (min 2 chars)</mat-error>
+      </mat-form-field>
+
+      <!-- Email (readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Email Address</mat-label>
+        <input matInput [value]="userAccount.email" readonly>
+      </mat-form-field>
+
+      <!-- Contact number -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Contact number</mat-label>
+        <input matInput formControlName="contactNumber" placeholder="Edit contact number">
+      </mat-form-field>
+
+      <!-- Job title -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Job title</mat-label>
+        <input matInput formControlName="jobTitle" placeholder="Edit job title">
+      </mat-form-field>
+
+      <!-- Role -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Role</mat-label>
+        <ng-container *ngIf="roleSelectionIsDisabled; else roleSelect">
+          <input matInput [value]="userAccountForm.get('role')?.value?.name" readonly>
+        </ng-container>
+        <ng-template #roleSelect>
+          <mat-select formControlName="role">
+            <mat-option *ngFor="let role of availableRoles" [value]="role">{{ role.name }}</mat-option>
+          </mat-select>
+        </ng-template>
+      </mat-form-field>
+
+      <!-- Password -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>New password</mat-label>
+        <input type="password"
+               matInput formControlName="password"
+               placeholder="Enter new password">
+        <mat-error *ngIf="userAccountForm.get('password')?.hasError('minlength')">
+          Password must be minimum of 5 characters.
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Confirm password -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Confirm password</mat-label>
+        <input type="password"
+               matInput
+               formControlName="confirmPassword"
+               placeholder="Confirm password">
+        <mat-error *ngIf="userAccountForm.controls['confirmPassword'].invalid &&
+                   userAccountForm.hasError('matchPasswordError')">Password does not match.</mat-error>
+      </mat-form-field>
+
+      <!-- Submit button with dynamic disable -->
+      <div align="right">
+        <button mat-flat-button color="primary" type="submit" style="margin:5px;" [disabled]="formIsValid()">Submit</button>
+        <button mat-flat-button color="accent" style="margin:5px;" routerLink="/user-accounts">Cancel</button>
+      </div>
+
+    </form>
+  </div>
+</div>

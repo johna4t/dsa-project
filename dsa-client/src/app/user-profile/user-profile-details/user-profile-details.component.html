@@ -1,0 +1,49 @@
+<div class="container" mt-5>
+  <h2>User profile: {{ userProfile.firstName }} {{ userProfile.lastName }}</h2>
+  <div class="card p-2">
+    <form>
+
+      <!-- First name (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>First name</mat-label>
+        <input matInput [value]="userProfile.firstName" readonly>
+      </mat-form-field>
+
+      <!-- Last name (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Last name</mat-label>
+        <input matInput [value]="userProfile.lastName" readonly>
+      </mat-form-field>
+
+      <!-- Email address (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Email Address</mat-label>
+        <input matInput [value]="userProfile.email" readonly>
+      </mat-form-field>
+
+      <!-- Contact number (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Contact number</mat-label>
+        <input matInput [value]="userProfile.contactNumber" readonly>
+      </mat-form-field>
+
+      <!-- Job title (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Job title</mat-label>
+        <input matInput [value]="userProfile.jobTitle" readonly>
+      </mat-form-field>
+
+      <!-- Roles (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Roles</mat-label>
+        <input matInput [value]="rolesDisplay" readonly>
+      </mat-form-field>
+
+      <div align="right">
+        <button mat-flat-button color="primary" (click)="updateUserProfile()">Edit</button>
+        <button mat-flat-button color="accent" style="margin:5px;" routerLink="/data-sharing-agreements">Back</button>
+      </div>
+
+    </form>
+  </div>
+</div>

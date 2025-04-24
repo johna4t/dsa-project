@@ -1,0 +1,130 @@
+<div class="container" mt-5>
+  <h2>Create customer account</h2>
+  <div class="card p-2">
+    <form [formGroup]="customerAccountForm" (ngSubmit)="onSubmit()">
+
+      <div class="row" mt-5 style="margin-bottom: 5px;">
+        <div class="col-3">
+          <p class="text-secondary"><small>Organisation name</small></p>
+        </div>
+        <div class="col-9">
+          {{customerAccount.name}}
+        </div>
+      </div>
+      <div class="row" mt-5 style="margin-bottom: 5px;">
+        <div class="col-3">
+          <p class="text-secondary"><small>Organisation branch name</small></p>
+        </div>
+        <div class="col-9">
+          {{customerAccount.branchName}}
+        </div>
+      </div>
+      <div class="row" mt-5 style="margin-bottom: 5px;">
+        <div class="col-3">
+          <p class="text-secondary"><small>Department / team name</small></p>
+        </div>
+        <div class="col-9">
+          {{customerAccount.departmentName}}
+        </div>
+      </div>
+      <div class="row" mt-5 style="margin-bottom: 5px;">
+        <div class="col-3">
+          <p class="text-secondary"><small>Address</small></p>
+        </div>
+        <div class="col-9">
+          {{customerAccount.address.addressLine1}}
+        </div>
+      </div>
+      <div class="row" mt-5 style="margin-bottom: 5px;">
+        <div class="col-3">
+          <p class="text-secondary"><small>Postal code</small></p>
+        </div>
+        <div class="col-9">
+          {{customerAccount.address.postalCode}}
+        </div>
+      </div>
+      <div class="row" mt-5 style="margin-bottom: 5px;">
+        <div class="col-3">
+          <p class="text-secondary"><small>Web address</small></p>
+        </div>
+        <div class="col-9">
+          {{customerAccount.url}}
+        </div>
+      </div>
+      <div class="row" mt-5 style="margin-bottom: 5px;">
+        <div class="col-3">
+          <p class="text-secondary"><small>First name</small></p>
+        </div>
+        <div class="col-9">
+          {{customerAccount.users[0].firstName}}
+        </div>
+      </div>
+      <div class="row" mt-5 style="margin-bottom: 5px;">
+        <div class="col-3">
+          <p class="text-secondary"><small>Last name</small></p>
+        </div>
+        <div class="col-9">
+          {{customerAccount.users[0].lastName}}
+        </div>
+      </div>
+      <div class="row" mt-5 style="margin-bottom: 5px;">
+        <div class="col-3">
+          <p class="text-secondary"><small>Job title</small></p>
+        </div>
+        <div class="col-9">
+          {{customerAccount.users[0].jobTitle}}
+        </div>
+      </div>
+      <div class="row" mt-5 style="margin-bottom: 5px;">
+        <div class="col-3">
+          <p class="text-secondary"><small>Email</small></p>
+        </div>
+        <div class="col-9">
+          {{customerAccount.users[0].email}}
+        </div>
+      </div>
+      <div class="row" mt-5 style="margin-bottom: 5px;">
+        <div class="col-3">
+          <p class="text-secondary"><small>Contact number</small></p>
+        </div>
+        <div class="col-9">
+          {{customerAccount.users[0].contactNumber}}
+        </div>
+      </div>
+
+      <!--Enter password-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Password</mat-label>
+        <input type="text"
+               matInput
+               placeholder="Enter password"
+               [(ngModel)]="customerAccount.users[0].password"
+               formControlName="password"
+               name="password"
+               required>
+        <!--<mat-hint>Password</mat-hint>-->
+        <mat-error *ngIf="customerAccountForm.controls['password'].hasError('required')">Password required.</mat-error>
+        <mat-error *ngIf="customerAccountForm.controls['password'].hasError('minlength')">Password must be minimum of 5 characters.</mat-error>
+     </mat-form-field>
+
+      <!--Confirm password-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Confirm password</mat-label>
+        <input type="text"
+               matInput
+               placeholder="Confirm password"
+               formControlName="confirmPassword"
+               name="confirmPassword"
+               required>
+        <mat-error *ngIf="customerAccountForm.controls['confirmPassword'].invalid &&       
+                   customerAccountForm.hasError('matchPasswordError')">Password does not match.</mat-error>
+      </mat-form-field>
+
+      <div align="right">
+        <button mat-flat-button color="primary" type="submit" style="margin:5px;" [disabled]="formInvalid()">Submit</button>
+        <button mat-flat-button color="primary" style="margin:5px;" (click)="back()">Back</button>
+        <button mat-flat-button color="accent" style="margin:5px;" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="LOG_LEVEL" value="INFO"/>
+    <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"/>
+    <property name="FILE_NAME" value="application.log"/>
+    <property name="FILE_PATH" value="logs"/>
+    <property name="ARCHIVE_NAME" value="application.%d{yyyy-MM-dd}.log"/>
+    <property name="ARCHIVE_PATH" value="archive"/>
+
+    <!-- Console appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- File appender -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${FILE_PATH}/${FILE_NAME}</file>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Rolling file appender for log archiving -->
+    <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Log rotation pattern -->
+            <fileNamePattern>${FILE_PATH}/${ARCHIVE_PATH}/${ARCHIVE_NAME}</fileNamePattern>
+            <!-- Maximum file size before rolling over (e.g., 10MB) -->
+            <maxFileSize>1MB</maxFileSize>
+            <!-- Maximum number of archive files to keep -->
+            <maxHistory>5</maxHistory>
+            <!-- Total size cap of archived log files -->
+            <totalSizeCap>5MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ROLLING_FILE"/>
+    </root>
+
+</configuration>

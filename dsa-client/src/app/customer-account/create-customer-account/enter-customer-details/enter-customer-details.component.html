@@ -1,0 +1,81 @@
+<div class="container" mt-5>
+  <h2>Add organisation details</h2>
+  <div class="card p-2">
+    <form #customerDetailsForm="ngForm" (ngSubmit)="onSubmit()">
+
+      <!--Enter organisation name-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Organisation name</mat-label>
+        <input matInput
+               placeholder="Enter organisation name"
+               [(ngModel)]="customerDetails.name"
+               [formControl]="name">
+      </mat-form-field>
+
+      <!--Enter branch name-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Branch name</mat-label>
+        <input matInput
+               placeholder="Enter branch name (if applicable)"
+               [(ngModel)]="customerDetails.branchName"
+               [formControl]="branchName">
+      </mat-form-field>
+
+      <!--Enter department or team name-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Department or team name</mat-label>
+        <input matInput
+               placeholder="Enter name of department or team"
+               [(ngModel)]="customerDetails.departmentName"
+               [formControl]="departmentName"
+               required
+               minlength="3">
+        <mat-error [hidden]="!departmentName.hasError('required')">Name of department or team required.</mat-error>
+        <mat-error [hidden]="!departmentName.hasError('minlength')">Name of department or team must be minimum of 3 characters.</mat-error>
+      </mat-form-field>
+
+      <!--Enter business address line 1-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Address</mat-label>
+        <textarea matInput
+                  placeholder="Enter business address"
+                  [(ngModel)]="customerDetails.address.addressLine1"
+                  [formControl]="addressLine1"
+                  required
+                  minlength="3">
+        </textarea>
+        <mat-error [hidden]="!addressLine1.hasError('required')">Business address required.</mat-error>
+      </mat-form-field>
+
+      <!--Enter postal code-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Postal code</mat-label>
+        <input matInput
+               placeholder="Enter business address postal code"
+               [(ngModel)]="customerDetails.address.postalCode"
+               [formControl]="postalCode"
+               required
+               minlength="3">
+        <mat-error [hidden]="!postalCode.hasError('required')">Business address postal code required.</mat-error>
+      </mat-form-field>
+
+      <!--Enter web address-->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Website</mat-label>
+        <input matInput
+               placeholder="Enter website address"
+               [(ngModel)]="customerDetails.url"
+               [formControl]="url"
+               required
+               minlength="3">
+        <mat-error [hidden]="!url.hasError('required')">Web address required.</mat-error>
+        <mat-error [hidden]="!url.hasError('pattern')">Valid web address required.</mat-error>
+      </mat-form-field>
+
+      <div align="right">
+        <button mat-flat-button color="primary" type="submit" style="margin:5px;" [disabled]="formInvalid()">Next</button>
+        <button mat-flat-button color="accent" style="margin:5px;" (click)="cancel()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
