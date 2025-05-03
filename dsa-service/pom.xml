@@ -180,6 +180,15 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0</version>
+				<configuration>
+					<excludes>
+						<!-- Exclude all suite-level classes to avoid CLI triple execution -->
+						<exclude>**/DsaTests.java</exclude>
+						<exclude>**/ControllerTests.java</exclude>
+						<exclude>**/ServiceTests.java</exclude>
+						<exclude>**/RepositoryTests.java</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -210,20 +219,6 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0</version>
-				<configuration>
-					<excludes>
-						<!-- Exclude all suite-level classes to avoid CLI triple execution -->
-						<exclude>**/DsaTests.java</exclude>
-						<exclude>**/ControllerTests.java</exclude>
-						<exclude>**/ServiceTests.java</exclude>
-						<exclude>**/RepositoryTests.java</exclude>
-					</excludes>
-				</configuration>
 			</plugin>
 		</plugins>
 		<pluginManagement>
