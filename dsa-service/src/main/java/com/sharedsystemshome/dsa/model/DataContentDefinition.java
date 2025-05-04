@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharedsystemshome.dsa.enums.DataContentType;
+import com.sharedsystemshome.dsa.enums.MetadataScheme;
+import com.sharedsystemshome.dsa.util.conversion.DurationStringConverter;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +14,11 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Data
 @Entity(name = "DataContentDefinition")
@@ -65,6 +72,13 @@ public class DataContentDefinition {
     @Enumerated(EnumType.STRING)
     private DataContentType dataContentType;
 
+    @Column(name = "RETENTION_PERIOD", columnDefinition = "TEXT")
+    @Convert(converter = DurationStringConverter.class)
+    private Duration retentionPeriod;
+
+    @OneToMany(mappedBy = "dataContentDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DataContentPerspective> perspectives;
+
 
     @Builder
     public DataContentDefinition(
@@ -73,7 +87,9 @@ public class DataContentDefinition {
             DataSharingParty provider,
             String name,
             String description,
-            DataContentType dataContentType
+            DataContentType dataContentType,
+            Duration retentionPeriod,
+            List<DataContentPerspective> perspectives
     ) {
         this.id = id;
         // Set owning entity
@@ -81,6 +97,8 @@ public class DataContentDefinition {
         this.name = name;
         this.description = description;
         this.dataContentType = dataContentType;
+        this.retentionPeriod = retentionPeriod;
+        this.perspectives = perspectives;
         this.initialiseDefaultValues();
     }
 
@@ -98,6 +116,22 @@ public class DataContentDefinition {
         if(null != this.provider){
             this.provider.addDataContentDefinition(this);
         }
+
+        if(null == this.perspectives){
+            this.perspectives = new ArrayList<>();
+        }
+
+    }
+
+    public Optional<DataContentPerspective> getPerspective(MetadataScheme scheme) {
+        return perspectives.stream()
+                .filter(p -> p.getMetadataScheme() == scheme)
+                .findFirst();
+    }
+
+    public void addPerspective(DataContentPerspective perspective) {
+        perspective.setDataContentDefinition(this);
+        this.perspectives.add(perspective);
     }
 
     public String toJsonString() throws JsonProcessingException {

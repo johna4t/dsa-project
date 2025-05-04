@@ -3,13 +3,12 @@ package com.sharedsystemshome.dsa.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.sharedsystemshome.dsa.datatype.Address;
-import com.sharedsystemshome.dsa.util.HashMapConverter;
+import com.sharedsystemshome.dsa.util.conversion.HashMapConverter;
 //import com.sharedsystemshome.dsa.util.ValidatedEntity;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.*;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
