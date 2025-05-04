@@ -1,7 +1,9 @@
 package com.sharedsystemshome.dsa.repository;
 
+import com.sharedsystemshome.dsa.enums.MetadataScheme;
 import com.sharedsystemshome.dsa.model.CustomerAccount;
 import com.sharedsystemshome.dsa.model.DataContentDefinition;
+import com.sharedsystemshome.dsa.model.DataContentPerspective;
 import com.sharedsystemshome.dsa.model.DataSharingParty;
 import com.sharedsystemshome.dsa.enums.DataContentType;
 import org.junit.jupiter.api.AfterEach;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -89,4 +92,41 @@ public class DataContentDefinitionRepositoryTest {
         assertEquals(custId, dcd.getProvider().getId());
 
     }
+
+    @Test
+    void testSaveAndLoadDataContentDefinition_withGdprPerspective() {
+        DataSharingParty dsp = DataSharingParty.builder()
+                .description("Repo Test DSP")
+                .build();
+
+        // Create and persist a customer account
+        CustomerAccount account = CustomerAccount.builder()
+                .name("Test Customer")
+                .dataSharingParty(dsp)
+                .build();
+        customerRepo.save(account);
+
+        DataContentDefinition dcd = DataContentDefinition.builder()
+                .name("Repo DCD with GDPR")
+                .provider(dsp)
+                .build();
+
+        DataContentPerspective dcp = new DataContentPerspective();
+        dcp.setMetadataScheme(MetadataScheme.GDPR);
+        dcp.setMetadata(Map.of(
+                "lawfulBasis", "CONTRACT",
+                "specialCategory", "NOT_SPECIAL_CATEGORY_DATA"
+        ));
+        dcd.addPerspective(dcp);
+
+        this.testSubject.save(dcd);
+
+        DataContentDefinition saved = this.testSubject.findById(dcd.getId()).orElseThrow();
+        assertEquals(1, saved.getPerspectives().size());
+
+        DataContentPerspective savedDcp = saved.getPerspectives().get(0);
+        assertEquals(MetadataScheme.GDPR, savedDcp.getMetadataScheme());
+        assertEquals("CONTRACT", savedDcp.get("lawfulBasis"));
+    }
+
 }

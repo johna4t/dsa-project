@@ -1,7 +1,11 @@
 package com.sharedsystemshome.dsa.service;
 
+import com.sharedsystemshome.dsa.enums.MetadataScheme;
+import com.sharedsystemshome.dsa.model.CustomerAccount;
 import com.sharedsystemshome.dsa.model.DataContentDefinition;
+import com.sharedsystemshome.dsa.model.DataContentPerspective;
 import com.sharedsystemshome.dsa.model.DataSharingParty;
+import com.sharedsystemshome.dsa.repository.CustomerAccountRepository;
 import com.sharedsystemshome.dsa.repository.DataContentDefinitionRepository;
 import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
 import com.sharedsystemshome.dsa.util.BusinessValidationException;
@@ -16,6 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +34,9 @@ class DataContentDefinitionServiceTest {
 
     @Mock
     private DataSharingPartyRepository dspMockRepo;
+
+    @Mock
+    private CustomerAccountRepository customerMockRepo;
 
     @Mock
     private CustomValidator<DataContentDefinition> validator;
@@ -330,6 +338,44 @@ class DataContentDefinitionServiceTest {
         verify(this.dcdMockRepo, times(1)).findById(dcdId);
         verify(this.dspMockRepo, times(1)).findById(provId);
         verify(this.dspMockRepo, times(0)).save(prov);
+    }
+
+    @Test
+    void testCreateDataContentDefinition_withGdprPerspective() {
+        // Assign ID manually since we're mocking the repository
+        Long dspId = 1L;
+
+        DataSharingParty dsp = DataSharingParty.builder()
+                .id(dspId)
+                .description("Service Test DSP")
+                .build();
+
+        // Required because the service checks this
+        when(dspMockRepo.existsById(dspId)).thenReturn(true);
+
+        DataContentDefinition dcd = DataContentDefinition.builder()
+                .name("Service DCD with GDPR")
+                .provider(dsp)
+                .build();
+
+        DataContentPerspective dcp = new DataContentPerspective();
+        dcp.setMetadataScheme(MetadataScheme.GDPR);
+        dcp.setMetadata(Map.of(
+                "lawfulBasis", "LEGITIMATE_INTERESTS",
+                "specialCategory", "POLITICAL"
+        ));
+        dcd.addPerspective(dcp);
+
+        // Assume mock dcdRepo returns the same object with an ID
+        when(dcdMockRepo.save(any())).thenAnswer(invocation -> {
+            DataContentDefinition saved = invocation.getArgument(0);
+            saved.setId(42L);
+            return saved;
+        });
+
+        Long id = dcdService.createDataContentDefinition(dcd);
+        assertNotNull(id);
+        assertEquals(42L, id);
     }
 
 

@@ -2,7 +2,11 @@ package com.sharedsystemshome.dsa.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.sharedsystemshome.dsa.enums.LawfulBasis;
+import com.sharedsystemshome.dsa.enums.MetadataScheme;
+import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
 import com.sharedsystemshome.dsa.model.DataContentDefinition;
+import com.sharedsystemshome.dsa.model.DataContentPerspective;
 import com.sharedsystemshome.dsa.model.DataSharingParty;
 import com.sharedsystemshome.dsa.service.DataContentDefinitionService;
 import com.sharedsystemshome.dsa.enums.DataContentType;
@@ -21,6 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -140,7 +145,14 @@ public class DataContentDefinitionControllerTest {
         Long provId = 1L;
         DataSharingParty prov = DataSharingParty.builder()
                 .id(provId)
-//                .name("Org 1")
+                .build();
+
+        DataContentPerspective dcp1 = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                        "lawfulBasis", LawfulBasis.CONSENT,
+                        "specialCategory", SpecialCategoryData.POLITICAL
+                ))
                 .build();
 
         Long dcdId1 = 2L;
@@ -148,6 +160,15 @@ public class DataContentDefinitionControllerTest {
                 .id(dcdId1)
                 .name("DCD 1")
                 .provider(prov)
+                .perspectives(List.of(dcp1))
+                .build();
+
+        DataContentPerspective dcp2 = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                        "lawfulBasis", LawfulBasis.CONTRACT,
+                        "specialCategory", SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA
+                ))
                 .build();
 
         Long dcdId2 = 3L;
@@ -156,6 +177,7 @@ public class DataContentDefinitionControllerTest {
                 .name("DCD 2")
                 .dataContentType(DataContentType.PAPER_DOCUMENT)
                 .provider(prov)
+                .perspectives(List.of(dcp2))
                 .build();
 
         List<DataContentDefinition> dcds = new ArrayList<>();
@@ -169,7 +191,7 @@ public class DataContentDefinitionControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("$.length()").value(4))
+                .andExpect(jsonPath("$.length()").value(5))
                 // Verify the response body using JSONPath
                 .andExpect(jsonPath("$.id").value(dcdId2))
                 .andExpect(jsonPath("$.dataContentType").value(DataContentType.PAPER_DOCUMENT.toString()))
