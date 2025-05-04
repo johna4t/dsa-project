@@ -30,7 +30,7 @@ public class GdprPerspectiveEvaluator {
         return category != null && !"NOT_SPECIAL_CATEGORY_DATA".equals(category.toString());
     }
 
-    public DataContentPerspective getDataContentPerspective() {
+    public DataContentPerspective getPerspective() {
         return this.perspective;
     }
 }

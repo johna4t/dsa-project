@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sharedsystemshome.dsa.datatype.Address;
+import com.sharedsystemshome.dsa.enums.MetadataScheme;
+import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
 import com.sharedsystemshome.dsa.model.*;
 import com.sharedsystemshome.dsa.repository.*;
 import com.sharedsystemshome.dsa.enums.LawfulBasis;
@@ -42,6 +44,7 @@ public class ApplicationConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
     private Map<String, DataContentDefinition> dcds = new HashMap<>();
+    private Map<String, DataContentPerspective> dcps = new HashMap<>();
     private Map<String, CustomerAccount> customers = new HashMap<>();
     private Map<String, DataSharingParty> dsps = new HashMap<>();
     private Map<String, DataSharingAgreement> dsas = new HashMap<>();
@@ -54,6 +57,7 @@ public class ApplicationConfig {
 
     @Bean
     CommandLineRunner commandLineRunner(DataContentDefinitionRepository dcdRepo,
+                                        DataContentPerspectiveRepository dcpRepo,
                                         DataSharingPartyRepository dspRepo,
                                         DataSharingAgreementRepository dsaRepo,
                                         DataFlowRepository dfRepo,
@@ -73,6 +77,9 @@ public class ApplicationConfig {
 
             //DCD is instantiated with DSP
             this.createDataContentDefinitions(dcdRepo);
+
+            //DCD is instantiated with owning DCD
+            this.createDataContentPerspectives(dcpRepo);
 
             //DSA is instantiated with CustomerAccount
             this.createDataSharingAgreements(dsaRepo);
@@ -210,6 +217,49 @@ public class ApplicationConfig {
         this.customers.put("custC", custC);
         this.customers.put("custS", custS);
         this.customers.put("cust99", cust99);
+
+    }
+
+    private void createDataContentPerspectives(DataContentPerspectiveRepository dcpRepo) {
+
+        DataContentPerspective dcpA = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                        "lawfulBasis", LawfulBasis.CONSENT.name(),
+                        "specialCategory", SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA.name()))
+                .dataContentDefinition(this.dcds.get("dcdA"))
+                .build();
+
+        DataContentPerspective dcpB = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                        "lawfulBasis", LawfulBasis.CONTRACT.name(),
+                        "specialCategory", SpecialCategoryData.HEALTH.name()))
+                .dataContentDefinition(this.dcds.get("dcdB"))
+                .build();
+
+        DataContentPerspective dcpC = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                        "lawfulBasis", LawfulBasis.LEGITIMATE_INTERESTS.name(),
+                        "specialCategory", SpecialCategoryData.POLITICAL.name()))
+                .dataContentDefinition(this.dcds.get("dcdB"))
+                .build();
+
+        DataContentPerspective dcp99 = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                        "lawfulBasis", LawfulBasis.NOT_PERSONAL_DATA.name(),
+                        "specialCategory", SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA.name()))
+                .dataContentDefinition(this.dcds.get("dcdB"))
+                .build();
+
+        dcpRepo.saveAll(List.of(dcpA, dcpB, dcpC, dcp99));
+
+        this.dcps.put("dcpA", dcpA);
+        this.dcps.put("dcpB", dcpB);
+        this.dcps.put("dcpC", dcpC);
+        this.dcps.put("dcp99", dcp99);
 
     }
 
