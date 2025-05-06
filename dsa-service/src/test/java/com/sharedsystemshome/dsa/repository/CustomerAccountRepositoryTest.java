@@ -18,6 +18,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.Period;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -342,6 +343,9 @@ class CustomerAccountRepositoryTest {
                 .name("Test DCD")
                 .description("Test DCD desc")
                 .provider(prov)
+                .ownerEmail("someone@email.com")
+                .sourceSystem("Some System")
+                .retentionPeriod(Period.ofYears(5))
                 .build();
         this.dcdRepo.save(dcd);
 

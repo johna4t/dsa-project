@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharedsystemshome.dsa.enums.DataContentType;
 import com.sharedsystemshome.dsa.enums.MetadataScheme;
 import com.sharedsystemshome.dsa.util.conversion.DurationStringConverter;
+import com.sharedsystemshome.dsa.util.conversion.PeriodStringConverter;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -16,6 +17,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.Duration;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -73,12 +75,25 @@ public class DataContentDefinition {
     private DataContentType dataContentType;
 
     @Column(name = "RETENTION_PERIOD", columnDefinition = "TEXT")
-    @Convert(converter = DurationStringConverter.class)
-    private Duration retentionPeriod;
+    @Convert(converter = PeriodStringConverter.class)
+    private Period retentionPeriod;
 
     @OneToMany(mappedBy = "dataContentDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DataContentPerspective> perspectives;
 
+    @Column(name = "OWNER_NAME",
+            columnDefinition = "TEXT")
+    private String ownerName;
+
+    @Column(name = "OWNER_EMAIL",
+            columnDefinition = "TEXT",
+            nullable = false)
+    private String ownerEmail;
+
+    @Column(name = "SOURCE_SYSTEM",
+            columnDefinition = "TEXT",
+            nullable = false)
+    private String sourceSystem;
 
     @Builder
     public DataContentDefinition(
@@ -88,8 +103,11 @@ public class DataContentDefinition {
             String name,
             String description,
             DataContentType dataContentType,
-            Duration retentionPeriod,
-            List<DataContentPerspective> perspectives
+            Period retentionPeriod,
+            List<DataContentPerspective> perspectives,
+            String ownerName,
+            String ownerEmail,
+            String sourceSystem
     ) {
         this.id = id;
         // Set owning entity
@@ -99,6 +117,10 @@ public class DataContentDefinition {
         this.dataContentType = dataContentType;
         this.retentionPeriod = retentionPeriod;
         this.perspectives = perspectives;
+        this.ownerName = ownerName;
+        this.ownerEmail = ownerEmail;
+        this.sourceSystem = sourceSystem;
+
         this.initialiseDefaultValues();
     }
 

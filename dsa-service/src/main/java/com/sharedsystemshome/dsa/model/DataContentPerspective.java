@@ -48,7 +48,10 @@ public class DataContentPerspective {
     private Map<String, Object> metadata;
 
     @Builder
-    public DataContentPerspective(DataContentDefinition dataContentDefinition, MetadataScheme metadataScheme, Map<String, Object> metadata) {
+    public DataContentPerspective(
+            DataContentDefinition dataContentDefinition,
+            MetadataScheme metadataScheme,
+            Map<String, Object> metadata) {
 
         this.metadataScheme = metadataScheme;
         this.metadata = metadata;

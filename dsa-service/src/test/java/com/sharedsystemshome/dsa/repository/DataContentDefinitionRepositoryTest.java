@@ -13,7 +13,9 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.time.Period;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -70,6 +72,22 @@ public class DataContentDefinitionRepositoryTest {
                 .name(name)
                 .description(desc)
                 .provider(prov)
+                .dataContentType(DataContentType.NOT_SPECIFIED)
+                .retentionPeriod(Period.ofYears(5))
+                .ownerEmail("someone@email.com")
+                .ownerName("Some One")
+                .sourceSystem("Data Source")
+                .build();
+
+        DataContentPerspective dcp = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(
+                        Map.of(
+                                "lawfulBasis", "CONTRACT",
+                                "specialCategory", "NOT_SPECIAL_CATEGORY_DATA"
+                        )
+                )
+                .dataContentDefinition(dcd)
                 .build();
 
         // When DCD is added to repository.
@@ -109,6 +127,11 @@ public class DataContentDefinitionRepositoryTest {
         DataContentDefinition dcd = DataContentDefinition.builder()
                 .name("Repo DCD with GDPR")
                 .provider(dsp)
+                .retentionPeriod(Period.ofYears(5))
+                .dataContentType(DataContentType.NOT_SPECIFIED)
+                .retentionPeriod(Period.ofYears(5))
+                .ownerEmail("someone@email.com")
+                .ownerName("Some One")
                 .build();
 
         DataContentPerspective dcp = new DataContentPerspective();

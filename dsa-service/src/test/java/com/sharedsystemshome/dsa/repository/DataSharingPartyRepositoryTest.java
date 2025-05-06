@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.time.Period;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -104,7 +105,7 @@ public class DataSharingPartyRepositoryTest {
     }
 
     @Test
-    void unitTestDeleteDataContentDefinition(){
+    void testDeleteDataContentDefinition(){
 
         // Test adding DSP to repository with minimal dataset
 
@@ -129,6 +130,9 @@ public class DataSharingPartyRepositoryTest {
                 .name("Test DCD1")
                 .dataContentType(DataContentType.NOT_SPECIFIED)
                 .description("Test DCD1 desc")
+                .ownerEmail("someone@email.com")
+                .sourceSystem("Some System")
+                .retentionPeriod(Period.ofYears(5))
                 .build();
         this.dcdRepo.save(dcd1);
         Long dcdId1 = dcd1.getId();
@@ -138,6 +142,9 @@ public class DataSharingPartyRepositoryTest {
                 .name("Test DCD2")
                 .dataContentType(DataContentType.ELECTRONIC_DOCUMENT)
                 .description("Test DCD2 desc")
+                .ownerEmail("someone.else@email.com")
+                .sourceSystem("Another System")
+                .retentionPeriod(Period.ofYears(1))
                 .build();
         this.dcdRepo.save(dcd2);
 

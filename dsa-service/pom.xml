@@ -15,8 +15,8 @@
 	<groupId>com.sharedsystemshome</groupId>
 	<artifactId>dsa</artifactId>
 	<!--version>0.0.13</version-->
-	<name>DSA Sprint #13</name>
-	<description>DSA project - sprint #13</description>
+	<name>DSA Sprint #14</name>
+	<description>DSA project - sprint #14</description>
 
 	<properties>
 		<java.version>17</java.version>
@@ -24,7 +24,7 @@
 		<build.timestamp.format>yyyyMMdd'T'HHmm</build.timestamp.format>
 		<timestamp>unknown</timestamp>
 		<!-- Sprint version -->
-		<revision>0.0.13</revision>
+		<revision>0.0.14</revision>
 	</properties>
 
 	<dependencyManagement>

@@ -149,7 +149,7 @@ public class DataSharingAgreementRepositoryTest {
     }
 
     @Test
-    void unitTestDeleteDataFlow() {
+    void testDeleteDataFlow() {
         // Given
 
         // Create DataSharingParty to add to DataFlow
@@ -172,6 +172,9 @@ public class DataSharingAgreementRepositoryTest {
                 .provider(cust.getDataSharingParty())
                 .name("Prov DCD 1")
                 .description("Prov DCD 1 desc.")
+                .ownerEmail("someone@email.com")
+                .sourceSystem("Some System")
+                .retentionPeriod(Period.ofYears(5))
                 .build();
         this.dcdRepo.save(dcd1);
 
@@ -180,6 +183,9 @@ public class DataSharingAgreementRepositoryTest {
                 .provider(cust.getDataSharingParty())
                 .name("Prov DCD 12")
                 .description("Prov DCD 2 desc.")
+                .ownerEmail("someone.esle@email.com")
+                .sourceSystem("Some Other System")
+                .retentionPeriod(Period.ofYears(2))
                 .build();
         this.dcdRepo.save(dcd2);
 
