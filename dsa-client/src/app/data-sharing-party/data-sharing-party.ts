@@ -1,9 +1,9 @@
 export class DataSharingParty {
-  id: number = 0;
+  id = 0;
   // Temporary default values
-  name: string = 'DSP name';
-  description: string = 'DSP desc.';
-  url: string = 'www.dsp.com';
-  dataFlowProvider: boolean = false;
-  dataFlowConsumer: boolean = false;
+  name = 'DSP name';
+  description = 'DSP desc.';
+  url = 'www.dsp.com';
+  dataFlowProvider = false;
+  dataFlowConsumer = false;
 }
