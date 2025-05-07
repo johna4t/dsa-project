@@ -8,6 +8,7 @@ import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
 import com.sharedsystemshome.dsa.model.DataContentDefinition;
 import com.sharedsystemshome.dsa.model.DataContentPerspective;
 import com.sharedsystemshome.dsa.model.DataSharingParty;
+import com.sharedsystemshome.dsa.security.service.UserContextService;
 import com.sharedsystemshome.dsa.service.DataContentDefinitionService;
 import com.sharedsystemshome.dsa.enums.DataContentType;
 import org.junit.jupiter.api.AfterEach;
@@ -40,6 +41,9 @@ public class DataContentDefinitionControllerTest {
 
     @Mock
     private DataContentDefinitionService dcdMockService;
+
+    @Mock
+    private UserContextService userContextMockService;
 
     private MockMvc mockMvc;
 
@@ -94,11 +98,11 @@ public class DataContentDefinitionControllerTest {
 
     @Test
     void testGetDataContentDefinitions() throws Exception {
+        when(userContextMockService.isSuperAdmin()).thenReturn(true);
 
         Long provId = 1L;
         DataSharingParty prov = DataSharingParty.builder()
                 .id(provId)
-//                .name("Org 1")
                 .build();
 
         Long dcdId1 = 2L;
@@ -115,28 +119,22 @@ public class DataContentDefinitionControllerTest {
                 .provider(prov)
                 .build();
 
-        List<DataContentDefinition> dcds = new ArrayList<>();
-        dcds.add(dcd1);
-        dcds.add(dcd2);
-
+        List<DataContentDefinition> dcds = List.of(dcd1, dcd2);
         when(this.dcdMockService.getDataContentDefinitions()).thenReturn(dcds);
 
-        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
+        mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v1/data-content-definitions"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(jsonPath("$.length()").value(2))
-                // Verify the response body using JSONPath
                 .andExpect(jsonPath("$[0].id").value(dcdId1))
                 .andExpect(jsonPath("$[0].dataContentType").value(DataContentType.NOT_SPECIFIED.toString()))
                 .andExpect(jsonPath("$[1].id").value(dcdId2))
-                .andExpect(jsonPath("$[1].dataContentType").value(DataContentType.NOT_SPECIFIED.toString()))
-                .andReturn();
+                .andExpect(jsonPath("$[1].dataContentType").value(DataContentType.NOT_SPECIFIED.toString()));
 
         verify(this.dcdMockService, times(1)).getDataContentDefinitions();
-
     }
+
 
     @Test
     @WithMockUser(username = "user", roles = "NUTS")
