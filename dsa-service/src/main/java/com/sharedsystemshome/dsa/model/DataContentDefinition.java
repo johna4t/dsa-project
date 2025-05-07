@@ -80,6 +80,7 @@ public class DataContentDefinition {
     @Convert(converter = PeriodStringConverter.class)
     private Period retentionPeriod;
 
+    @JsonIncludeProperties({"id"})
     @OneToMany(mappedBy = "dataContentDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DataContentPerspective> perspectives;
 

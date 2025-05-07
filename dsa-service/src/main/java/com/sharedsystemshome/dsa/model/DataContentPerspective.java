@@ -1,5 +1,6 @@
 package com.sharedsystemshome.dsa.model;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.sharedsystemshome.dsa.enums.LawfulBasis;
 import com.sharedsystemshome.dsa.enums.MetadataScheme;
 import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
@@ -35,6 +36,7 @@ public class DataContentPerspective {
             updatable = false)
     private Long id;
 
+    @JsonIncludeProperties({"id"})
     @ManyToOne(optional = false)
     @JoinColumn(name = "dcd_id")
     private DataContentDefinition dataContentDefinition;

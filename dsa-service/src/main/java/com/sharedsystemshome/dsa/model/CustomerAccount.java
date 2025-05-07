@@ -70,6 +70,7 @@ public class CustomerAccount {
     private Map<String, Object> address;
 
     @Setter(AccessLevel.NONE)
+    @JsonIncludeProperties({"id"})
     @OneToMany(
             mappedBy = "accountHolder",
             cascade = CascadeType.ALL,
@@ -96,6 +97,7 @@ public class CustomerAccount {
     @PrimaryKeyJoinColumn
     private DataSharingParty dataSharingParty;
 
+    @JsonIncludeProperties({"id"})
     @OneToMany(
             mappedBy = "parentAccount",
             cascade = CascadeType.ALL,
