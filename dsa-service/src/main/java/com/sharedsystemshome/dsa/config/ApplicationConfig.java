@@ -32,6 +32,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -270,24 +271,36 @@ public class ApplicationConfig {
                 .name("Test DCD A")
                 .description("Test DCD A description")
                 .provider(this.dsps.get("dspA"))
+                .ownerEmail("a.someonea@email.com")
+                .sourceSystem("System A")
+                .retentionPeriod(Period.ofYears(5))
                 .build();
 
         DataContentDefinition dcdB = DataContentDefinition.builder()
                 .name("Test DCD B")
                 .description("Test DCD B description")
                 .provider(this.dsps.get("dspB"))
+                .ownerEmail("b.someone@email.com")
+                .sourceSystem("System B")
+                .retentionPeriod(Period.ofMonths(36))
                 .build();
 
         DataContentDefinition dcdC = DataContentDefinition.builder()
                 .name("Test DCD C")
                 .description("Test DCD C description")
                 .provider(this.dsps.get("dspC"))
+                .ownerEmail("c.someone@email.com")
+                .sourceSystem("System C")
+                .retentionPeriod(Period.ofDays(117))
                 .build();
 
         DataContentDefinition dcd99 = DataContentDefinition.builder()
                 .name("Test DCD 99")
                 .description("Test DCD 99 description")
                 .provider(this.dsps.get("dsp99"))
+                .ownerEmail("someone.99@email.com")
+                .sourceSystem("System 99")
+                .retentionPeriod(Period.ofWeeks(27))
                 .build();
 
         dcdRepo.saveAll(List.of(dcdA, dcdB, dcdC, dcd99));
@@ -569,7 +582,7 @@ public class ApplicationConfig {
                 .parentAccount(this.customers.get("custA"))
                 .firstName("Steve")
                 .lastName("Rogers")
-                .email("steve@theavengers.com")
+                .email("steve@avengers.com")
                 .contactNumber("99999")
                 .password(encoder.encode("captainamerica"))
                 .roles(List.of(
@@ -583,7 +596,7 @@ public class ApplicationConfig {
                 .parentAccount(this.customers.get("custA"))
                 .firstName("Sam")
                 .lastName("Wilson")
-                .email("sam@theavengers.com")
+                .email("sam@avengers.com")
                 .contactNumber("99999")
                 .password(encoder.encode("thefalcon"))
                 .roles(List.of(
