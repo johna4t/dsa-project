@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sharedsystemshome.dsa.datatype.Address;
+import com.sharedsystemshome.dsa.enums.MetadataScheme;
+import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
 import com.sharedsystemshome.dsa.model.*;
 import com.sharedsystemshome.dsa.repository.*;
 import com.sharedsystemshome.dsa.enums.LawfulBasis;
@@ -30,6 +32,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.Period;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +45,7 @@ public class ApplicationConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
     private Map<String, DataContentDefinition> dcds = new HashMap<>();
+    private Map<String, DataContentPerspective> dcps = new HashMap<>();
     private Map<String, CustomerAccount> customers = new HashMap<>();
     private Map<String, DataSharingParty> dsps = new HashMap<>();
     private Map<String, DataSharingAgreement> dsas = new HashMap<>();
@@ -54,6 +58,7 @@ public class ApplicationConfig {
 
     @Bean
     CommandLineRunner commandLineRunner(DataContentDefinitionRepository dcdRepo,
+                                        DataContentPerspectiveRepository dcpRepo,
                                         DataSharingPartyRepository dspRepo,
                                         DataSharingAgreementRepository dsaRepo,
                                         DataFlowRepository dfRepo,
@@ -73,6 +78,9 @@ public class ApplicationConfig {
 
             //DCD is instantiated with DSP
             this.createDataContentDefinitions(dcdRepo);
+
+            //DCD is instantiated with owning DCD
+            this.createDataContentPerspectives(dcpRepo);
 
             //DSA is instantiated with CustomerAccount
             this.createDataSharingAgreements(dsaRepo);
@@ -213,6 +221,49 @@ public class ApplicationConfig {
 
     }
 
+    private void createDataContentPerspectives(DataContentPerspectiveRepository dcpRepo) {
+
+        DataContentPerspective dcpA = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                        "lawfulBasis", LawfulBasis.CONSENT.name(),
+                        "specialCategory", SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA.name()))
+                .dataContentDefinition(this.dcds.get("dcdA"))
+                .build();
+
+        DataContentPerspective dcpB = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                        "lawfulBasis", LawfulBasis.CONTRACT.name(),
+                        "specialCategory", SpecialCategoryData.HEALTH.name()))
+                .dataContentDefinition(this.dcds.get("dcdB"))
+                .build();
+
+        DataContentPerspective dcpC = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                        "lawfulBasis", LawfulBasis.LEGITIMATE_INTERESTS.name(),
+                        "specialCategory", SpecialCategoryData.POLITICAL.name()))
+                .dataContentDefinition(this.dcds.get("dcdB"))
+                .build();
+
+        DataContentPerspective dcp99 = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                        "lawfulBasis", LawfulBasis.NOT_PERSONAL_DATA.name(),
+                        "specialCategory", SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA.name()))
+                .dataContentDefinition(this.dcds.get("dcdB"))
+                .build();
+
+        dcpRepo.saveAll(List.of(dcpA, dcpB, dcpC, dcp99));
+
+        this.dcps.put("dcpA", dcpA);
+        this.dcps.put("dcpB", dcpB);
+        this.dcps.put("dcpC", dcpC);
+        this.dcps.put("dcp99", dcp99);
+
+    }
+
     private void createDataContentDefinitions(DataContentDefinitionRepository dcdRepo){
 
         //Create DCDs against provider DataSharingParty
@@ -220,24 +271,36 @@ public class ApplicationConfig {
                 .name("Test DCD A")
                 .description("Test DCD A description")
                 .provider(this.dsps.get("dspA"))
+                .ownerEmail("a.someonea@email.com")
+                .sourceSystem("System A")
+                .retentionPeriod(Period.ofYears(5))
                 .build();
 
         DataContentDefinition dcdB = DataContentDefinition.builder()
                 .name("Test DCD B")
                 .description("Test DCD B description")
                 .provider(this.dsps.get("dspB"))
+                .ownerEmail("b.someone@email.com")
+                .sourceSystem("System B")
+                .retentionPeriod(Period.ofMonths(36))
                 .build();
 
         DataContentDefinition dcdC = DataContentDefinition.builder()
                 .name("Test DCD C")
                 .description("Test DCD C description")
                 .provider(this.dsps.get("dspC"))
+                .ownerEmail("c.someone@email.com")
+                .sourceSystem("System C")
+                .retentionPeriod(Period.ofDays(117))
                 .build();
 
         DataContentDefinition dcd99 = DataContentDefinition.builder()
                 .name("Test DCD 99")
                 .description("Test DCD 99 description")
                 .provider(this.dsps.get("dsp99"))
+                .ownerEmail("someone.99@email.com")
+                .sourceSystem("System 99")
+                .retentionPeriod(Period.ofWeeks(27))
                 .build();
 
         dcdRepo.saveAll(List.of(dcdA, dcdB, dcdC, dcd99));
@@ -519,7 +582,7 @@ public class ApplicationConfig {
                 .parentAccount(this.customers.get("custA"))
                 .firstName("Steve")
                 .lastName("Rogers")
-                .email("steve@theavengers.com")
+                .email("steve@avengers.com")
                 .contactNumber("99999")
                 .password(encoder.encode("captainamerica"))
                 .roles(List.of(
@@ -533,7 +596,7 @@ public class ApplicationConfig {
                 .parentAccount(this.customers.get("custA"))
                 .firstName("Sam")
                 .lastName("Wilson")
-                .email("sam@theavengers.com")
+                .email("sam@avengers.com")
                 .contactNumber("99999")
                 .password(encoder.encode("thefalcon"))
                 .roles(List.of(

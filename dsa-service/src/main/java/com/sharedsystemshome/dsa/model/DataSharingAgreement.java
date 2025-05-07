@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharedsystemshome.dsa.enums.ControllerRelationship;
+import com.sharedsystemshome.dsa.util.JpaLogUtils;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -155,7 +156,8 @@ public class DataSharingAgreement {
                 ", controllerRelationship=" + controllerRelationship +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", dataFlows=" + dataFlows +
+                ", dataFlows=" + JpaLogUtils.getObjectIds(dataFlows, DataFlow::getId) +
+                ", accountHolder=" + accountHolder.getId() +
                 '}';
     }
 

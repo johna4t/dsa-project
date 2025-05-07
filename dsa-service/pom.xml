@@ -15,8 +15,8 @@
 	<groupId>com.sharedsystemshome</groupId>
 	<artifactId>dsa</artifactId>
 	<!--version>0.0.13</version-->
-	<name>DSA Sprint #13</name>
-	<description>DSA project - sprint #13</description>
+	<name>DSA Sprint #14</name>
+	<description>DSA project - sprint #14</description>
 
 	<properties>
 		<java.version>17</java.version>
@@ -24,8 +24,20 @@
 		<build.timestamp.format>yyyyMMdd'T'HHmm</build.timestamp.format>
 		<timestamp>unknown</timestamp>
 		<!-- Sprint version -->
-		<revision>0.0.13</revision>
+		<revision>0.0.14</revision>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.junit</groupId>
+				<artifactId>junit-bom</artifactId>
+				<version>5.9.3</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<!-- Spring Boot core -->
@@ -111,14 +123,17 @@
 		</dependency>
 		<dependency>
 			<groupId>org.junit.platform</groupId>
-			<artifactId>junit-platform-suite-api</artifactId>
-			<scope>test</scope>
+			<artifactId>junit-platform-suite-engine</artifactId>
+			<version>1.9.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.9.3</version>
 			<scope>test</scope>
 		</dependency>
+
+
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
@@ -165,6 +180,15 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.0.0</version>
+				<configuration>
+					<excludes>
+						<!-- Exclude all suite-level classes to avoid CLI triple execution -->
+						<exclude>**/DsaTests.java</exclude>
+						<exclude>**/ControllerTests.java</exclude>
+						<exclude>**/ServiceTests.java</exclude>
+						<exclude>**/RepositoryTests.java</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>

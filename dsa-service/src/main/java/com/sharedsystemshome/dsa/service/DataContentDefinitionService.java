@@ -2,7 +2,6 @@ package com.sharedsystemshome.dsa.service;
 
 import com.sharedsystemshome.dsa.model.DataContentDefinition;
 import com.sharedsystemshome.dsa.model.DataSharingParty;
-import com.sharedsystemshome.dsa.model.UserAccount;
 import com.sharedsystemshome.dsa.repository.DataContentDefinitionRepository;
 import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
 import com.sharedsystemshome.dsa.util.AddOrUpdateTransactionException;
@@ -14,7 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -185,5 +183,21 @@ public class DataContentDefinitionService {
 
         logger.info("Found DataContentDefinition with id: {}", dcdId);
         return dcd;
+    }
+
+    public List<DataContentDefinition> getDataContentDefinitionsByProviderId(Long provId) {
+        logger.debug("Entering method DataContentDefinition::getDataContentDefinitionsByCustomerId");
+
+        if(null == provId){
+            throw new NullOrEmptyValueException(BusinessValidationException.DATA_CONTENT_DEFINITION + " id");
+        }
+
+        List<DataContentDefinition> dcds = this.dcdRepo.findDataContentDefinitionByProviderId(provId).orElseThrow(
+                () -> new EntityNotFoundException(BusinessValidationException.CUSTOMER_ACCOUNT, provId)
+        );
+
+        logger.info("Found {} DataContentDefinitionss for CustomerAccount with id: {}",
+                dcds.size(), provId);
+        return dcds;
     }
 }

@@ -1,4 +1,4 @@
-package com.sharedsystemshome.dsa.util;
+package com.sharedsystemshome.dsa.util.conversion;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -7,8 +7,6 @@ import com.sharedsystemshome.dsa.util.BusinessValidationException;
 import jakarta.persistence.AttributeConverter;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 

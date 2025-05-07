@@ -22,6 +22,7 @@ import { CreateCustomerAccountComponent } from './customer-account/create-custom
 import { EnterAdminUserDetailsComponent } from './customer-account/create-customer-account/enter-admin-user-details/enter-admin-user-details.component';
 import { EnterCustomerDetailsComponent } from './customer-account/create-customer-account/enter-customer-details/enter-customer-details.component';
 import { CustomerAccountDetailsComponent } from './customer-account/customer-account-details/customer-account-details.component';
+import { DataContentDefinitionListComponent } from './data-content-definition/data-content-definition-list/data-content-definition-list.component';
 import { authGuard } from './access/auth/auth.guard';
 
 const routes: Routes = [
@@ -96,7 +97,7 @@ const routes: Routes = [
   },
   {
     path: 'data-sharing-agreements',
-    title: 'DSA Hom',
+    title: 'DSA Home',
     component: DataSharingAgreementListComponent,
     canActivate: [authGuard],
     data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
@@ -133,6 +134,13 @@ const routes: Routes = [
     path: 'update-user-profile',
     title: 'Update user profile',
     component: UpdateUserProfileComponent,
+    canActivate: [authGuard],
+    data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
+  },
+  {
+    path: 'data-content-definitions',
+    title: 'View data content definitions',
+    component: DataContentDefinitionListComponent,
     canActivate: [authGuard],
     data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
   },

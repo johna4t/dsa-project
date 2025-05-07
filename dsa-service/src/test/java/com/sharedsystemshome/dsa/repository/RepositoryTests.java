@@ -13,6 +13,7 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 @SelectClasses( {
         CustomerAccountRepositoryTest.class,
         DataContentDefinitionRepositoryTest.class,
+        DataContentPerspectiveRepositoryTest.class,
         DataFlowRepositoryTest.class,
         DataSharingAgreementRepositoryTest.class,
         DataSharingPartyRepositoryTest.class,

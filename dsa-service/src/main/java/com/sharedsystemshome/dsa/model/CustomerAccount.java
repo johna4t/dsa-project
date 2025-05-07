@@ -3,18 +3,18 @@ package com.sharedsystemshome.dsa.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.sharedsystemshome.dsa.datatype.Address;
-import com.sharedsystemshome.dsa.util.HashMapConverter;
-//import com.sharedsystemshome.dsa.util.ValidatedEntity;
+import com.sharedsystemshome.dsa.util.conversion.HashMapConverter;
+import com.sharedsystemshome.dsa.util.JpaLogUtils;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.*;
 import jakarta.validation.constraints.NotBlank;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 @Data
 @Entity(name = "CustomerAccount")
@@ -70,6 +70,7 @@ public class CustomerAccount {
     private Map<String, Object> address;
 
     @Setter(AccessLevel.NONE)
+    @JsonIncludeProperties({"id"})
     @OneToMany(
             mappedBy = "accountHolder",
             cascade = CascadeType.ALL,
@@ -96,6 +97,7 @@ public class CustomerAccount {
     @PrimaryKeyJoinColumn
     private DataSharingParty dataSharingParty;
 
+    @JsonIncludeProperties({"id"})
     @OneToMany(
             mappedBy = "parentAccount",
             cascade = CascadeType.ALL,
@@ -223,5 +225,22 @@ public class CustomerAccount {
         updatedDsps.remove(dsp);
         this.dataSharingPartners = updatedDsps;
     }
+
+    @Override
+    public String toString() {
+        return "CustomerAccount{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", url='" + url + '\'' +
+                ", departmentName='" + departmentName + '\'' +
+                ", branchName='" + branchName + '\'' +
+                ", address=" + address +
+                ", agreements=" + JpaLogUtils.getObjectIds(agreements, DataSharingAgreement::getId) +
+                ", dataSharingPartners=" + JpaLogUtils.getObjectIds(dataSharingPartners, DataSharingParty::getId) +
+                ", dataSharingParty=" + dataSharingParty.getId() +
+                ", users=" + JpaLogUtils.getObjectIds(users, UserAccount::getId) +
+                '}';
+    }
+
 
 }

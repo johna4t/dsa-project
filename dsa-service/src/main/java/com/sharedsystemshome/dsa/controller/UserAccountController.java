@@ -46,7 +46,7 @@ public class UserAccountController {
     public ResponseEntity<List<UserAccount>> getUserAccounts(RequestEntity<Map<String, String>> requestEntity) {
         Map<String, String> queryParams = requestEntity.getBody();
 
-        if (null == queryParams || 0 == queryParams.size()) {
+        if (null == queryParams || queryParams.isEmpty()) {
             // No query params passed, so run default query
 
             if(this.userContext.isSuperAdmin()){

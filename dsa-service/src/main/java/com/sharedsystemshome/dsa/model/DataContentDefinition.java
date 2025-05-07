@@ -5,6 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharedsystemshome.dsa.enums.DataContentType;
+import com.sharedsystemshome.dsa.enums.MetadataScheme;
+import com.sharedsystemshome.dsa.util.JpaLogUtils;
+import com.sharedsystemshome.dsa.util.conversion.DurationStringConverter;
+import com.sharedsystemshome.dsa.util.conversion.PeriodStringConverter;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -12,6 +16,13 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
+
+import java.time.Duration;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 @Data
 @Entity(name = "DataContentDefinition")
@@ -65,6 +76,27 @@ public class DataContentDefinition {
     @Enumerated(EnumType.STRING)
     private DataContentType dataContentType;
 
+    @Column(name = "RETENTION_PERIOD", columnDefinition = "TEXT")
+    @Convert(converter = PeriodStringConverter.class)
+    private Period retentionPeriod;
+
+    @JsonIncludeProperties({"id"})
+    @OneToMany(mappedBy = "dataContentDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DataContentPerspective> perspectives;
+
+    @Column(name = "OWNER_NAME",
+            columnDefinition = "TEXT")
+    private String ownerName;
+
+    @Column(name = "OWNER_EMAIL",
+            columnDefinition = "TEXT",
+            nullable = false)
+    private String ownerEmail;
+
+    @Column(name = "SOURCE_SYSTEM",
+            columnDefinition = "TEXT",
+            nullable = false)
+    private String sourceSystem;
 
     @Builder
     public DataContentDefinition(
@@ -73,7 +105,12 @@ public class DataContentDefinition {
             DataSharingParty provider,
             String name,
             String description,
-            DataContentType dataContentType
+            DataContentType dataContentType,
+            Period retentionPeriod,
+            List<DataContentPerspective> perspectives,
+            String ownerName,
+            String ownerEmail,
+            String sourceSystem
     ) {
         this.id = id;
         // Set owning entity
@@ -81,6 +118,12 @@ public class DataContentDefinition {
         this.name = name;
         this.description = description;
         this.dataContentType = dataContentType;
+        this.retentionPeriod = retentionPeriod;
+        this.perspectives = perspectives;
+        this.ownerName = ownerName;
+        this.ownerEmail = ownerEmail;
+        this.sourceSystem = sourceSystem;
+
         this.initialiseDefaultValues();
     }
 
@@ -98,6 +141,22 @@ public class DataContentDefinition {
         if(null != this.provider){
             this.provider.addDataContentDefinition(this);
         }
+
+        if(null == this.perspectives){
+            this.perspectives = new ArrayList<>();
+        }
+
+    }
+
+    public Optional<DataContentPerspective> getPerspective(MetadataScheme scheme) {
+        return perspectives.stream()
+                .filter(p -> p.getMetadataScheme() == scheme)
+                .findFirst();
+    }
+
+    public void addPerspective(DataContentPerspective perspective) {
+        perspective.setDataContentDefinition(this);
+        this.perspectives.add(perspective);
     }
 
     public String toJsonString() throws JsonProcessingException {
@@ -112,6 +171,13 @@ public class DataContentDefinition {
                 ", provider=" + provider +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", dataContentType=" + dataContentType +
+                ", retentionPeriod=" + retentionPeriod +
+                ", perspectives=" + JpaLogUtils.getObjectIds(perspectives, DataContentPerspective::getId) +
+                ", ownerName='" + ownerName + '\'' +
+                ", ownerEmail='" + ownerEmail + '\'' +
+                ", sourceSystem='" + sourceSystem + '\'' +
                 '}';
     }
+
 }

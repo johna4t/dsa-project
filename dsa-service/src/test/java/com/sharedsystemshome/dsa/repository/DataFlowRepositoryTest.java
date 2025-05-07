@@ -1,6 +1,7 @@
 package com.sharedsystemshome.dsa.repository;
 
 import com.sharedsystemshome.dsa.datatype.Address;
+import com.sharedsystemshome.dsa.enums.DataContentType;
 import com.sharedsystemshome.dsa.model.*;
 import com.sharedsystemshome.dsa.enums.ControllerRelationship;
 import com.sharedsystemshome.dsa.enums.LawfulBasis;
@@ -72,6 +73,9 @@ public class DataFlowRepositoryTest {
                 .name("Test DCD A")
                 .description("Test DCD A description")
                 .provider(prov)
+                .ownerEmail("someone@email.com")
+                .sourceSystem("System A")
+                .retentionPeriod(Period.ofYears(5))
                 .build();
         this.dcdRepo.save(dcd);
 
@@ -174,6 +178,10 @@ public class DataFlowRepositoryTest {
                 .name("Referral")
                 .description("Referral letter")
                 .provider(prov)
+                .dataContentType(DataContentType.ELECTRONIC_DOCUMENT)
+                .retentionPeriod(Period.ofYears(7))
+                .ownerEmail("someone@email.com")
+                .sourceSystem("Some System")
                 .build();
 
         Boolean isSpecialCategoryData = true;
@@ -246,6 +254,9 @@ public class DataFlowRepositoryTest {
                 .name("DCD1")
                 .provider(prov1)
                 .description("DCD1 desc")
+                .ownerEmail("someone@email.com")
+                .sourceSystem("Some System")
+                .retentionPeriod(Period.ofYears(5))
                 .build();
         this.dcdRepo.save(dcd1);
 
@@ -268,6 +279,9 @@ public class DataFlowRepositoryTest {
                 .name("DCD2")
                 .provider(prov2)
                 .description("DCD2 desc")
+                .ownerEmail("someother@email.com")
+                .sourceSystem("Some Other System")
+                .retentionPeriod(Period.ofYears(5))
                 .build();
         this.dcdRepo.save(dcd2);
 
@@ -275,6 +289,9 @@ public class DataFlowRepositoryTest {
                 .name("DCD3")
                 .provider(prov1)
                 .description("DCD3 desc")
+                .ownerEmail("someone.else@email.com")
+                .sourceSystem("Another System")
+                .retentionPeriod(Period.ofMonths(12))
                 .build();
         this.dcdRepo.save(dcd3);
 
@@ -364,6 +381,9 @@ public class DataFlowRepositoryTest {
                 .name("DCD1")
                 .provider(prov1)
                 .description("DCD1 desc")
+                .ownerEmail("someone@email.com")
+                .sourceSystem("Some System")
+                .retentionPeriod(Period.ofYears(5))
                 .build();
         this.dcdRepo.save(dcd1);
 
@@ -385,6 +405,9 @@ public class DataFlowRepositoryTest {
                 .name("DCD2")
                 .provider(prov2)
                 .description("DCD2 desc")
+                .ownerEmail("someone.else@email.com")
+                .sourceSystem("Some Other System")
+                .retentionPeriod(Period.ofYears(5))
                 .build();
         this.dcdRepo.save(dcd2);
 
@@ -406,6 +429,9 @@ public class DataFlowRepositoryTest {
                 .name("DCD3")
                 .provider(prov3)
                 .description("DCD3 desc")
+                .ownerEmail("someother@email.com")
+                .sourceSystem("System 3")
+                .retentionPeriod(Period.ofYears(25))
                 .build();
         this.dcdRepo.save(dcd3);
 
@@ -511,6 +537,9 @@ public class DataFlowRepositoryTest {
                 .name("DCD1")
                 .provider(prov)
                 .description("DCD1 desc")
+                .ownerEmail("someone@email.com")
+                .sourceSystem("Some System")
+                .retentionPeriod(Period.ofYears(5))
                 .build();
         this.dcdRepo.save(dcd1);
 
@@ -518,6 +547,9 @@ public class DataFlowRepositoryTest {
                 .name("DCD2")
                 .provider(prov)
                 .description("DCD2 desc")
+                .ownerEmail("someother@email.com")
+                .sourceSystem("Some Other System")
+                .retentionPeriod(Period.ofYears(5))
                 .build();
         this.dcdRepo.save(dcd2);
 
@@ -525,6 +557,9 @@ public class DataFlowRepositoryTest {
                 .name("DCD3")
                 .provider(prov)
                 .description("DCD3 desc")
+                .ownerEmail("someone.else@email.com")
+                .sourceSystem("Another System")
+                .retentionPeriod(Period.ofDays(100))
                 .build();
         this.dcdRepo.save(dcd3);
 

@@ -4,6 +4,7 @@ public class BusinessValidationException extends RuntimeException {
 
     public static String CUSTOMER_ACCOUNT = "Customer Account";
     public static String DATA_CONTENT_DEFINITION = "Data Content Definition";
+    public static String DATA_CONTENT_PERSPECTIVE = "Data Content Perspective";
     public static String DATA_FLOW = "Data Flow";
     public static String DATA_SHARING_AGREEMENT = "Data Sharing Agreement";
     public static String DATA_SHARING_PARTY = "Data Sharing Party";
