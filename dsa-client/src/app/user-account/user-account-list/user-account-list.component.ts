@@ -31,14 +31,14 @@ export class UserAccountListComponent implements OnInit{
   };
 
   private getUserAccounts() {
-    this.userAccountService.getUserAccountList().subscribe(
-      (response) => {
+    this.userAccountService.getUserAccountList().subscribe({
+      next: (response) => {
         this.userAccounts = response;
       },
-      (error: HttpErrorResponse) => {
+      error: (error: HttpErrorResponse) => {
         console.log(error);
       }
-    )
+    });
   }
 
   updateUserAccount(id: number) {

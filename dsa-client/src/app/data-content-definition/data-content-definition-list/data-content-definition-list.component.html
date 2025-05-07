@@ -1,0 +1,63 @@
+<div class="container" mt-5>
+  <div class="table-header">
+    <h2>Data asset register</h2>
+    <button mat-flat-button color="primary" routerLink="/create-data-content-definition">Add</button>
+  </div>
+  <table mat-table [dataSource]="dataContentDefinitions" class="mat-elevation-z8">
+
+    <!-- Name column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{ element.name }} </td>
+    </ng-container>
+
+    <!-- Source system column -->
+    <ng-container matColumnDef="sourceSystem">
+      <th mat-header-cell *matHeaderCellDef> Source System </th>
+      <td mat-cell *matCellDef="let element"> {{ element.sourceSystem }} </td>
+    </ng-container>
+
+    <!-- Content type column -->
+    <ng-container matColumnDef="dataContentType">
+      <th mat-header-cell *matHeaderCellDef> Data content type </th>
+      <td mat-cell *matCellDef="let element"> {{ element.dataContentType }} </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="btnView">
+      <th mat-header-cell *matHeaderCellDef> </th>
+      <td mat-cell *matCellDef="let element">
+        <button (click)="viewDataContentDefinition(element.id)"
+                mat-flat-button
+                color="primary">
+          View
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="btnEdit">
+      <th mat-header-cell *matHeaderCellDef> </th>
+      <td mat-cell *matCellDef="let element">
+        <button (click)="updateDataContentDefinition(element.id)"
+                mat-flat-button
+                color="primary">
+          Edit
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="btnDelete">
+      <th mat-header-cell *matHeaderCellDef> </th>
+      <td mat-cell *matCellDef="let element">
+        <button (click)="deleteDataContentDefinition(element.id)"
+                mat-flat-button
+                color="warn">
+          Delete
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>

@@ -8,6 +8,8 @@ export class DataContentDefinition {
   name = '';
   description?: string;
   dataContentType = "";
-  retentionPeriod?: string;
+  retentionPeriod?: string; // ISO 8601 duration string for Period, e.g. 'P5Y'
   perspectives: DataContentPerspective[] = [];
+  ownerEmail = '';
+  ownerName?: string;
 }

@@ -46,6 +46,7 @@ import { UserAccountDetailsComponent } from './user-account/user-account-details
 import { UpdateUserAccountComponent } from './user-account/update-user-account/update-user-account.component';
 import { UserProfileDetailsComponent } from './user-profile/user-profile-details/user-profile-details.component';
 import { UpdateUserProfileComponent } from './user-profile/update-user-profile/update-user-profile.component';
+import { DataContentDefinitionListComponent } from './data-content-definition/data-content-definition-list/data-content-definition-list.component';
 
 @NgModule({
   declarations: [
@@ -75,7 +76,8 @@ import { UpdateUserProfileComponent } from './user-profile/update-user-profile/u
     UserAccountDetailsComponent,
     UpdateUserAccountComponent,
     UserProfileDetailsComponent,
-    UpdateUserProfileComponent
+    UpdateUserProfileComponent,
+    DataContentDefinitionListComponent
   ],
   imports: [
     BrowserModule,
