@@ -1,6 +1,7 @@
 package com.sharedsystemshome.dsa.controller;
 
 import com.sharedsystemshome.dsa.model.DataContentDefinition;
+import com.sharedsystemshome.dsa.security.service.UserContextService;
 import com.sharedsystemshome.dsa.service.DataContentDefinitionService;
 import com.sharedsystemshome.dsa.util.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,15 @@ import java.util.Map;
 public class DataContentDefinitionController {
 
     private final DataContentDefinitionService dcdService;
+    private final UserContextService userContext;
 
     @Autowired
-    public DataContentDefinitionController(DataContentDefinitionService dcdService){
+    public DataContentDefinitionController(
+            DataContentDefinitionService dcdService,
+            UserContextService userContext){
 
         this.dcdService = dcdService;
+        this.userContext = userContext;
 
     }
 
@@ -37,24 +42,42 @@ public class DataContentDefinitionController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping
-    public ResponseEntity<List<DataContentDefinition>> getDataContentDefinitions(@RequestParam Map<String,String> params) {
 
-        // Supports /api/v1/customer-accounts?{param 1}={value 1}
-        if(null == params || 0 == params.size()) {
+    public ResponseEntity<List<DataContentDefinition>> getDataContentDefinitions(RequestEntity<Map<String, String>> requestEntity) {
+        Map<String, String> queryParams = requestEntity.getBody();
 
-            List<DataContentDefinition> dcds = this.dcdService.getDataContentDefinitions();
+        if(null == queryParams || queryParams.isEmpty()) {
 
-            if(null != dcds && !dcds.isEmpty()){
+            if(this.userContext.isSuperAdmin()){
 
-            return ResponseEntity.status(200).body(dcds);
+                return getDataContentDefinitionsResponse(this.dcdService.getDataContentDefinitions());
 
             } else {
 
-                return ResponseEntity.status(204).build();
+                Long id = this.userContext.getCurrentUser().getParentAccount().getId();
 
+                return getDataContentDefinitionsResponse(
+                        this.dcdService.getDataContentDefinitionsByProviderId(
+                                this.userContext.getCurrentUser().getParentAccount().getId()));
             }
+
         } else {
             throw new BadRequestException("Unrecognised query parameter.");
+        }
+
+    }
+
+
+    private ResponseEntity<List<DataContentDefinition>> getDataContentDefinitionsResponse(List<DataContentDefinition> dcds){
+
+        if(null != dcds && !dcds.isEmpty()){
+
+            return ResponseEntity.status(200).body(dcds);
+
+        } else {
+
+            return ResponseEntity.status(204).build();
+
         }
 
     }

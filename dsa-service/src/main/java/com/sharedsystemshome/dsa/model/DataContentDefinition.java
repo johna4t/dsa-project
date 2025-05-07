@@ -165,7 +165,7 @@ public class DataContentDefinition {
     public String toString() {
         return "DataContentDefinition{" +
                 "id=" + id +
-                ", provider=" + provider +
+                //", provider=" + provider +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 '}';
