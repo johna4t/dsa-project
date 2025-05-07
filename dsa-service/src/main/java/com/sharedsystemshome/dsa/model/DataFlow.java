@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sharedsystemshome.dsa.enums.LawfulBasis;
 import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
+import com.sharedsystemshome.dsa.util.JpaLogUtils;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -238,17 +239,17 @@ public class DataFlow {
     public String toString() {
         return "DataFlow{" +
                 "id=" + id +
-                ", dataSharingAgreement=" + dataSharingAgreement +
-                ", provider=" + provider +
-                ", consumer=" + consumer +
+                ", dataSharingAgreement=" + dataSharingAgreement.getId() +
+                ", purposeOfSharing='" + purposeOfSharing + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
+                ", provider=" + provider.getId() +
+                ", consumer=" + consumer.getId() +
                 ", isPersonalData=" + isPersonalData +
                 ", lawfulBasis=" + lawfulBasis +
                 ", isSpecialCategoryData=" + isSpecialCategoryData +
                 ", specialCategory=" + specialCategory +
-                ", purposeOfSharing='" + purposeOfSharing + '\'' +
-                ", providedDcds=" + providedDcds +
+                ", providedDcds=" + JpaLogUtils.getObjectIds(providedDcds, DataContentDefinition::getId) +
                 '}';
     }
 }

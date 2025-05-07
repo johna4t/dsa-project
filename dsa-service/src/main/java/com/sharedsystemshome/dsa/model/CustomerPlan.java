@@ -8,6 +8,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
+import java.util.List;
+import java.util.function.Function;
+
 @Data
 @Entity(name = "CustomerPan")
 @Table(name = "CUSTOMER_PLAN")
@@ -59,5 +62,17 @@ public class CustomerPlan {
             nullable = false,
             columnDefinition = "INTEGER")
     private Integer maxPartners = 0;
+
+    @Override
+    public String toString() {
+        return "CustomerPlan{" +
+                "id=" + id +
+                ", name=" + name +
+                ", description='" + description + '\'' +
+                ", maxAgreements=" + maxAgreements +
+                ", maxUsers=" + maxUsers +
+                ", maxPartners=" + maxPartners +
+                '}';
+    }
 
 }

@@ -196,7 +196,7 @@ public class DataContentDefinitionService {
                 () -> new EntityNotFoundException(BusinessValidationException.CUSTOMER_ACCOUNT, provId)
         );
 
-        logger.info("Found {} UserAccounts for CustomerAccount with id: {}",
+        logger.info("Found {} DataContentDefinitionss for CustomerAccount with id: {}",
                 dcds.size(), provId);
         return dcds;
     }

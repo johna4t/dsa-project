@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharedsystemshome.dsa.enums.DataContentType;
 import com.sharedsystemshome.dsa.enums.MetadataScheme;
+import com.sharedsystemshome.dsa.util.JpaLogUtils;
 import com.sharedsystemshome.dsa.util.conversion.DurationStringConverter;
 import com.sharedsystemshome.dsa.util.conversion.PeriodStringConverter;
 import jakarta.persistence.*;
@@ -21,6 +22,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Data
 @Entity(name = "DataContentDefinition")
@@ -165,9 +167,16 @@ public class DataContentDefinition {
     public String toString() {
         return "DataContentDefinition{" +
                 "id=" + id +
-                //", provider=" + provider +
+                ", provider=" + provider +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", dataContentType=" + dataContentType +
+                ", retentionPeriod=" + retentionPeriod +
+                ", perspectives=" + JpaLogUtils.getObjectIds(perspectives, DataContentPerspective::getId) +
+                ", ownerName='" + ownerName + '\'' +
+                ", ownerEmail='" + ownerEmail + '\'' +
+                ", sourceSystem='" + sourceSystem + '\'' +
                 '}';
     }
+
 }

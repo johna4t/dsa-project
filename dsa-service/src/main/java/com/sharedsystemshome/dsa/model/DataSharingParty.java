@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sharedsystemshome.dsa.util.JpaLogUtils;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -132,17 +133,6 @@ public class DataSharingParty {
         return !this.consumedDataFlows.isEmpty();
     }
 
-    @Override
-    public String toString() {
-        return "DataSharingParty{" +
-                "id=" + id +
-                ", description='" + description + '\'' +
-                ", providerDcds=" + providerDcds +
-                ", providedDataFlows=" + providedDataFlows +
-                ", consumedDataFlows=" + consumedDataFlows +
-                '}';
-    }
-
     public Long getId() {
         return id;
     }
@@ -198,5 +188,17 @@ public class DataSharingParty {
 
     public void setAccount(CustomerAccount account) {
         this.account = account;
+    }
+
+    @Override
+    public String toString() {
+        return "DataSharingParty{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", providerDcds=" + JpaLogUtils.getObjectIds(providerDcds, DataContentDefinition::getId) +
+                ", providedDataFlows=" + JpaLogUtils.getObjectIds(providedDataFlows, DataFlow::getId) +
+                ", consumedDataFlows=" + JpaLogUtils.getObjectIds(consumedDataFlows, DataFlow::getId) +
+                ", account=" + account.getId() +
+                '}';
     }
 }

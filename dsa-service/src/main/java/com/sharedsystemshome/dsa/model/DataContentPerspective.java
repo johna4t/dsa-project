@@ -92,4 +92,14 @@ public class DataContentPerspective {
             metadata.put(key, value);
         }
     }
+
+    @Override
+    public String toString() {
+        return "DataContentPerspective{" +
+                "id=" + id +
+                ", dataContentDefinition=" + dataContentDefinition.getId() +
+                ", metadataScheme=" + metadataScheme +
+                ", metadata=" + metadata +
+                '}';
+    }
 }

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharedsystemshome.dsa.enums.UserAccountStatus;
 import com.sharedsystemshome.dsa.security.model.Role;
 import com.sharedsystemshome.dsa.security.model.Token;
+import com.sharedsystemshome.dsa.util.JpaLogUtils;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.*;
@@ -110,7 +111,6 @@ public class UserAccount implements UserDetails {
             referencedColumnName = "id",
             nullable = false
     )
-
     private CustomerAccount parentAccount;
 
     @JsonIncludeProperties({"id", "name"})
@@ -208,23 +208,6 @@ public class UserAccount implements UserDetails {
                 .writerWithDefaultPrettyPrinter().writeValueAsString(this);
     }
 
-    @Override
-    public String toString() {
-        return "UserAccount{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", contactNumber='" + contactNumber + '\'' +
-                ", password='" + password + '\'' +
-                ", status=" + status +
-                ", isAccountNonExpired=" + isAccountNonExpired +
-                ", isAccountNonLocked=" + isAccountNonLocked +
-                ", isCredentialsNonExpired=" + isCredentialsNonExpired +
-                ", roles=" + roles +
-                '}';
-    }
-
     @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -267,5 +250,26 @@ public class UserAccount implements UserDetails {
     @Override
     public boolean isEnabled() {
         return UserAccountStatus.ACTIVE == this.status;
+    }
+
+    @Override
+    public String toString() {
+        return "UserAccount{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", contactNumber='" + contactNumber + '\'' +
+                ", jobTitle='" + jobTitle + '\'' +
+                ", password='" + password + '\'' +
+                ", status=" + status +
+                ", isAccountNonExpired=" + isAccountNonExpired +
+                ", isAccountNonLocked=" + isAccountNonLocked +
+                ", isCredentialsNonExpired=" + isCredentialsNonExpired +
+                ", parentAccount=" + parentAccount.getId() +
+                ", roles=" + JpaLogUtils.getObjectIds(roles, Role::getId) +
+                ", tokens=" + JpaLogUtils.getObjectIds(tokens, Token::getId) +
+                ", revokedTokens=" + JpaLogUtils.getObjectIds(revokedTokens, Token::getId) +
+                '}';
     }
 }
