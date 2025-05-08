@@ -35,4 +35,27 @@ export class DataContentDefinitionDetailsComponent implements OnInit {
   updateDataContentDefinition(id: number) {
     this.router.navigate(['update-data-content-definition', id]);
   }
+
+  getFormattedRetentionPeriod(): string | undefined {
+    const iso = this.dcd?.retentionPeriod;
+    if (!iso || typeof iso !== 'string') return undefined;
+
+    const match = iso.match(/^P(\d+)([DWMY])$/);
+    if (!match) return iso; // fallback for unexpected formats
+
+    const [_, numberStr, unit] = match;
+    const number = parseInt(numberStr, 10);
+
+    const unitMap: Record<'D' | 'W' | 'M' | 'Y', string> = {
+      D: 'Day',
+      W: 'Week',
+      M: 'Month',
+      Y: 'Year',
+    };
+
+    const label = unitMap[unit as keyof typeof unitMap];
+    const pluralLabel = number === 1 ? label : `${label}s`;
+
+    return `${number} ${pluralLabel}`;
+  }
 }

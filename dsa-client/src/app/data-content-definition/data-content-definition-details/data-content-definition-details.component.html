@@ -32,7 +32,7 @@
       <!-- Retention period (Readonly) -->
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Retention period</mat-label>
-        <input matInput [value]="dcd.retentionPeriod" readonly>
+        <input matInput [value]="getFormattedRetentionPeriod()" readonly>
       </mat-form-field>
 
       <!-- Owner email (Readonly) -->
