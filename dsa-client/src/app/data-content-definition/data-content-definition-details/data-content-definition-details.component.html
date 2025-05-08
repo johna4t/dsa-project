@@ -1,1 +1,57 @@
-<p>data-content-definition-details works!</p>
+<div class="container" mt-5>
+  <div *ngIf="dcd">
+  <h2>Data asset: {{ dcd.name }}</h2>
+</div>
+  <div class="card p-2">
+    <form>
+
+      <!-- Name (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Name</mat-label>
+        <input matInput [value]="dcd.name" readonly>
+      </mat-form-field>
+
+      <!-- Description (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description</mat-label>
+        <input matInput [value]="dcd.description" readonly>
+      </mat-form-field>
+
+      <!-- Source system (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Source system</mat-label>
+        <input matInput [value]="dcd.sourceSystem" readonly>
+      </mat-form-field>
+
+      <!-- Data content type (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Content type</mat-label>
+        <input matInput [value]="dcd.dataContentType" readonly>
+      </mat-form-field>
+
+      <!-- Retention period (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Retention period</mat-label>
+        <input matInput [value]="dcd.retentionPeriod" readonly>
+      </mat-form-field>
+
+      <!-- Owner email (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Owner email</mat-label>
+        <input matInput [value]="dcd.ownerEmail" readonly>
+      </mat-form-field>
+
+      <!-- Owner name (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Owner name</mat-label>
+        <input matInput [value]="dcd.ownerName" readonly>
+      </mat-form-field>
+
+      <div align="right">
+        <button mat-flat-button color="primary" (click)="updateDataContentDefinition(dcd.id)">Edit</button>
+        <button mat-flat-button color="accent" style="margin:5px;" routerLink="/data-content-definitions">Back</button>
+      </div>
+
+    </form>
+  </div>
+</div>

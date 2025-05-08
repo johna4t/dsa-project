@@ -23,6 +23,9 @@ import { EnterAdminUserDetailsComponent } from './customer-account/create-custom
 import { EnterCustomerDetailsComponent } from './customer-account/create-customer-account/enter-customer-details/enter-customer-details.component';
 import { CustomerAccountDetailsComponent } from './customer-account/customer-account-details/customer-account-details.component';
 import { DataContentDefinitionListComponent } from './data-content-definition/data-content-definition-list/data-content-definition-list.component';
+import { CreateDataContentDefinitionComponent } from './data-content-definition/create-data-content-definition/create-data-content-definition.component';
+import { UpdateDataContentDefinitionComponent } from './data-content-definition/update-data-content-definition/update-data-content-definition.component';
+import { DataContentDefinitionDetailsComponent } from './data-content-definition/data-content-definition-details/data-content-definition-details.component';
 import { authGuard } from './access/auth/auth.guard';
 
 const routes: Routes = [
@@ -141,6 +144,27 @@ const routes: Routes = [
     path: 'data-content-definitions',
     title: 'View data content definitions',
     component: DataContentDefinitionListComponent,
+    canActivate: [authGuard],
+    data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
+  },
+  {
+    path: 'update-content-definition',
+    title: 'Update data content definition',
+    component: UpdateDataContentDefinitionComponent,
+    canActivate: [authGuard],
+    data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
+  },
+{
+    path: 'view-data-content-definition/:id',
+    title: 'View data content definition',
+    component: DataContentDefinitionDetailsComponent,
+    canActivate: [authGuard],
+    data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
+  },
+  {
+    path: 'create-data-content-definition',
+    title: 'Add data content definition',
+    component: CreateDataContentDefinitionComponent,
     canActivate: [authGuard],
     data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
   },
