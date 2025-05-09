@@ -1,1 +1,65 @@
-<p>create-data-content-definition works!</p>
+<div class="container" *ngIf="dcdForm">
+  <h2>Add new data asset</h2>
+  <div class="card p-2">
+    <form [formGroup]="dcdForm" (ngSubmit)="onSubmit()">
+      <!-- Name -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" required>
+        <mat-error *ngIf="dcdForm.get('name')?.hasError('required')">Name is required</mat-error>
+      </mat-form-field>
+
+      <!-- Description -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description">
+      </mat-form-field>
+
+      <!-- Source system -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Source system</mat-label>
+        <input matInput formControlName="sourceSystem" required>
+        <mat-error *ngIf="dcdForm.get('sourceSystem')?.hasError('required')">Source system is required</mat-error>
+      </mat-form-field>
+
+      <!-- Owner email -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Owner email</mat-label>
+        <input matInput formControlName="ownerEmail" required>
+        <mat-error *ngIf="dcdForm.get('ownerEmail')?.hasError('required')">Email is required</mat-error>
+        <mat-error *ngIf="dcdForm.get('ownerEmail')?.hasError('email')">Enter a valid email</mat-error>
+      </mat-form-field>
+
+      <!-- Retention period -->
+      <div class="d-flex gap-2">
+        <mat-form-field appearance="outline" class="flex-grow-1">
+          <mat-label>Retention value</mat-label>
+          <input matInput type="number" formControlName="retentionValue" min="1">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="flex-grow-1">
+          <mat-label>Retention unit</mat-label>
+          <mat-select formControlName="retentionUnit">
+            <mat-option value="D">Days</mat-option>
+            <mat-option value="W">Weeks</mat-option>
+            <mat-option value="M">Months</mat-option>
+            <mat-option value="Y">Years</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Content type -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Content type</mat-label>
+        <mat-select formControlName="dataContentType">
+          <mat-option *ngFor="let ct of contentTypes" [value]="ct">{{ ct }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div align="right">
+        <button mat-flat-button color="primary" type="submit" style="margin:5px;" [disabled]="dcdForm.invalid || dcdForm.pristine">Create</button>
+        <button mat-flat-button color="accent" style="margin:5px;" routerLink="/data-content-definitions">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -148,7 +148,7 @@ const routes: Routes = [
     data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
   },
   {
-    path: 'update-content-definition',
+    path: 'update-data-content-definition/:id',
     title: 'Update data content definition',
     component: UpdateDataContentDefinitionComponent,
     canActivate: [authGuard],

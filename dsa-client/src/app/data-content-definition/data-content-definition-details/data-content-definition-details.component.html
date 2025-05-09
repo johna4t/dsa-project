@@ -1,6 +1,6 @@
 <div class="container" mt-5>
   <div *ngIf="dcd">
-  <h2>Data asset: {{ dcd.name }}</h2>
+  <h2>Data asset details: {{ dcd.name }}</h2>
 </div>
   <div class="card p-2">
     <form>
@@ -29,12 +29,6 @@
         <input matInput [value]="dcd.dataContentType" readonly>
       </mat-form-field>
 
-      <!-- Retention period (Readonly) -->
-      <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Retention period</mat-label>
-        <input matInput [value]="getFormattedRetentionPeriod()" readonly>
-      </mat-form-field>
-
       <!-- Owner email (Readonly) -->
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Owner email</mat-label>
@@ -45,6 +39,12 @@
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Owner name</mat-label>
         <input matInput [value]="dcd.ownerName" readonly>
+      </mat-form-field>
+
+      <!-- Retention period (Readonly) -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Retention period</mat-label>
+        <input matInput [value]="getFormattedRetentionPeriod()" readonly>
       </mat-form-field>
 
       <div align="right">
