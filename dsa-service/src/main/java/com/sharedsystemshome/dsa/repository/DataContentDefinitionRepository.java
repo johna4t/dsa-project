@@ -12,4 +12,6 @@ import java.util.Optional;
 public interface DataContentDefinitionRepository extends JpaRepository<DataContentDefinition, Long> {
     Optional<List<DataContentDefinition>> findDataContentDefinitionByProviderId(Long custId);
 
+    Optional<DataContentDefinition> findByIdAndProviderId(Long id, Long provId);
+
 }

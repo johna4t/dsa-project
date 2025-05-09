@@ -2,6 +2,7 @@ package com.sharedsystemshome.dsa.controller;
 
 import com.sharedsystemshome.dsa.model.DataContentDefinition;
 import com.sharedsystemshome.dsa.security.service.UserContextService;
+import com.sharedsystemshome.dsa.security.util.SecurityValidationException;
 import com.sharedsystemshome.dsa.service.DataContentDefinitionService;
 import com.sharedsystemshome.dsa.util.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,9 @@ public class DataContentDefinitionController {
     public ResponseEntity<Long> postDataContentDefinition(RequestEntity<DataContentDefinition> request){
 
         try{
-            return ResponseEntity.status(201).body(this.dcdService.createDataContentDefinition(request.getBody()));
+            return ResponseEntity.status(201).body(
+                    this.dcdService.createDataContentDefinition(
+                            this.userContext.validateAccess(request.getBody())));
         } catch(Exception e) {
             throw new BadRequestException(e.getMessage(), e);
         }
@@ -42,76 +45,65 @@ public class DataContentDefinitionController {
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping
-
     public ResponseEntity<List<DataContentDefinition>> getDataContentDefinitions(RequestEntity<Map<String, String>> requestEntity) {
         Map<String, String> queryParams = requestEntity.getBody();
+        List<DataContentDefinition> dcds = null;
 
         if(null == queryParams || queryParams.isEmpty()) {
 
-            if(this.userContext.isSuperAdmin()){
+            // TODO: SUPER_ADMIN returns empty for now — behavior to be enhanced later
+            dcds = this.dcdService.getDataContentDefinitions(this.userContext.getCurrentCustomerAccountId());
 
-                return getDataContentDefinitionsResponse(this.dcdService.getDataContentDefinitions());
+            if(null == dcds || dcds.isEmpty()) {
 
-            } else {
+                return ResponseEntity.status(204).build();
 
-                Long id = this.userContext.getCurrentUser().getParentAccount().getId();
-
-                return getDataContentDefinitionsResponse(
-                        this.dcdService.getDataContentDefinitionsByProviderId(
-                                this.userContext.getCurrentUser().getParentAccount().getId()));
             }
-
-        } else {
-            throw new BadRequestException("Unrecognised query parameter.");
-        }
-
-    }
-
-
-    private ResponseEntity<List<DataContentDefinition>> getDataContentDefinitionsResponse(List<DataContentDefinition> dcds){
-
-        if(null != dcds && !dcds.isEmpty()){
 
             return ResponseEntity.status(200).body(dcds);
 
         } else {
-
-            return ResponseEntity.status(204).build();
-
+            throw new BadRequestException("Unrecognised query parameter.");
         }
-
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping(path = "{id}")
     public ResponseEntity<DataContentDefinition> getDataContentDefinitionById(@PathVariable("id") Long id) {
 
-        try{
+        try {
 
-            return ResponseEntity.status(200).body(this.dcdService.getDataContentDefinitionById(id));
+            return ResponseEntity.status(200).body(this.userContext.validateAccess(
+                    this.dcdService.getDataContentDefinitionById(id)));
 
-        } catch(EntityNotFoundException e){
-
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(204).build();
-
         }
-
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
-    @PatchMapping(path = "{id}")
-    public ResponseEntity<DataContentDefinition> patchDataContentDefinition(
+    @PutMapping(path = "{id}")
+    public ResponseEntity<DataContentDefinition> putDataContentDefinition(
             @PathVariable("id") Long id,
-            @RequestParam String description){
+            RequestEntity<DataContentDefinition> request){
 
-        this.dcdService.updateDataContentDefinition(
-                id,
-                null,
-                description,
-                null);
+        try {
+            // Access Validation
+            this.userContext.validateAccess(this.dcdService.getDataContentDefinitionById(id));
 
-        return ResponseEntity.status(204).build();
+            // Apply Update
+            this.dcdService.updateDataContentDefinition(request.getBody());
 
+            // Return 204 No Content for successful update without response body
+            return ResponseEntity.status(204).build();
+
+        } catch (EntityNotFoundException | SecurityValidationException e) {
+            // Silent fail for security/privacy
+            return ResponseEntity.status(204).build();
+        } catch (Exception e) {
+            // Explicit client error for malformed or invalid payloads
+            throw new BadRequestException(e.getMessage(), e);
+        }
     }
 
 
@@ -119,10 +111,25 @@ public class DataContentDefinitionController {
     @DeleteMapping(path = "{id}")
     public ResponseEntity<DataContentDefinition> deleteDataContentDefinition(@PathVariable("id") Long id){
 
-        this.dcdService.deleteDataContentDefinition(id);
+        try {
+            // Access Validation
+            this.userContext.validateAccess(this.dcdService.getDataContentDefinitionById(id));
 
-        return ResponseEntity.status(204).build();
+            // Delete record
+            this.dcdService.deleteDataContentDefinition(id);
+
+            // Return 204 No Content for successful update without response body
+            return ResponseEntity.status(204).build();
+
+        } catch (EntityNotFoundException | SecurityValidationException e) {
+            // Silent fail for security/privacy
+            return ResponseEntity.status(204).build();
+        } catch (Exception e) {
+            // Explicit client error for malformed or invalid payloads
+            throw new BadRequestException(e.getMessage(), e);
+        }
 
     }
+
 
 }

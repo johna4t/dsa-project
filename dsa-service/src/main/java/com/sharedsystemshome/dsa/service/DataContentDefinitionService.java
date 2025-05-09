@@ -1,9 +1,12 @@
 package com.sharedsystemshome.dsa.service;
 
 import com.sharedsystemshome.dsa.model.DataContentDefinition;
+import com.sharedsystemshome.dsa.model.DataContentPerspective;
 import com.sharedsystemshome.dsa.model.DataSharingParty;
+import com.sharedsystemshome.dsa.model.UserAccount;
 import com.sharedsystemshome.dsa.repository.DataContentDefinitionRepository;
 import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
+import com.sharedsystemshome.dsa.security.util.SecurityValidationException;
 import com.sharedsystemshome.dsa.util.AddOrUpdateTransactionException;
 import com.sharedsystemshome.dsa.enums.DataContentType;
 import com.sharedsystemshome.dsa.util.CustomValidator;
@@ -17,6 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.Period;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -62,8 +67,6 @@ public class DataContentDefinitionService {
         } catch (Exception e) {
             throw new AddOrUpdateTransactionException(BusinessValidationException.DATA_CONTENT_DEFINITION, e);
         }
-
-
     }
 
     //READ
@@ -82,18 +85,18 @@ public class DataContentDefinitionService {
         return dcd;
     }
 
-    //READ ALL
-    // Remove this as only getting DataFlows for given DSA
+    //READ ALL CUSTOMER DCDs
     @GetMapping
-    public List<DataContentDefinition> getDataContentDefinitions(){
+    public List<DataContentDefinition> getDataContentDefinitions(Long custId){
         logger.debug("Entering method DataContentDefinition::getDataContentDefinitions");
 
-        List<DataContentDefinition> dcds = this.dcdRepo.findAll();
+        List<DataContentDefinition> dcds = this.dcdRepo.findDataContentDefinitionByProviderId(custId).orElseThrow();
 
         logger.info("Found {} DataContentDefinitions", dcds.size());
         return dcds;
     }
 
+    @Transactional
     public void updateDataContentDefinition(DataContentDefinition dcd){
         logger.debug("Entering method DataContentDefinition::updateDataContentDefinition");
 
@@ -105,7 +108,13 @@ public class DataContentDefinitionService {
                 dcd.getId(),
                 dcd.getName(),
                 dcd.getDescription(),
-                dcd.getDataContentType());
+                dcd.getDataContentType(),
+                dcd.getOwnerName(),
+                dcd.getOwnerEmail(),
+                dcd.getRetentionPeriod(),
+                dcd.getSourceSystem(),
+                dcd.getPerspectives()
+        );
 
     }
 
@@ -114,7 +123,13 @@ public class DataContentDefinitionService {
             Long id,
             String name,
             String description,
-            DataContentType dataContentType){
+            DataContentType dataContentType,
+            String ownerName,
+            String ownerEmail,
+            Period retentionPeriod,
+            String sourceSystem,
+            List<DataContentPerspective> perspectives){
+
         logger.debug("Entering method DataContentDefinition::updateDataContentDefinition");
 
         DataContentDefinition dcd = this.dcdRepo.findById(id)
@@ -144,7 +159,47 @@ public class DataContentDefinitionService {
                         "for DataContentDefinition with id: {}", oldDataContentType, dataContentType, id);
             }
         }
-
+        if (null != ownerName && !ownerName.isEmpty()) {
+            String oldOwnerName = dcd.getOwnerName();
+            if(!Objects.equals(oldOwnerName, ownerName)) {
+                dcd.setOwnerName(ownerName);
+                logger.info("Updated value of property DataContentDefinition::ownerName from {} to {}, " +
+                        "for DataContentDefinition with id: {}", oldOwnerName, ownerName, id);
+            }
+        }
+        if (null != ownerEmail && !ownerEmail.isEmpty()) {
+            String oldOwnerEmail = dcd.getOwnerEmail();
+            if(!Objects.equals(oldOwnerEmail, ownerEmail)) {
+                dcd.setOwnerName(ownerEmail);
+                logger.info("Updated value of property DataContentDefinition::ownerEmail from {} to {}, " +
+                        "for DataContentDefinition with id: {}", oldOwnerEmail, ownerEmail, id);
+            }
+        }
+        if (null != retentionPeriod) {
+            Period oldRetentionPeriod = dcd.getRetentionPeriod();
+            if(!Objects.equals(oldRetentionPeriod, retentionPeriod)) {
+                dcd.setRetentionPeriod(retentionPeriod);
+                logger.info("Updated value of property DataContentDefinition::retentionPeriod from {} to {}, " +
+                        "for DataContentDefinition with id: {}", oldRetentionPeriod, retentionPeriod, id);
+            }
+        }
+        if (null != sourceSystem && !sourceSystem.isEmpty()) {
+            String oldSourceSystem = dcd.getSourceSystem();
+            if(!Objects.equals(oldSourceSystem, sourceSystem)) {
+                dcd.setSourceSystem(sourceSystem);
+                logger.info("Updated value of property DataContentDefinition::sourceSystem from {} to {}, " +
+                        "for DataContentDefinition with id: {}", oldSourceSystem, sourceSystem, id);
+            }
+        }
+        if (null != perspectives && !perspectives.isEmpty()) {
+            List<DataContentPerspective> oldPerspectives = dcd.getPerspectives();
+            // Order doesn't matter
+            if(!new HashSet<>(perspectives).equals(new HashSet<>(oldPerspectives))) {
+                dcd.setSourceSystem(sourceSystem);
+                logger.info("Updated value of property DataContentDefinition::perspectives " +
+                        "for DataContentDefinition with id: {}", id);
+            }
+        }
     }
 
 
@@ -152,9 +207,12 @@ public class DataContentDefinitionService {
     public void deleteDataContentDefinition(Long id){
         logger.debug("Entering method DataContentDefinition::deleteDataContentDefinition");
 
-        //Prevent deletion if DCD in
 
         DataContentDefinition dcd = findDataContentDefinition(id);
+
+        if(dcd.isReferenced()){
+            throw new AddOrUpdateTransactionException(BusinessValidationException.DATA_CONTENT_DEFINITION);
+        }
 
         Long provId = dcd.getProvider().getId();
         DataSharingParty prov = this.dspRepo.findById(provId)
@@ -169,35 +227,19 @@ public class DataContentDefinitionService {
 
         try{
             this.dspRepo.save(prov);
-            logger.info("Deleted DataContentDefinition with id: {}", id);
+            logger.info("Deleted Data Content Definition with id: {}", id);
         }catch(Exception e){
             throw new AddOrUpdateTransactionException(BusinessValidationException.DATA_SHARING_PARTY, e);
         }
 
     }
 
-    private DataContentDefinition findDataContentDefinition(Long dcdId){
+    private DataContentDefinition findDataContentDefinition(Long id){
 
-        DataContentDefinition dcd = this.dcdRepo.findById(dcdId).
-                orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_CONTENT_DEFINITION, dcdId));
+        DataContentDefinition dcd = this.dcdRepo.findById(id).
+                orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_CONTENT_DEFINITION, id));
 
-        logger.info("Found DataContentDefinition with id: {}", dcdId);
+        logger.info("Found DataContentDefinition with id: {}", id);
         return dcd;
-    }
-
-    public List<DataContentDefinition> getDataContentDefinitionsByProviderId(Long provId) {
-        logger.debug("Entering method DataContentDefinition::getDataContentDefinitionsByCustomerId");
-
-        if(null == provId){
-            throw new NullOrEmptyValueException(BusinessValidationException.DATA_CONTENT_DEFINITION + " id");
-        }
-
-        List<DataContentDefinition> dcds = this.dcdRepo.findDataContentDefinitionByProviderId(provId).orElseThrow(
-                () -> new EntityNotFoundException(BusinessValidationException.CUSTOMER_ACCOUNT, provId)
-        );
-
-        logger.info("Found {} DataContentDefinitionss for CustomerAccount with id: {}",
-                dcds.size(), provId);
-        return dcds;
     }
 }

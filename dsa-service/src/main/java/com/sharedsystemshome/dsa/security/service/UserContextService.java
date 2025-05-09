@@ -1,9 +1,13 @@
 package com.sharedsystemshome.dsa.security.service;
 
+import com.sharedsystemshome.dsa.model.Owned;
 import com.sharedsystemshome.dsa.model.UserAccount;
 import com.sharedsystemshome.dsa.model.CustomerAccount;
 import com.sharedsystemshome.dsa.security.enums.RoleType;
 import com.sharedsystemshome.dsa.security.util.SecurityValidationException;
+import com.sharedsystemshome.dsa.util.NullOrEmptyValueException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,6 +22,7 @@ import static com.sharedsystemshome.dsa.util.BusinessValidationException.*;
 @Service
 public class UserContextService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserContextService.class);
     /**
      * Sets the authenticated user in SecurityContextHolder
      */
@@ -118,5 +123,27 @@ public class UserContextService {
 
     public Boolean isUser() {
         return isAuthorised(getRoleName(RoleType.USER.name()));
+    }
+
+    public <T extends Owned> T validateAccess(T ownedObject) throws SecurityValidationException {
+        if (ownedObject == null) {
+            throw new NullOrEmptyValueException("Unknown entity");
+        }
+
+        Long accountId = this.getCurrentCustomerAccountId();
+        Long ownerId = ownedObject.ownerId();
+
+        if (accountId != null && accountId.equals(ownerId) || this.isSuperAdmin()) {
+            return ownedObject;
+        }
+
+        String msg = String.format(
+                "Record with id %s does not exist for Customer with id %s",
+                ownedObject.objectId(),
+                accountId
+        );
+
+        logger.error(msg);
+        throw new SecurityValidationException(msg);
     }
 }

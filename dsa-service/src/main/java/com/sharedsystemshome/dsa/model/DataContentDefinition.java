@@ -24,12 +24,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static com.sharedsystemshome.dsa.util.BusinessValidationException.DATA_CONTENT_DEFINITION;
+
 @Data
 @Entity(name = "DataContentDefinition")
 @Table(name = "DATA_CONTENT_DEFINITION")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Valid
-public class DataContentDefinition {
+public class DataContentDefinition implements Referenceable, Owned {
 
     // DCD id and primary key
     @Id
@@ -88,11 +90,13 @@ public class DataContentDefinition {
             columnDefinition = "TEXT")
     private String ownerName;
 
+    @NotBlank(message = "Data Content Definition owner email null or empty.")
     @Column(name = "OWNER_EMAIL",
             columnDefinition = "TEXT",
             nullable = false)
     private String ownerEmail;
 
+    @NotBlank(message = "Data Content Definition source system null or empty.")
     @Column(name = "SOURCE_SYSTEM",
             columnDefinition = "TEXT",
             nullable = false)
@@ -168,7 +172,7 @@ public class DataContentDefinition {
     public String toString() {
         return "DataContentDefinition{" +
                 "id=" + id +
-                ", provider=" + provider +
+                ", provider=" + provider.getId() +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", dataContentType=" + dataContentType +
@@ -180,4 +184,25 @@ public class DataContentDefinition {
                 '}';
     }
 
+    @Transient
+    @Override
+    public Boolean isReferenced() {
+        return false;
+    }
+
+    @Override
+    public Long ownerId() {
+        return this.provider.getId();
+    }
+
+    @Override
+    public Long objectId() {
+        return this.getId();
+    }
+
+    @Override
+    public String entityName() {
+
+        return DataContentDefinition.class.getSimpleName().replaceAll("([a-z])([A-Z])", "$1 $2");
+    }
 }
