@@ -198,7 +198,7 @@ public class DataSharingParty {
                 ", providerDcds=" + JpaLogUtils.getObjectIds(providerDcds, DataContentDefinition::getId) +
                 ", providedDataFlows=" + JpaLogUtils.getObjectIds(providedDataFlows, DataFlow::getId) +
                 ", consumedDataFlows=" + JpaLogUtils.getObjectIds(consumedDataFlows, DataFlow::getId) +
-                ", account=" + account.getId() +
+                ", account=" + (account != null ? account.getId() : "null") +
                 '}';
     }
 }
