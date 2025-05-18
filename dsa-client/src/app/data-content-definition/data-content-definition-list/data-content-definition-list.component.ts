@@ -4,6 +4,9 @@ import { DataContentDefinitionService } from '../data-content-definition.service
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AccessService } from '../../access/access.service';
+import { ConfirmationDialogComponent } from '../../dialog/material/confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-data-content-definition-list',
@@ -19,7 +22,8 @@ export class DataContentDefinitionListComponent implements OnInit {
   constructor(
     private dataContentDefinitionService: DataContentDefinitionService,
     private router: Router,
-    private accessService: AccessService) { };
+    private accessService: AccessService,
+    private dialog: MatDialog,) { };
 
     ngOnInit(): void {
       this.getDataContentDefinitions();
@@ -41,10 +45,26 @@ export class DataContentDefinitionListComponent implements OnInit {
     }
 
     deleteDataContentDefinition(id: number) {
-      this.dataContentDefinitionService.deleteDataContentDefinition(id).subscribe(data => {
-        console.log(data);
-        this.getDataContentDefinitions();
-      })
+      const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+        width: '250px',
+        data: { title: 'Confirm delete', message: 'Delete data asset?' },
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result === true) {
+          this.dataContentDefinitionService.deleteDataContentDefinition(id).subscribe({
+            next: () => {
+              // ✅ Update the in-memory list
+              this.dataContentDefinitions = this.dataContentDefinitions.filter(
+                (dcd) => dcd.id !== id,
+              );
+            },
+            error: (error) => {
+              console.error('Error deleting data content definition:', error);
+            },
+          });
+        }
+      });
     }
 
     viewDataContentDefinition(id: number) {

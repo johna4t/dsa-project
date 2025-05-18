@@ -13,4 +13,5 @@ export class DataContentDefinition {
   ownerEmail = '';
   ownerName?: string;
   sourceSystem = '';
+  isReferenced = false;
 }
