@@ -7,15 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sharedsystemshome.dsa.enums.LawfulBasis;
 import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
-import com.sharedsystemshome.dsa.util.JpaLogUtils;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -121,14 +117,11 @@ public class DataFlow {
     @Enumerated(EnumType.STRING)
     private SpecialCategoryData specialCategory;
 
-    @JsonIncludeProperties({"id"})
-    @ManyToMany
-    @JoinTable(
-            name = "sharedDataContent",
-            joinColumns = @JoinColumn(name = "dfId"),
-            inverseJoinColumns = @JoinColumn(name = "dcdId", nullable = false)
-    )
-    private List<DataContentDefinition> providedDcds;
+    @OneToMany(
+            mappedBy = "dataFlow",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<SharedDataContent> associatedDataContent = new ArrayList<>();
 
     @JsonInclude
     public Boolean getIsPersonalData() {
@@ -156,7 +149,8 @@ public class DataFlow {
             LawfulBasis lawfulBasis,
             SpecialCategoryData specialCategory,
             String purposeOfSharing,
-            List<DataContentDefinition> providedDcds) {
+            List<DataContentDefinition> dataContent
+    ) {
         this.id = id;
         this.dataSharingAgreement = dataSharingAgreement;
         this.provider = provider;
@@ -166,7 +160,16 @@ public class DataFlow {
         this.lawfulBasis = lawfulBasis;
         this.specialCategory = specialCategory;
         this.purposeOfSharing = purposeOfSharing;
-        this.providedDcds = providedDcds;
+
+        this.associatedDataContent = new ArrayList<>();
+        if (dataContent != null) {
+            dataContent.forEach(dcd -> {
+                SharedDataContent association = new SharedDataContent(this, dcd);
+                this.associatedDataContent.add(association);
+                dcd.getAssociatedDataFlows().add(association); // Sync reverse side
+            });
+        }
+
         this.initialiseDefaultValues();
     }
 
@@ -188,9 +191,6 @@ public class DataFlow {
         if (null == this.specialCategory) {
             this.specialCategory = SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA;
         }
-        if (null == this.providedDcds) {
-            this.providedDcds = new ArrayList<>();
-        }
         if (null != this.provider) {
             this.provider.addProvidedDataFlow(this);
         }
@@ -205,26 +205,14 @@ public class DataFlow {
 
     public void addDataContentDefinition(DataContentDefinition dcd) {
 
-        int max = this.providedDcds.size();
-        boolean dcdExists = false;
-        Long partyId = dcd.getId();
+        this.associatedDataContent.add(new SharedDataContent(this, dcd));
 
-        for (int i = 0; i < max; i++) {
-            if (partyId == this.providedDcds.get(i).getId()) {
-                dcdExists = true;
-            }
-        }
-
-        if (!dcdExists) {
-            this.providedDcds.add(dcd);
-        }
     }
 
     public void removeDataContentDefinition(DataContentDefinition dcd) {
 
-        List<DataContentDefinition> updatedDcds = new ArrayList<>(this.providedDcds);
-        updatedDcds.remove(dcd);
-        this.providedDcds = updatedDcds;
+        this.associatedDataContent.removeIf(assoc -> assoc.getDataContentDefinition().equals(dcd));
+
     }
 
     public String toJsonString() throws JsonProcessingException {
@@ -249,7 +237,7 @@ public class DataFlow {
                 ", lawfulBasis=" + lawfulBasis +
                 ", isSpecialCategoryData=" + isSpecialCategoryData +
                 ", specialCategory=" + specialCategory +
-                ", providedDcds=" + JpaLogUtils.getObjectIds(providedDcds, DataContentDefinition::getId) +
+//               ", providedDcds=" + JpaLogUtils.getObjectIds(associatedDataContent, DataContentDefinition::getId) +
                 '}';
     }
 }

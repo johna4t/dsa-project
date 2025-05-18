@@ -353,7 +353,7 @@ public class ApplicationConfig {
                 .provider(this.dsps.get("dspA"))
                 .consumer(this.dsps.get("dspB"))
                 .lawfulBasis(LawfulBasis.CONSENT)
-                .providedDcds(List.of(this.dcds.get("dcdA")))
+                .dataContent(List.of(this.dcds.get("dcdA")))
                 .build();
 
         DataFlow dataFlowB = DataFlow.builder()
@@ -361,7 +361,7 @@ public class ApplicationConfig {
                 .dataSharingAgreement(this.dsas.get("dsaB"))
                 .provider(this.dsps.get("dspC"))
                 .consumer(this.dsps.get("dspB"))
-                .providedDcds(List.of(this.dcds.get("dcdC")))
+                .dataContent(List.of(this.dcds.get("dcdC")))
                 .build();
 
         DataFlow dataFlowC = DataFlow.builder()
@@ -369,7 +369,7 @@ public class ApplicationConfig {
                 .dataSharingAgreement(this.dsas.get("dsaC"))
                 .provider(this.dsps.get("dspC"))
                 .consumer(this.dsps.get("dspA"))
-                .providedDcds(List.of(this.dcds.get("dcdC")))
+                .dataContent(List.of(this.dcds.get("dcdC")))
                 .build();
 
         dfRepo.saveAll(List.of(dataFlowA, dataFlowB, dataFlowC));

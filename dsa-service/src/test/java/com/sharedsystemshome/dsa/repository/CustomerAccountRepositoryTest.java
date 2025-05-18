@@ -375,7 +375,7 @@ class CustomerAccountRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov)
                 .consumer(cons)
-                .providedDcds(List.of(dcd))
+                .dataContent(List.of(dcd))
                 .build();
         this.dataFlowRepo.save(dataFlow);
 
@@ -434,7 +434,7 @@ class CustomerAccountRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov)
                 .consumer(cons)
-                .providedDcds(List.of(dcd))
+                .dataContent(List.of(dcd))
                 .build();
         this.dataFlowRepo.save(dataFlow);
 

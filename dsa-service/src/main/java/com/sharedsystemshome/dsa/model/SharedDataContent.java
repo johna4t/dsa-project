@@ -1,50 +1,56 @@
 package com.sharedsystemshome.dsa.model;
 
+import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Entity(name = "SharedDataContent")
-@Table(name = "SHARED_DATA_CONTENT")
+@Entity
+@Table( name = "shared_data_content",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"dataFlowId", "dcdId"}
+                )
+        })
+@NoArgsConstructor
 public class SharedDataContent {
 
-    @EmbeddedId
-    private SharedDataContentId id;
+    @Id
+    @SequenceGenerator(
+            name = "shareddatacontent_sequence",
+            sequenceName = "shareddatacontent_sequence",
+            allocationSize = 1,
+            initialValue = 110000001
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "shareddatacontent_sequence"
 
-    @ManyToOne
-    @MapsId("dfId")
+    )
+    private Long id;
+
+    // Many-to-One with DataFlow (cascade delete allowed)
+    @JsonIncludeProperties({"id"})
+    @ManyToOne(optional = false)
+    @JoinColumn(
+            name = "dataFlowId",
+            referencedColumnName = "id",
+            nullable = false)
     private DataFlow dataFlow;
 
-    @ManyToOne
-    @MapsId("dcdId")
+    // Many-to-One with DataContentDefinition (deletion blocked if referenced)
+    @JsonIncludeProperties({"id"})
+    @ManyToOne(optional = false)
+    @JoinColumn(
+            name = "dcdId",
+            referencedColumnName = "id",
+            nullable = false)
     private DataContentDefinition dataContentDefinition;
 
-    public SharedDataContent() {}
-
-    // Constructor without prebuilding ID
-    public SharedDataContent(DataFlow dataFlow, DataContentDefinition dataContentDefinition) {
+    public SharedDataContent(
+            DataFlow dataFlow,
+            DataContentDefinition dataContentDefinition) {
         this.dataFlow = dataFlow;
         this.dataContentDefinition = dataContentDefinition;
-        this.id = new SharedDataContentId(this.dataFlow.getId(), this.dataContentDefinition.getId());
-        // Defer ID construction to a separate method after both IDs are guaranteed
-    }
-
-//    public void buildId() {
-//        if (dataFlow == null || dataFlow.getId() == null ||
-//                dataContentDefinition == null || dataContentDefinition.getId() == null) {
-//            throw new IllegalStateException("Both DataFlow and DataContentDefinition must be managed before building ID");
-//        }
-//        this.id = new SharedDataContentId(dataFlow.getId(), dataContentDefinition.getId());
-//    }
-//
-    public void setId(DataFlow dataflow, DataContentDefinition dcd){
-
-        if(null != dataflow){
-            this.id.setDfId(dataFlow.getId());
-        }
-
-        if(null != dcd){
-            this.id.setDcdId(dcd.getId());
-        }
     }
 }

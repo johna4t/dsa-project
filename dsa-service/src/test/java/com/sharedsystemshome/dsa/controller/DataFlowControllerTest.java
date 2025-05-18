@@ -94,7 +94,7 @@ class DataFlowControllerTest {
                 .lawfulBasis(LawfulBasis.CONSENT)
                 .specialCategory(SpecialCategoryData.HEALTH)
                 .purposeOfSharing("Text here")
-                .providedDcds(List.of(dcd))
+                .dataContent(List.of(dcd))
                 .build();
 
         when(this.dataFlowMockService.createDataFlow(any())).thenReturn(df_id);

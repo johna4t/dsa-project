@@ -1,22 +1,17 @@
 package com.sharedsystemshome.dsa.service;
 
-import com.sharedsystemshome.dsa.model.DataContentDefinition;
-import com.sharedsystemshome.dsa.model.DataSharingAgreement;
-import com.sharedsystemshome.dsa.model.DataSharingParty;
+import com.sharedsystemshome.dsa.model.*;
 import com.sharedsystemshome.dsa.repository.DataContentDefinitionRepository;
 import com.sharedsystemshome.dsa.repository.DataFlowRepository;
 import com.sharedsystemshome.dsa.repository.DataSharingAgreementRepository;
 import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
-import com.sharedsystemshome.dsa.model.DataFlow;
 import com.sharedsystemshome.dsa.util.*;
 import com.sharedsystemshome.dsa.enums.LawfulBasis;
 import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -81,18 +76,18 @@ public class DataFlowService {
             throw new EntityNotFoundException("Consumer " + BusinessValidationException.DATA_SHARING_PARTY, consId);
         }
 
-        //Test Data Flow has one or more DCDs
-        List<DataContentDefinition> dfDcds = dataFlow.getProvidedDcds();
-        if(null == dfDcds || 0 == dfDcds.size()){
-            throw new NullOrEmptyCollectionException(BusinessValidationException.DATA_CONTENT_DEFINITION);
+        //Test Data Flow has one or more associated DCDs
+        List<SharedDataContent> sdc = dataFlow.getAssociatedDataContent();
+        if(null == sdc || sdc.isEmpty()){
+            throw new NullOrEmptyCollectionException(SHARED_DATA_CONTENT);
         }
 
         //Create array of dfDcdIds as subset <= max set
-        final int maxD = dfDcds.size();
+        final int maxD = sdc.size();
         List<Long> dfDcdIds = new ArrayList<>(maxD);
 
         for(int i = 0; i < maxD; i++){
-            dfDcdIds.add(dfDcds.get(i).getId());
+            dfDcdIds.add(sdc.get(i).getId());
         }
 
         //Create array of provDcdIds as max set
@@ -206,7 +201,7 @@ public class DataFlowService {
     //UPDATE
     @Transactional
     /**
-     * ISS-000-002: method does not support all entity attributes.
+     * TODO: method does not support all entity attributes.
      */
     public void updateDataFlow(Long dataFlowId,
                                LocalDate endDate,
@@ -267,15 +262,17 @@ public class DataFlowService {
         logger.debug("Entering method DataFlow::removeDataContentDefinition for DataFlow with id: {} "
                 + "and DataSharingAgreement with id: {}", dfId, dcdId);
 
-        DataFlow df = findDataFlow(dfId);
+        // TODO: fix method content
 
-        DataContentDefinition dcdToRemove = df.getProvidedDcds().stream()
+/*        DataFlow df = findDataFlow(dfId);
+
+        DataContentDefinition dcdToRemove = df.getAssociatedDataContent().stream()
                 .filter(dcd -> Objects.equals(dcd.getId(), dcdId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_CONTENT_DEFINITION, dcdId));
 
         df.removeDataContentDefinition(dcdToRemove);
-        this.dataFlowRepo.save(df);
+        this.dataFlowRepo.save(df);*/
 
         logger.info("Removed DataContentDefinition with id {} " +
                 "from property DataFlow::providedDcds of DataFlow with id: {}", dfId, dcdId);

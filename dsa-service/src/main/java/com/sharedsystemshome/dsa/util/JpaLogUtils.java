@@ -1,6 +1,6 @@
 package com.sharedsystemshome.dsa.util;
 
-import com.sharedsystemshome.dsa.model.SharedDataContent;
+//import com.sharedsystemshome.dsa.model.SharedDataContent;
 import org.hibernate.Hibernate;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public class JpaLogUtils {
      * @param sharedDataContent List of SharedDataContent, possibly uninitialized
      * @return String representation of DataContentDefinition IDs or "uninitialized"
      */
-    public static String getSharedDataContentIds(List<SharedDataContent> sharedDataContent) {
+/*    public static String getSharedDataContentIds(List<SharedDataContent> sharedDataContent) {
         if (sharedDataContent == null) return "null";
 
         if (!Hibernate.isInitialized(sharedDataContent)) {
@@ -47,5 +47,5 @@ public class JpaLogUtils {
                     return String.valueOf(sdc.getDataContentDefinition().getId());
                 })
                 .collect(Collectors.joining(", ", "[", "]"));
-    }
+    }*/
 }

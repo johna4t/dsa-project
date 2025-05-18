@@ -1,15 +1,13 @@
 package com.sharedsystemshome.dsa.service;
-
 import com.sharedsystemshome.dsa.model.DataContentDefinition;
 import com.sharedsystemshome.dsa.model.DataContentPerspective;
 import com.sharedsystemshome.dsa.model.DataSharingParty;
-import com.sharedsystemshome.dsa.model.UserAccount;
 import com.sharedsystemshome.dsa.repository.DataContentDefinitionRepository;
 import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
-import com.sharedsystemshome.dsa.security.util.SecurityValidationException;
 import com.sharedsystemshome.dsa.util.AddOrUpdateTransactionException;
 import com.sharedsystemshome.dsa.enums.DataContentType;
 import com.sharedsystemshome.dsa.util.CustomValidator;
+import com.sharedsystemshome.dsa.util.DeleteTransactionException;
 import com.sharedsystemshome.dsa.util.EntityNotFoundException;
 import com.sharedsystemshome.dsa.util.NullOrEmptyValueException;
 import jakarta.transaction.Transactional;
@@ -19,8 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -90,9 +88,15 @@ public class DataContentDefinitionService {
     public List<DataContentDefinition> getDataContentDefinitions(Long custId){
         logger.debug("Entering method DataContentDefinition::getDataContentDefinitions");
 
-        List<DataContentDefinition> dcds = this.dcdRepo.findDataContentDefinitionByProviderId(custId).orElseThrow();
+        List<DataContentDefinition> dcds = this.dcdRepo.findByProviderId(custId);
+
+        if(null == dcds){
+            // Return empty list
+            dcds = new ArrayList<>();
+        }
 
         logger.info("Found {} DataContentDefinitions", dcds.size());
+
         return dcds;
     }
 
@@ -206,7 +210,6 @@ public class DataContentDefinitionService {
     //DELETE
     public void deleteDataContentDefinition(Long id){
         logger.debug("Entering method DataContentDefinition::deleteDataContentDefinition");
-
 
         DataContentDefinition dcd = findDataContentDefinition(id);
 

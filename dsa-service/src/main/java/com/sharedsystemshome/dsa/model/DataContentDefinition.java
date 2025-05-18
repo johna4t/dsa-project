@@ -7,24 +7,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharedsystemshome.dsa.enums.DataContentType;
 import com.sharedsystemshome.dsa.enums.MetadataScheme;
 import com.sharedsystemshome.dsa.util.JpaLogUtils;
-import com.sharedsystemshome.dsa.util.conversion.DurationStringConverter;
 import com.sharedsystemshome.dsa.util.conversion.PeriodStringConverter;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.Duration;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
-
-import static com.sharedsystemshome.dsa.util.BusinessValidationException.DATA_CONTENT_DEFINITION;
 
 @Data
 @Entity(name = "DataContentDefinition")
@@ -101,6 +95,14 @@ public class DataContentDefinition implements Referenceable, Owned {
             columnDefinition = "TEXT",
             nullable = false)
     private String sourceSystem;
+
+    @JsonIncludeProperties({"id"})
+    @OneToMany(
+            mappedBy = "dataContentDefinition",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<SharedDataContent> associatedDataFlows = new ArrayList<>();
 
     @Builder
     public DataContentDefinition(
@@ -187,7 +189,7 @@ public class DataContentDefinition implements Referenceable, Owned {
     @Transient
     @Override
     public Boolean isReferenced() {
-        return false;
+        return this.associatedDataFlows != null && !this.associatedDataFlows.isEmpty();
     }
 
     @Override

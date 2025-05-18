@@ -1,7 +1,6 @@
 package com.sharedsystemshome.dsa.service;
 
 import com.sharedsystemshome.dsa.enums.MetadataScheme;
-import com.sharedsystemshome.dsa.model.CustomerAccount;
 import com.sharedsystemshome.dsa.model.DataContentDefinition;
 import com.sharedsystemshome.dsa.model.DataContentPerspective;
 import com.sharedsystemshome.dsa.model.DataSharingParty;
@@ -162,13 +161,13 @@ class DataContentDefinitionServiceTest {
     public void testGetDataContentDefinitions() {
 
         List<DataContentDefinition> dcds = new ArrayList<>();
-        when(this.dcdMockRepo.findDataContentDefinitionByProviderId(anyLong())).thenReturn(Optional.of(dcds));
+        when(this.dcdMockRepo.findByProviderId(anyLong())).thenReturn(dcds);
 
         List<DataContentDefinition> result = this.dcdService.getDataContentDefinitions(anyLong());
 
         assertNotNull(result);
         assertEquals(dcds, result);
-        verify(this.dcdMockRepo, times(1)).findDataContentDefinitionByProviderId(anyLong());
+        verify(this.dcdMockRepo, times(1)).findByProviderId(anyLong());
     }
 
     @Ignore
