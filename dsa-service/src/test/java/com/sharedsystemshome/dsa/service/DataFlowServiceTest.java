@@ -102,7 +102,7 @@ public class DataFlowServiceTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov)
                 .consumer(cons)
-                .providedDcds(List.of(dcd1, dcd2))
+                .dataContent(List.of(dcd1, dcd2))
 //                .startDate(LocalDate.now())
 //                .isPersonalData(true)
 //                .lawfulBasis(LawfulBasis.CONSENT)
@@ -117,7 +117,7 @@ public class DataFlowServiceTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov)
                 .consumer(cons)
-                .providedDcds(List.of(dcd1, dcd2))
+                .dataContent(List.of(dcd1, dcd2))
                 .build();
 
         when(this.dataFlowMockRepo.save(dataFlow)).thenReturn(savedDataFlow);
@@ -278,7 +278,7 @@ public class DataFlowServiceTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov)
                 .consumer(cons)
-                .providedDcds(List.of(dcd1, dcd2))
+                .dataContent(List.of(dcd1, dcd2))
                 .build();
 
         Exception e = assertThrows(BusinessValidationException.class,
@@ -336,7 +336,7 @@ public class DataFlowServiceTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov)
                 .consumer(cons)
-                .providedDcds(List.of(dcd1, dcd2))
+                .dataContent(List.of(dcd1, dcd2))
                 .specialCategory(SpecialCategoryData.HEALTH)
 //                .startDate(LocalDate.now())
 //                .isPersonalData(true)
@@ -756,7 +756,7 @@ public class DataFlowServiceTest {
         // Should NOT add dcd 1 again
         this.dataFlowService.addDataContentDefinition(dfId, dcdId1);
 
-        assertEquals(2, dataFlow.getProvidedDcds().size());
+        assertEquals(2, dataFlow.getAssociatedDataContent().size());
     }
 
     @Test
@@ -802,7 +802,7 @@ public class DataFlowServiceTest {
         Long dfId = 1L;
         DataFlow dataFlow = DataFlow.builder()
                 .id(dfId)
-                .providedDcds(dcds)
+                .dataContent(dcds)
                 .build();
 
         when(this.dataFlowMockRepo.findById(dfId)).thenReturn(Optional.of(dataFlow));
@@ -810,13 +810,13 @@ public class DataFlowServiceTest {
         // Mock DataFlow repo to return DataFlow with id on save
         when(this.dataFlowMockRepo.save(dataFlow)).thenReturn(dataFlow);
 
-        assertEquals(2, dataFlow.getProvidedDcds().size());
+        assertEquals(2, dataFlow.getAssociatedDataContent().size());
 
         // When method run
         this.dataFlowService.removeDataContentDefinition(dfId, dcdId2);
 
         // Then
-        assertEquals(1, dataFlow.getProvidedDcds().size());
+        assertEquals(1, dataFlow.getAssociatedDataContent().size());
         verify(this.dataFlowMockRepo, times(1)).save(dataFlow);
     }
 
@@ -842,19 +842,19 @@ public class DataFlowServiceTest {
         Long dfId = 1L;
         DataFlow dataFlow = DataFlow.builder()
                 .id(dfId)
-                .providedDcds(dcds)
+                .dataContent(dcds)
                 .build();
 
         when(this.dataFlowMockRepo.findById(dfId)).thenReturn(Optional.of(dataFlow));
 
-        assertEquals(2, dataFlow.getProvidedDcds().size());
+        assertEquals(2, dataFlow.getAssociatedDataContent().size());
 
         // Then
         Long invalidDcdId = 3L;
         Exception e = assertThrows(BusinessValidationException.class,
                 () -> this.dataFlowService.removeDataContentDefinition(dfId, invalidDcdId));
         assertEquals("Data Content Definition with id = " + invalidDcdId + " not found.", e.getMessage());
-        assertEquals(2, dataFlow.getProvidedDcds().size());
+        assertEquals(2, dataFlow.getAssociatedDataContent().size());
         verify(this.dataFlowMockRepo, times(0)).save(dataFlow);
     }
 

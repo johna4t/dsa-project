@@ -214,7 +214,7 @@ public class DataSharingAgreementRepositoryTest {
         // Create DataFlow
         DataFlow dfA = DataFlow.builder()
                 .dataSharingAgreement(dsa)
-                .providedDcds(List.of(dcd1))
+                .dataContent(List.of(dcd1))
                 .provider(cust.getDataSharingParty())
                 .consumer(cust2.getDataSharingParty())
                 .build();
@@ -226,7 +226,7 @@ public class DataSharingAgreementRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(cust.getDataSharingParty())
                 .consumer(cust2.getDataSharingParty())
-                .providedDcds(List.of(dcd2))
+                .dataContent(List.of(dcd2))
                 .build();
         this.dataFlowRepo.save(dfB);
 

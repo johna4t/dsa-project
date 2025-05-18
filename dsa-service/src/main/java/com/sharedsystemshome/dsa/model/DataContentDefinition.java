@@ -2,6 +2,7 @@ package com.sharedsystemshome.dsa.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharedsystemshome.dsa.enums.DataContentType;
@@ -188,6 +189,7 @@ public class DataContentDefinition implements Referenceable, Owned {
 
     @Transient
     @Override
+    @JsonProperty("isReferenced")
     public Boolean isReferenced() {
         return this.associatedDataFlows != null && !this.associatedDataFlows.isEmpty();
     }

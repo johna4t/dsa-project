@@ -1,6 +1,5 @@
 package com.sharedsystemshome.dsa.repository;
 
-import com.sharedsystemshome.dsa.datatype.Address;
 import com.sharedsystemshome.dsa.enums.DataContentType;
 import com.sharedsystemshome.dsa.model.*;
 import com.sharedsystemshome.dsa.enums.ControllerRelationship;
@@ -15,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -103,7 +101,7 @@ public class DataFlowRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov)
                 .consumer(cons)
-                .providedDcds(List.of(dcd))
+                .dataContent(List.of(dcd))
                 .build();
 
         // When - Data Flow is added to repository.
@@ -195,7 +193,7 @@ public class DataFlowRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov)
                 .consumer(cons)
-                .providedDcds(List.of(dcd))
+                .dataContent(List.of(dcd))
                 // Optional data
                 .lawfulBasis(lawfulBasis)
                 .specialCategory(specialCategory)
@@ -323,7 +321,7 @@ public class DataFlowRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov1)
                 .consumer(cons)
-                .providedDcds(List.of(dcd1))
+                .dataContent(List.of(dcd1))
                 .build();
         this.testSubject.save(df1);
 
@@ -332,7 +330,7 @@ public class DataFlowRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov2)
                 .consumer(cons)
-                .providedDcds(List.of(dcd2))
+                .dataContent(List.of(dcd2))
                 .build();
         this.testSubject.save(df2);
 
@@ -341,7 +339,7 @@ public class DataFlowRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov1)
                 .consumer(cons)
-                .providedDcds(List.of(dcd3))
+                .dataContent(List.of(dcd3))
                 .build();
         this.testSubject.save(df3);
 
@@ -352,9 +350,9 @@ public class DataFlowRepositoryTest {
         // Then
         assertEquals(2, dfs.size());
         assertEquals(prov1.getId(), (dfs.get(0).getProvider().getId()));
-        assertTrue(this.dcdRepo.existsById(dfs.get(0).getProvidedDcds().get(0).getId()));
+        assertTrue(this.dcdRepo.existsById(dfs.get(0).getAssociatedDataContent().get(0).getId()));
         assertEquals(prov1.getId(), (dfs.get(1).getProvider().getId()));
-        assertTrue(this.dcdRepo.existsById(dfs.get(1).getProvidedDcds().get(0).getId()));
+        assertTrue(this.dcdRepo.existsById(dfs.get(1).getAssociatedDataContent().get(0).getId()));
 
     }
 
@@ -477,7 +475,7 @@ public class DataFlowRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov1)
                 .consumer(cons1)
-                .providedDcds(List.of(dcd1))
+                .dataContent(List.of(dcd1))
                 .build();
         this.testSubject.save(df1);
 
@@ -486,7 +484,7 @@ public class DataFlowRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov2)
                 .consumer(cons1)
-                .providedDcds(List.of(dcd2))
+                .dataContent(List.of(dcd2))
                 .build();
         this.testSubject.save(df2);
 
@@ -495,7 +493,7 @@ public class DataFlowRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov3)
                 .consumer(cons2)
-                .providedDcds(List.of(dcd3))
+                .dataContent(List.of(dcd3))
                 .build();
         this.testSubject.save(df3);
 
@@ -506,9 +504,9 @@ public class DataFlowRepositoryTest {
         // Then
         assertEquals(2, dfs.size());
         assertEquals(cons1.getId(), (dfs.get(0).getConsumer().getId()));
-        assertTrue(this.dcdRepo.existsById(dfs.get(0).getProvidedDcds().get(0).getId()));
+        assertTrue(this.dcdRepo.existsById(dfs.get(0).getAssociatedDataContent().get(0).getId()));
         assertEquals(cons1.getId(), (dfs.get(1).getConsumer().getId()));
-        assertTrue(this.dcdRepo.existsById(dfs.get(1).getProvidedDcds().get(0).getId()));
+        assertTrue(this.dcdRepo.existsById(dfs.get(1).getAssociatedDataContent().get(0).getId()));
 
     }
 
@@ -590,13 +588,13 @@ public class DataFlowRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov)
                 .consumer(cons)
-                .providedDcds(List.of(dcd1, dcd2, dcd3))
+                .dataContent(List.of(dcd1, dcd2, dcd3))
                 .build();
         this.testSubject.save(dataFlow);
 
         Long dcdId2 = dcd2.getId();
 
-        assertEquals(3, dataFlow.getProvidedDcds().size());
+        assertEquals(3, dataFlow.getAssociatedDataContent().size());
         assertTrue(this.dcdRepo.existsById(dcdId2));
 
         //When
@@ -604,8 +602,8 @@ public class DataFlowRepositoryTest {
 
         // Then
         //Assert DCD is removed from DataFlow
-        assertEquals(2, dataFlow.getProvidedDcds().size());
-        assertFalse(dataFlow.getProvidedDcds().contains(dcd2));
+        assertEquals(2, dataFlow.getAssociatedDataContent().size());
+        assertFalse(dataFlow.getAssociatedDataContent().contains(dcd2));
         //Assert DCD is NOT removed from repo
         assertTrue(this.dcdRepo.existsById(dcdId2));
         assertEquals(3, this.dcdRepo.count());
