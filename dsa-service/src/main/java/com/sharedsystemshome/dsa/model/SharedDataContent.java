@@ -2,8 +2,12 @@ package com.sharedsystemshome.dsa.model;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.Objects;
 
 @Data
 @Entity
@@ -47,10 +51,32 @@ public class SharedDataContent {
             nullable = false)
     private DataContentDefinition dataContentDefinition;
 
+    @Builder
     public SharedDataContent(
             DataFlow dataFlow,
             DataContentDefinition dataContentDefinition) {
         this.dataFlow = dataFlow;
         this.dataContentDefinition = dataContentDefinition;
+    }
+
+    @Override
+    public String toString() {
+        return "SharedDataContent{" +
+                "id=" + id +
+                ", dataFlow=" + dataFlow +
+                ", dataContentDefinition=" + dataContentDefinition +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SharedDataContent other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sharedsystemshome.dsa.enums.LawfulBasis;
 import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
+import com.sharedsystemshome.dsa.util.JpaLogUtils;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -16,14 +17,16 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Entity(name = "DataFlow")
 @Table(name = "DATA_FLOW")
 @JsonInclude(Include.NON_NULL)
 @Valid
-public class DataFlow {
+public class DataFlow implements Owned, Referenceable{
 
     // Data Flow id and primary key
     @Id
@@ -205,15 +208,31 @@ public class DataFlow {
 
     public void addDataContentDefinition(DataContentDefinition dcd) {
 
-        this.associatedDataContent.add(new SharedDataContent(this, dcd));
+        boolean alreadyLinked = this.associatedDataContent.stream()
+                .anyMatch(assoc -> assoc.getDataContentDefinition().equals(dcd));
 
+        if (!alreadyLinked) {
+            this.associatedDataContent.add(new SharedDataContent(this, dcd));
+        }
     }
+
 
     public void removeDataContentDefinition(DataContentDefinition dcd) {
+        Iterator<SharedDataContent> iterator = this.associatedDataContent.iterator();
+        while (iterator.hasNext()) {
+            SharedDataContent assoc = iterator.next();
+            if (assoc.getDataContentDefinition().equals(dcd)) {
+                // Break both references
+                assoc.setDataFlow(null);
+                assoc.setDataContentDefinition(null);
 
-        this.associatedDataContent.removeIf(assoc -> assoc.getDataContentDefinition().equals(dcd));
-
+                // ✅ Remove from both collections
+                dcd.getAssociatedDataFlows().remove(assoc);  // remove from DCD side
+                iterator.remove();                           // remove from DF side
+            }
+        }
     }
+
 
     public String toJsonString() throws JsonProcessingException {
 
@@ -227,17 +246,50 @@ public class DataFlow {
     public String toString() {
         return "DataFlow{" +
                 "id=" + id +
-                ", dataSharingAgreement=" + dataSharingAgreement.getId() +
+                ", dataSharingAgreement=" + (null != dataSharingAgreement ? dataSharingAgreement.getId() : "null") +
                 ", purposeOfSharing='" + purposeOfSharing + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", provider=" + provider.getId() +
-                ", consumer=" + consumer.getId() +
+                ", provider=" + (null != provider ? provider.getId() : "null") +
+                ", consumer=" + (null != consumer ? consumer.getId() : "null") +
                 ", isPersonalData=" + isPersonalData +
                 ", lawfulBasis=" + lawfulBasis +
                 ", isSpecialCategoryData=" + isSpecialCategoryData +
                 ", specialCategory=" + specialCategory +
-//               ", providedDcds=" + JpaLogUtils.getObjectIds(associatedDataContent, DataContentDefinition::getId) +
+                ", associatedDataContent=" + (null != associatedDataContent ?
+                JpaLogUtils.getObjectIds(associatedDataContent, SharedDataContent::getId) : "null") +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DataFlow other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    @Override
+    public Long ownerId() {
+        return this.dataSharingAgreement.getId();
+    }
+
+    @Override
+    public Long objectId() {
+        return this.getId();
+    }
+
+    @Override
+    public String entityName() {
+        return DataFlow.class.getSimpleName().replaceAll("([a-z])([A-Z])", "$1 $2");
+    }
+
+    @Override
+    public Boolean isReferenced() {
+        return this.associatedDataContent != null && !this.associatedDataContent.isEmpty();
     }
 }

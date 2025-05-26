@@ -19,6 +19,7 @@ import lombok.Data;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Data
@@ -175,15 +176,18 @@ public class DataContentDefinition implements Referenceable, Owned {
     public String toString() {
         return "DataContentDefinition{" +
                 "id=" + id +
-                ", provider=" + provider.getId() +
+                ", provider=" + (null != provider ? provider.getId() : "null") +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", dataContentType=" + dataContentType +
                 ", retentionPeriod=" + retentionPeriod +
-                ", perspectives=" + JpaLogUtils.getObjectIds(perspectives, DataContentPerspective::getId) +
+                ", perspectives=" + (null != perspectives ?
+                JpaLogUtils.getObjectIds(perspectives, DataContentPerspective::getId) : "null") +
                 ", ownerName='" + ownerName + '\'' +
                 ", ownerEmail='" + ownerEmail + '\'' +
                 ", sourceSystem='" + sourceSystem + '\'' +
+                ", associatedDataFlows=" + (null != associatedDataFlows ?
+                JpaLogUtils.getObjectIds(associatedDataFlows, SharedDataContent::getId) : "null") +
                 '}';
     }
 
@@ -208,5 +212,17 @@ public class DataContentDefinition implements Referenceable, Owned {
     public String entityName() {
 
         return DataContentDefinition.class.getSimpleName().replaceAll("([a-z])([A-Z])", "$1 $2");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DataContentDefinition other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Entity
 @Table(name = "DATA_CONTENT_PERSPECTIVE")
@@ -99,9 +100,21 @@ public class DataContentPerspective {
     public String toString() {
         return "DataContentPerspective{" +
                 "id=" + id +
-                ", dataContentDefinition=" + dataContentDefinition.getId() +
+                ", dataContentDefinition=" + dataContentDefinition +
                 ", metadataScheme=" + metadataScheme +
                 ", metadata=" + metadata +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DataContentPerspective other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }
