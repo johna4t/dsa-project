@@ -10,10 +10,7 @@ import jakarta.validation.Valid;
 import lombok.*;
 import jakarta.validation.constraints.NotBlank;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 
 @Data
@@ -226,7 +223,7 @@ public class CustomerAccount {
         this.dataSharingPartners = updatedDsps;
     }
 
-    @Override
+@Override
     public String toString() {
         return "CustomerAccount{" +
                 "id=" + id +
@@ -235,11 +232,26 @@ public class CustomerAccount {
                 ", departmentName='" + departmentName + '\'' +
                 ", branchName='" + branchName + '\'' +
                 ", address=" + address +
-                ", agreements=" + JpaLogUtils.getObjectIds(agreements, DataSharingAgreement::getId) +
-                ", dataSharingPartners=" + JpaLogUtils.getObjectIds(dataSharingPartners, DataSharingParty::getId) +
-                ", dataSharingParty=" + dataSharingParty.getId() +
-                ", users=" + JpaLogUtils.getObjectIds(users, UserAccount::getId) +
+                ", agreements=" + (null != agreements ?
+                JpaLogUtils.getObjectIds(agreements, DataSharingAgreement::getId) : "null") +
+                ", dataSharingPartners=" + (null != dataSharingPartners ?
+                JpaLogUtils.getObjectIds(dataSharingPartners, DataSharingParty::getId) : "null") +
+                ", dataSharingParty=" + (null != dataSharingParty ? dataSharingParty.getId() : "null") +
+                ", users=" + (null != users ?
+                JpaLogUtils.getObjectIds(users, UserAccount::getId) : "null") +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CustomerAccount other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
 
