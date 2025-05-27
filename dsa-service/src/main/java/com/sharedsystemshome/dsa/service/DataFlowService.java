@@ -1,10 +1,7 @@
 package com.sharedsystemshome.dsa.service;
 
 import com.sharedsystemshome.dsa.model.*;
-import com.sharedsystemshome.dsa.repository.DataContentDefinitionRepository;
-import com.sharedsystemshome.dsa.repository.DataFlowRepository;
-import com.sharedsystemshome.dsa.repository.DataSharingAgreementRepository;
-import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
+import com.sharedsystemshome.dsa.repository.*;
 import com.sharedsystemshome.dsa.util.*;
 import com.sharedsystemshome.dsa.enums.LawfulBasis;
 import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
@@ -34,6 +31,7 @@ public class DataFlowService {
     private final DataSharingPartyRepository dspRepo;
     private final DataSharingAgreementRepository dsaRepo;
     private final DataContentDefinitionRepository dcdRepo;
+    private final SharedDataContentRepository sdcRepo;
 
     private final CustomValidator<DataFlow> validator;
 
@@ -87,7 +85,7 @@ public class DataFlowService {
         List<Long> dfDcdIds = new ArrayList<>(maxD);
 
         for(int i = 0; i < maxD; i++){
-            dfDcdIds.add(sdc.get(i).getId());
+            dfDcdIds.add(sdc.get(i).getDataContentDefinition().getId());
         }
 
         //Create array of provDcdIds as max set
@@ -258,25 +256,37 @@ public class DataFlowService {
         }
     }
 
+    @Transactional
     public void removeDataContentDefinition(Long dfId, Long dcdId) {
-        logger.debug("Entering method DataFlow::removeDataContentDefinition for DataFlow with id: {} "
-                + "and DataSharingAgreement with id: {}", dfId, dcdId);
+        logger.debug("Entering method DataFlow::removeDataContentDefinition for DataFlow with id: {} and DCD id: {}", dfId, dcdId);
 
-        // TODO: fix method content
+        DataFlow dataFlow = findDataFlow(dfId);
 
-/*        DataFlow df = findDataFlow(dfId);
-
-        DataContentDefinition dcdToRemove = df.getAssociatedDataContent().stream()
-                .filter(dcd -> Objects.equals(dcd.getId(), dcdId))
+        // Find the actual DCD instance to unlink
+        SharedDataContent sdcToRemove = dataFlow.getAssociatedDataContent().stream()
+                .filter(sdc -> sdc.getDataContentDefinition() != null && Objects.equals(sdc.getDataContentDefinition().getId(), dcdId))
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_CONTENT_DEFINITION, dcdId));
 
-        df.removeDataContentDefinition(dcdToRemove);
-        this.dataFlowRepo.save(df);*/
+        DataContentDefinition dcdToRemove = sdcToRemove.getDataContentDefinition();
 
-        logger.info("Removed DataContentDefinition with id {} " +
-                "from property DataFlow::providedDcds of DataFlow with id: {}", dfId, dcdId);
+        // Unlink from both sides
+        dataFlow.removeDataContentDefinition(dcdToRemove);
+
+        // Manually delete the orphan (if not relying purely on orphanRemoval)
+        this.sdcRepo.delete(sdcToRemove);
+
+        // Persist the changes
+        this.dataFlowRepo.save(dataFlow);
+
+        if (dataFlow.getAssociatedDataContent().isEmpty()) {
+            logger.info("No remaining DCDs — deleting orphan DataFlow with id: {}", dfId);
+            this.dataFlowRepo.deleteById(dfId);
+        }
+
+        logger.info("Removed DataContentDefinition with id {} from DataFlow with id: {}", dcdId, dfId);
     }
+
 
     @Transactional
     public void addDataContentDefinition(Long dfId, Long dcdId){
@@ -302,22 +312,32 @@ public class DataFlowService {
         DataFlow dataFlow = findDataFlow(id);
 
         Long dsaId = dataFlow.getDataSharingAgreement().getId();
+
         DataSharingAgreement dsa = this.dsaRepo.findById(dsaId)
                 .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_SHARING_AGREEMENT, dsaId));
 
-        DataFlow dfToRemove = dsa.getDataFlows().stream()
-                .filter(df -> Objects.equals(df.getId(), id))
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_FLOW, id));
+        List<DataContentDefinition> associatedDcds = dataFlow.getAssociatedDataContent().stream()
+                .map(SharedDataContent::getDataContentDefinition)
+                .distinct()
+                .toList();
 
-        dsa.deleteDataFlow(dfToRemove);
+        for (DataContentDefinition dcd : associatedDcds) {
+            SharedDataContent sdcToDelete = dcd.getAssociatedDataFlows().stream()
+                    .filter(sdc -> sdc.getDataFlow().equals(dataFlow))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("No matching SDC"));
 
-        try{
-            this.dsaRepo.save(dsa);
-            logger.info("Deleted DataFlow with id: {}", id);
-        }catch(Exception e){
-            throw new AddOrUpdateTransactionException(BusinessValidationException.DATA_SHARING_AGREEMENT, e);
+            // Break both sides
+            dataFlow.removeDataContentDefinition(dcd);
+
+            // Delete orphan record manually
+            this.sdcRepo.delete(sdcToDelete);
         }
+
+        dsa.deleteDataFlow(dataFlow);
+
+        // Delete DataFlow
+        this.dataFlowRepo.deleteById(id);
 
     }
 
