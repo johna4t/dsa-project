@@ -1,10 +1,7 @@
 package com.sharedsystemshome.dsa.service;
 
 import com.sharedsystemshome.dsa.model.*;
-import com.sharedsystemshome.dsa.repository.DataContentDefinitionRepository;
-import com.sharedsystemshome.dsa.repository.DataFlowRepository;
-import com.sharedsystemshome.dsa.repository.DataSharingAgreementRepository;
-import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
+import com.sharedsystemshome.dsa.repository.*;
 import com.sharedsystemshome.dsa.util.BusinessValidationException;
 import com.sharedsystemshome.dsa.enums.LawfulBasis;
 import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
@@ -41,6 +38,9 @@ public class DataFlowServiceTest {
     private DataContentDefinitionRepository dataContentDefinitionMockRepo;
 
     @Mock
+    private SharedDataContentRepository sharedDataContentMockRepo;
+
+    @Mock
     private CustomValidator<DataFlow> validator;
 
     DataFlowService dataFlowService;
@@ -54,6 +54,7 @@ public class DataFlowServiceTest {
                 this.dataSharingPartyMockRepo,
                 this.dataSharingAgreementMockRepo,
                 this.dataContentDefinitionMockRepo,
+                this.sharedDataContentMockRepo,
                 this.validator
         );
     }
@@ -226,7 +227,7 @@ public class DataFlowServiceTest {
         Exception e = assertThrows(BusinessValidationException.class,
                 () -> this.dataFlowService.createDataFlow(dataFlow));
 
-        assertEquals("Data Content Definition member collection is null or empty.", e.getMessage());
+        assertEquals("Shared Data Content member collection is null or empty.", e.getMessage());
 
         verify(this.dataSharingAgreementMockRepo, times(1)).existsById(id);
         verify(this.dataSharingPartyMockRepo, times(1)).findById(prov_id);
@@ -348,7 +349,8 @@ public class DataFlowServiceTest {
 
         Exception e = assertThrows(BusinessValidationException.class,
                 () -> this.dataFlowService.createDataFlow(dataFlow));
-        assertEquals("Confirmation of Personal Data required for Data Flow", e.getMessage());
+        assertEquals(
+                "Confirmation of Personal Data required for Data Flow", e.getMessage());
 
         verify(this.dataSharingAgreementMockRepo, times(1)).existsById(id);
         verify(this.dataSharingPartyMockRepo, times(1)).findById(prov_id);
@@ -637,32 +639,59 @@ public class DataFlowServiceTest {
     }
 
     @Test
-    public void testDeleteDataFlow(){
+    public void testDeleteDataFlowWithAssociatedDataContent() {
+        // Arrange IDs
+        Long dsaId = 1L;
+        Long dfId = 100L;
+        Long dcdId = 200L;
 
-        Long id = 1L;
+        // Create provider and agreement
+        DataSharingParty provider = DataSharingParty.builder().id(10L).build();
+        CustomerAccount customer = CustomerAccount.builder().name("Customer").dataSharingParty(provider).build();
         DataSharingAgreement dsa = DataSharingAgreement.builder()
-                .id(id)
+                .id(dsaId)
+                .accountHolder(customer)
                 .build();
-        when(this.dataSharingAgreementMockRepo.findById(id)).thenReturn(Optional.of(dsa));
 
-        Long df_id = 4L;
+        // Create DCD with ID and provider
+        DataContentDefinition dcd = DataContentDefinition.builder()
+                .id(dcdId)
+                .provider(provider)
+                .name("Test DCD")
+                .build();
+
+        // Create DataFlow with DSA and link to DCD
         DataFlow dataFlow = DataFlow.builder()
-                .id(df_id)
+                .id(dfId)
                 .dataSharingAgreement(dsa)
+                .provider(provider)
+                .consumer(provider)
+                .dataContent(List.of(dcd)) // triggers creation of SharedDataContent
                 .build();
 
-        dsa.addDataFlow(dataFlow);
+        // Get auto-created SharedDataContent from the dataFlow
+        SharedDataContent sdc = dataFlow.getAssociatedDataContent().get(0);
+        dcd.getAssociatedDataFlows().add(sdc);  // ensure both sides are linked (if not already)
 
-        when(this.dataFlowMockRepo.findById(anyLong())).thenReturn(Optional.of(dataFlow));
+        // Mocks
+        when(this.dataFlowMockRepo.findById(dfId)).thenReturn(Optional.of(dataFlow));
+        when(this.dataSharingAgreementMockRepo.findById(dsaId)).thenReturn(Optional.of(dsa));
 
-        // Call the deleteDataFlow method
-        this.dataFlowService.deleteDataFlow(df_id);
+        // Act
+        this.dataFlowService.deleteDataFlow(dfId);
 
-        verify(this.dataFlowMockRepo, times(1)).findById(df_id);
-        verify(this.dataSharingAgreementMockRepo, times(1)).findById(id);
-        verify(this.dataSharingAgreementMockRepo, times(1)).save(dsa);
+        // Assert
+        verify(this.dataFlowMockRepo).findById(dfId);
+        verify(this.dataSharingAgreementMockRepo).findById(dsaId);
+        verify(this.sharedDataContentMockRepo).delete(sdc);
+        verify(this.dataFlowMockRepo).deleteById(dfId);
 
+        assertTrue(dataFlow.getAssociatedDataContent().isEmpty(), "DataFlow should have no SharedDataContent left");
+        assertTrue(dsa.getDataFlows().isEmpty(), "DSA should have no DataFlows left");
     }
+
+
+
 
     @Test
     void testDeleteDataFlow_DataFlowIdIsInvalid() {

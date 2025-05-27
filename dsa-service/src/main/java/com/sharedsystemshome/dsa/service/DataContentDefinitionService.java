@@ -147,7 +147,7 @@ public class DataContentDefinitionService {
                         "for DataContentDefinition with id: {}", oldName, name, id);
             }
         }
-        if (null != description && !description.isEmpty()) {
+        if (null != description) {
             String oldDescription = dcd.getDescription();
             if(!Objects.equals(oldDescription, description)) {
                 dcd.setDescription(description);
@@ -163,7 +163,7 @@ public class DataContentDefinitionService {
                         "for DataContentDefinition with id: {}", oldDataContentType, dataContentType, id);
             }
         }
-        if (null != ownerName && !ownerName.isEmpty()) {
+        if (null != ownerName) {
             String oldOwnerName = dcd.getOwnerName();
             if(!Objects.equals(oldOwnerName, ownerName)) {
                 dcd.setOwnerName(ownerName);
@@ -174,7 +174,7 @@ public class DataContentDefinitionService {
         if (null != ownerEmail && !ownerEmail.isEmpty()) {
             String oldOwnerEmail = dcd.getOwnerEmail();
             if(!Objects.equals(oldOwnerEmail, ownerEmail)) {
-                dcd.setOwnerName(ownerEmail);
+                dcd.setOwnerEmail(ownerEmail);
                 logger.info("Updated value of property DataContentDefinition::ownerEmail from {} to {}, " +
                         "for DataContentDefinition with id: {}", oldOwnerEmail, ownerEmail, id);
             }
@@ -187,7 +187,7 @@ public class DataContentDefinitionService {
                         "for DataContentDefinition with id: {}", oldRetentionPeriod, retentionPeriod, id);
             }
         }
-        if (null != sourceSystem && !sourceSystem.isEmpty()) {
+        if (null != sourceSystem) {
             String oldSourceSystem = dcd.getSourceSystem();
             if(!Objects.equals(oldSourceSystem, sourceSystem)) {
                 dcd.setSourceSystem(sourceSystem);
@@ -199,7 +199,7 @@ public class DataContentDefinitionService {
             List<DataContentPerspective> oldPerspectives = dcd.getPerspectives();
             // Order doesn't matter
             if(!new HashSet<>(perspectives).equals(new HashSet<>(oldPerspectives))) {
-                dcd.setSourceSystem(sourceSystem);
+                dcd.setPerspectives(perspectives);
                 logger.info("Updated value of property DataContentDefinition::perspectives " +
                         "for DataContentDefinition with id: {}", id);
             }

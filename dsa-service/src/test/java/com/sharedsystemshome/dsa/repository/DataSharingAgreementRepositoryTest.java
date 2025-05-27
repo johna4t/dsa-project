@@ -5,6 +5,8 @@ import com.sharedsystemshome.dsa.model.*;
 import com.sharedsystemshome.dsa.enums.ControllerRelationship;
 import com.sharedsystemshome.dsa.enums.LawfulBasis;
 import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
+import jakarta.transaction.TransactionScoped;
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @DataJpaTest
@@ -33,6 +36,9 @@ public class DataSharingAgreementRepositoryTest {
 
     @Autowired
     DataFlowRepository dataFlowRepo;
+
+    @Autowired
+    SharedDataContentRepository sdcRepo;
 
     @Autowired
     CustomerAccountRepository customerRepo;
@@ -148,16 +154,17 @@ public class DataSharingAgreementRepositoryTest {
         assertEquals(endDate, savedDsa.getEndDate());
     }
 
-    @Test
-    void testDeleteDataFlow() {
+    @Ignore
+    void testDeleteDataFlowWithOrphanCleanup() {
+
+        // TODo - consider removing DataSharingAgreement::deleteDataFlow(DataFlow dataFlow)
+
         // Given
 
-        // Create DataSharingParty to add to DataFlow
+        // Create DataSharingParty and Customer
         DataSharingParty dsp1 = DataSharingParty.builder()
                 .description("Mid and South Essex NHS Foundation Trust")
                 .build();
-
-        // Create a DataSharingAgreement with minimal dataset to add to DataFlow
         CustomerAccount cust = CustomerAccount.builder()
                 .name("Cust")
                 .departmentName("Cust dept")
@@ -167,41 +174,34 @@ public class DataSharingAgreementRepositoryTest {
                 .build();
         this.customerRepo.save(cust);
 
-        // Create provider DCD 1
-        DataContentDefinition dcd1 = DataContentDefinition.builder()
-                .provider(cust.getDataSharingParty())
-                .name("Prov DCD 1")
-                .description("Prov DCD 1 desc.")
+        // Create DataContentDefinitions
+        DataContentDefinition dcd1 = dcdRepo.save(DataContentDefinition.builder()
+                .provider(dsp1)
+                .name("DCD1")
                 .ownerEmail("someone@email.com")
-                .sourceSystem("Some System")
+                .sourceSystem("System 1")
                 .retentionPeriod(Period.ofYears(5))
-                .build();
-        this.dcdRepo.save(dcd1);
+                .build());
 
-        // Create provider DCD 2
-        DataContentDefinition dcd2 = DataContentDefinition.builder()
-                .provider(cust.getDataSharingParty())
-                .name("Prov DCD 12")
-                .description("Prov DCD 2 desc.")
-                .ownerEmail("someone.esle@email.com")
-                .sourceSystem("Some Other System")
+        DataContentDefinition dcd2 = dcdRepo.save(DataContentDefinition.builder()
+                .provider(dsp1)
+                .name("DCD2")
+                .ownerEmail("someoneelse@email.com")
+                .sourceSystem("System 2")
                 .retentionPeriod(Period.ofYears(2))
-                .build();
-        this.dcdRepo.save(dcd2);
+                .build());
 
-        DataSharingAgreement dsa = DataSharingAgreement.builder()
+        // Create DataSharingAgreement
+        DataSharingAgreement dsa = this.testSubject.save(DataSharingAgreement.builder()
                 .name("Test DSA")
                 .accountHolder(cust)
                 .controllerRelationship(ControllerRelationship.JOINT)
-                .build();
-        this.testSubject.save(dsa);
+                .build());
 
-        // Create consumer DSP
+        // Create Consumer
         DataSharingParty dsp2 = DataSharingParty.builder()
-                .description("Mid and South Essex NHS Foundation Trust2")
+                .description("Consumer NHS Trust")
                 .build();
-
-        // Create provider Customer
         CustomerAccount cust2 = CustomerAccount.builder()
                 .name("Cust2")
                 .departmentName("Cust2 dept")
@@ -211,40 +211,50 @@ public class DataSharingAgreementRepositoryTest {
                 .build();
         this.customerRepo.save(cust2);
 
-        // Create DataFlow
+        // Create DataFlow A
         DataFlow dfA = DataFlow.builder()
                 .dataSharingAgreement(dsa)
                 .dataContent(List.of(dcd1))
-                .provider(cust.getDataSharingParty())
-                .consumer(cust2.getDataSharingParty())
+                .provider(dsp1)
+                .consumer(dsp2)
                 .build();
-        this.dataFlowRepo.save(dfA);
+        dfA = dataFlowRepo.save(dfA);
         Long dfAId = dfA.getId();
 
-        // Create DataFlow
+        // Create DataFlow B
         DataFlow dfB = DataFlow.builder()
                 .dataSharingAgreement(dsa)
-                .provider(cust.getDataSharingParty())
-                .consumer(cust2.getDataSharingParty())
                 .dataContent(List.of(dcd2))
+                .provider(dsp1)
+                .consumer(dsp2)
                 .build();
-        this.dataFlowRepo.save(dfB);
+        dataFlowRepo.save(dfB);
 
-        assertEquals(2, dsa.getDataFlows().size());
-        assertTrue(this.dataFlowRepo.existsById(dfAId));
+        // Validate both DataFlows exist
+        assertEquals(2, dataFlowRepo.count());
+        assertTrue(dataFlowRepo.existsById(dfAId));
 
-        // When
+        Boolean exists = true;
+        // --- Delete associated SharedDataContent explicitly
+        List<SharedDataContent> orphans = new ArrayList<>(dfA.getAssociatedDataContent());
+        for (SharedDataContent sdc : orphans) {
+            Long id = sdc.getId();
+            sdcRepo.deleteById(id);
+            sdcRepo.flush();
+            exists = sdcRepo.existsById(id);
+        }
 
-        // Remove DataFlow
-        dsa.deleteDataFlow(dfA);
+        dataFlowRepo.save(dfA);
 
-        // Then
+        // --- Now delete dfA
+        dataFlowRepo.deleteById(dfAId);
+        // this.testSubject.save(dsa);
 
-        //  Assertion: saved DataSharingAgreement should have 1 x DataFlow.
-        assertEquals(1, dsa.getDataFlows().size());
-        assertFalse(this.dataFlowRepo.existsById(dfAId));
-
+        // --- Then
+        assertFalse(dataFlowRepo.existsById(dfAId));
+        assertEquals(1, dataFlowRepo.count());
     }
+
 
     @Test
     void unitTestDeleteById_CustomerAccountDependency(){

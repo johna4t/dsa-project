@@ -394,7 +394,7 @@ class DataFlowControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("$.length()").value(11))
+                .andExpect(jsonPath("$.length()").value(12))
                 // Verify the response body using JSONPath
                 .andExpect(jsonPath("$.id").value(df_id))
                 .andExpect(jsonPath("$.isPersonalData").value(false))

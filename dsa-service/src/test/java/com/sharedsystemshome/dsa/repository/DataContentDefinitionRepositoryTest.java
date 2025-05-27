@@ -1,26 +1,18 @@
 package com.sharedsystemshome.dsa.repository;
 
 import com.sharedsystemshome.dsa.enums.MetadataScheme;
-import com.sharedsystemshome.dsa.model.CustomerAccount;
-import com.sharedsystemshome.dsa.model.DataContentDefinition;
-import com.sharedsystemshome.dsa.model.DataContentPerspective;
-import com.sharedsystemshome.dsa.model.DataSharingParty;
+import com.sharedsystemshome.dsa.model.*;
 import com.sharedsystemshome.dsa.enums.DataContentType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.Period;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @DataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -46,7 +38,7 @@ public class DataContentDefinitionRepositoryTest {
     }
 
     @Test
-    void testSave(){
+    void testSave() {
 
         // Test adding dataflow to repository with minimal dataset
 
@@ -79,16 +71,6 @@ public class DataContentDefinitionRepositoryTest {
                 .sourceSystem("Data Source")
                 .build();
 
-        DataContentPerspective dcp = DataContentPerspective.builder()
-                .metadataScheme(MetadataScheme.GDPR)
-                .metadata(
-                        Map.of(
-                                "lawfulBasis", "CONTRACT",
-                                "specialCategory", "NOT_SPECIAL_CATEGORY_DATA"
-                        )
-                )
-                .dataContentDefinition(dcd)
-                .build();
 
         // When DCD is added to repository.
         Long dcdId = this.testSubject.save(dcd).getId();
@@ -108,6 +90,16 @@ public class DataContentDefinitionRepositoryTest {
         assertEquals(DataContentType.NOT_SPECIFIED, dcd.getDataContentType());
         // Assertion: saved DCD should return provider DataSharingParty id.
         assertEquals(custId, dcd.getProvider().getId());
+
+        // Referenceable interface
+        assertFalse(dcd.isReferenced(), "DCD is not referenced.");
+
+        // Owned interface
+        assertEquals(dcd.getId(), dcd.objectId(), "DCD object id equals id.");
+        assertEquals(DataContentDefinition.class.getSimpleName().replaceAll("([a-z])([A-Z])",
+                        "$1 $2"), dcd.entityName(),
+                "DCD entity name is \"Data Content Definition\".");
+        assertEquals(prov.getId(), dcd.ownerId(), "DCD owner id is Data Sharing Party id.");
 
     }
 
@@ -151,5 +143,5 @@ public class DataContentDefinitionRepositoryTest {
         assertEquals(MetadataScheme.GDPR, savedDcp.getMetadataScheme());
         assertEquals("CONTRACT", savedDcp.get("lawfulBasis"));
     }
-
 }
+

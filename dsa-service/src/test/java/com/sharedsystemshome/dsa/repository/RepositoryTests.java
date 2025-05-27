@@ -17,6 +17,7 @@ import org.junit.platform.suite.api.SuiteDisplayName;
         DataFlowRepositoryTest.class,
         DataSharingAgreementRepositoryTest.class,
         DataSharingPartyRepositoryTest.class,
+        SharedDataContentRepositoryTest.class,
         PermissionRepositoryTest.class,
         RoleRepositoryTest.class,
         TokenRepositoryTest.class,
