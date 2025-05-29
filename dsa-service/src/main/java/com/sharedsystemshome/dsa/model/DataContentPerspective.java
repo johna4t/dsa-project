@@ -100,7 +100,7 @@ public class DataContentPerspective {
     public String toString() {
         return "DataContentPerspective{" +
                 "id=" + id +
-                ", dataContentDefinition=" + dataContentDefinition +
+                ", dataContentDefinition=" + (null != dataContentDefinition ? dataContentDefinition.getId() : "null") +
                 ", metadataScheme=" + metadataScheme +
                 ", metadata=" + metadata +
                 '}';

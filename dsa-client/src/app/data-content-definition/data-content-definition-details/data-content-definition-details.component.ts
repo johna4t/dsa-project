@@ -58,4 +58,9 @@ export class DataContentDefinitionDetailsComponent implements OnInit {
 
     return `${number} ${pluralLabel}`;
   }
+
+  getGdprPerspectiveValue(key: 'lawfulBasis' | 'specialCategory'): string | undefined {
+  const gdpr = this.dcd.perspectives?.find(p => p.metadataScheme === 'GDPR');
+  return gdpr?.metadata?.[key] as string | undefined;
+}
 }

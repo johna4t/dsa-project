@@ -78,7 +78,7 @@ public class DataContentDefinition implements Referenceable, Owned {
     @Convert(converter = PeriodStringConverter.class)
     private Period retentionPeriod;
 
-    @JsonIncludeProperties({"id"})
+//    @JsonIncludeProperties({"id"})
     @OneToMany(mappedBy = "dataContentDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DataContentPerspective> perspectives;
 

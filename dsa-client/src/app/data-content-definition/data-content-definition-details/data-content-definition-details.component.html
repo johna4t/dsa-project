@@ -1,6 +1,19 @@
 <div class="container" mt-5>
   <div *ngIf="dcd">
   <h2>Data asset details: {{ dcd.name }}</h2>
+  <div *ngIf="dcd?.perspectives?.length" class="card p-2 mb-3">
+  <h4>GDPR Perspective</h4>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Lawful basis</mat-label>
+    <input matInput [value]="getGdprPerspectiveValue('lawfulBasis')" readonly>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Special category</mat-label>
+    <input matInput [value]="getGdprPerspectiveValue('specialCategory')" readonly>
+  </mat-form-field>
+</div>
 </div>
   <div class="card p-2">
     <form>
