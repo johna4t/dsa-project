@@ -15,7 +15,7 @@ import { MatCardModule } from '@angular/material/card';
 })
 export class DataContentDefinitionListComponent implements OnInit {
 
-  displayedColumns: string[] = ['name', 'sourceSystem', 'dataContentType', 'btnView', 'btnEdit', 'btnDelete'];
+  displayedColumns: string[] = ['name', 'sourceSystem', 'dataContentType', 'personalData', 'specialCategory', 'btnView', 'btnEdit', 'btnDelete'];
 
    dataContentDefinitions: DataContentDefinition[] = [];
 
