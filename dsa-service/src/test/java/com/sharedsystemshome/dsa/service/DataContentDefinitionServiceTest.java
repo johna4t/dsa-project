@@ -179,7 +179,7 @@ class DataContentDefinitionServiceTest {
 
         String oldName = "Test DCD";
         String oldDesc = "Old description";
-        DataContentType oldDataContentType = DataContentType.STRUCTURED_ELECTR0NIC_DATA;
+        DataContentType oldDataContentType = DataContentType.STRUCTURED_ELECTRONIC_DATA;
         String oldOwnerName = "John Smith";
         String oldOwnerEmail = "js@email.com";
         Period oldRetention = Period.ofWeeks(6);
@@ -257,7 +257,7 @@ class DataContentDefinitionServiceTest {
 
         String oldName = "Test DCD";
         String oldDesc = "Old description";
-        DataContentType oldDataContentType = DataContentType.STRUCTURED_ELECTR0NIC_DATA;
+        DataContentType oldDataContentType = DataContentType.STRUCTURED_ELECTRONIC_DATA;
         String oldOwnerName = "John Smith";
         String oldOwnerEmail = "js@email.com";
         Period oldRetention = Period.ofWeeks(6);
@@ -318,7 +318,7 @@ class DataContentDefinitionServiceTest {
 
         String oldName = "Test DCD";
         String oldDesc = "Old description";
-        DataContentType oldDataContentType = DataContentType.STRUCTURED_ELECTR0NIC_DATA;
+        DataContentType oldDataContentType = DataContentType.STRUCTURED_ELECTRONIC_DATA;
         String oldOwnerName = "John Smith";
         String oldOwnerEmail = "js@email.com";
         Period oldRetention = Period.ofWeeks(6);
@@ -395,7 +395,7 @@ class DataContentDefinitionServiceTest {
 
         String oldName = "Test DCD";
         String oldDesc = "Old description";
-        DataContentType oldDataContentType = DataContentType.STRUCTURED_ELECTR0NIC_DATA;
+        DataContentType oldDataContentType = DataContentType.STRUCTURED_ELECTRONIC_DATA;
         String oldOwnerName = "John Smith";
         String oldOwnerEmail = "js@email.com";
         Period oldRetention = Period.ofWeeks(6);
