@@ -6,6 +6,7 @@ export class DataContentPerspective {
   metadataScheme: 'GDPR' | undefined;
   metadata: Record<string, unknown> = {
     lawfulBasis: 'NOT_PERSONAL_DATA',
-    specialCategory: 'NOT_SPECIAL_CATEGORY_DATA'
+    specialCategory: 'NOT_SPECIAL_CATEGORY_DATA',
+    article9Condition: 'NOT_APPLICABLE'
   };
 }

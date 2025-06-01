@@ -1,4 +1,3 @@
-
 import { DataSharingParty } from '../data-sharing-party/data-sharing-party';
 import { DataContentPerspective } from '../data-content-perspective/data-content-perspective';
 
