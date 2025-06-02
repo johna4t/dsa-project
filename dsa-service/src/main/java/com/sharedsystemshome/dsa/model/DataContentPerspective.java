@@ -96,6 +96,16 @@ public class DataContentPerspective {
         }
     }
 
+    public Metadata getMetadata(MetadataScheme scheme) {
+        if (scheme.equals(this.metadataScheme)) {
+            return GdprMetadata.builder()
+                    .meta(this.metadata)
+                    .build();
+        }
+
+        return null;
+    }
+
     @Override
     public String toString() {
         return "DataContentPerspective{" +
@@ -109,8 +119,21 @@ public class DataContentPerspective {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DataContentPerspective other)) return false;
-        return id != null && id.equals(other.id);
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DataContentPerspective other = (DataContentPerspective) o;
+
+        if (this.id != null && other.id != null && this.id.equals(other.id)) {
+            // Otherwise, fall back to deep metadata comparison
+            Metadata thisMetadata = this.getMetadata(this.getMetadataScheme());
+            Metadata otherMetadata = other.getMetadata(other.getMetadataScheme());
+
+            return thisMetadata.equals(otherMetadata);
+        } else {
+            return false;
+        }
+
+
     }
 
     @Override

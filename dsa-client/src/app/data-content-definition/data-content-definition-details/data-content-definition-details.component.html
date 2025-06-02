@@ -51,8 +51,8 @@
 
     <!-- GDPR Perspective card (separate from the main form) -->
     <div *ngIf="dcd?.perspectives?.length" class="card p-2 mt-3">
-      <h4>GDPR Perspective</h4>
-
+      <h3>GDPR Perspective</h3>
+      <h4>Applicable to personal data only.</h4>
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Lawful basis for processing</mat-label>
         <input matInput [value]="getLawfulBasisLabel()" readonly />

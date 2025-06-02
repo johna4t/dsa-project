@@ -195,11 +195,16 @@ public class DataContentDefinitionService {
                         "for DataContentDefinition with id: {}", oldSourceSystem, sourceSystem, id);
             }
         }
-        if (null != perspectives && !perspectives.isEmpty()) {
+        if (perspectives != null && !perspectives.isEmpty()) {
             List<DataContentPerspective> oldPerspectives = dcd.getPerspectives();
-            // Order doesn't matter
-            if(!new HashSet<>(perspectives).equals(new HashSet<>(oldPerspectives))) {
-                dcd.setPerspectives(perspectives);
+
+            DataContentPerspective newPerspective = perspectives.get(0);
+            DataContentPerspective oldPerspective = (oldPerspectives != null && !oldPerspectives.isEmpty()) ?
+                    oldPerspectives.get(0) : null;
+
+            if (null != oldPerspective && !newPerspective.equals(oldPerspective)) {
+
+                oldPerspective.setMetadata(newPerspective.getMetadata());
                 logger.info("Updated value of property DataContentDefinition::perspectives " +
                         "for DataContentDefinition with id: {}", id);
             }

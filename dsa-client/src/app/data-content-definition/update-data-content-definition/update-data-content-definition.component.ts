@@ -3,6 +3,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DataContentDefinitionService } from '../data-content-definition.service';
 import { DataContentDefinition } from '../data-content-definition';
+import { DataContentTypeLabels } from '../../enums/data-content-type-labels';
+import { LawfulBasisLabels } from '../../enums/lawful-basis-labels';
+import { SpecialCategoryDataLabels } from '../../enums/special-category-data-labels';
+import { Article9ConditionLabels } from '../../enums/article-9-condition-labels';
 
 @Component({
   selector: 'app-update-data-content-definition',
@@ -12,20 +16,31 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
   dcdForm!: FormGroup;
   dcdId!: number;
   dcd!: DataContentDefinition;
-  contentTypes = [
-    'NOT_SPECIFIED',
-    'STRUCTURED_ELECTR0NIC_DATA',
-    'ELECTRONIC_DOCUMENT',
-    'PAPER_DOCUMENT',
-    'OTHER_MEDIUM',
-  ];
+  dataContentTypeLabels = DataContentTypeLabels;
+  dataContentTypeKeys = Object.keys(
+    DataContentTypeLabels,
+  ) as (keyof typeof DataContentTypeLabels)[];
+
+  lawfulBasisLabels = LawfulBasisLabels;
+  lawfulBasisKeys = Object.keys(LawfulBasisLabels) as (keyof typeof LawfulBasisLabels)[];
+
+  specialCategoryDataLabels = SpecialCategoryDataLabels;
+  specialCategoryDatasKeys = Object.keys(
+    SpecialCategoryDataLabels,
+  ) as (keyof typeof SpecialCategoryDataLabels)[];
+
+  article9ConditionLabels = Article9ConditionLabels;
+  article9ConditionKeys = Object.keys(
+    Article9ConditionLabels,
+  ) as (keyof typeof Article9ConditionLabels)[];
+
   private originalFormValues!: Partial<DataContentDefinition>;
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private dcdService: DataContentDefinitionService
+    private dcdService: DataContentDefinitionService,
   ) {}
 
   ngOnInit(): void {
@@ -37,6 +52,11 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
       const value = match ? Number(match[1]) : null;
       const unit = match ? match[2] : 'D';
 
+      const gdpr = dcd.perspectives?.find((p) => p.metadataScheme === 'GDPR');
+      const lawfulBasis = gdpr?.metadata?.['lawfulBasis'] || 'NOT_PERSONAL_DATA';
+      const specialCategory = gdpr?.metadata?.['specialCategory'] || 'NOT_SPECIAL_CATEGORY_DATA';
+      const article9Condition = gdpr?.metadata?.['article9Condition'] || 'NOT_APPLICABLE';
+
       this.dcdForm = this.fb.group({
         name: [dcd.name, Validators.required],
         description: [dcd.description],
@@ -46,9 +66,11 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
         retentionValue: [value, [Validators.required, Validators.min(1)]],
         retentionUnit: [unit, Validators.required],
         dataContentType: [dcd.dataContentType],
+        lawfulBasis: [lawfulBasis],
+        specialCategory: [specialCategory],
+        article9Condition: [article9Condition]
       });
 
-      // Store the original values for change detection
       this.originalFormValues = this.dcdForm.value;
     });
   }
@@ -65,9 +87,22 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
 
     const updated: DataContentDefinition = {
       ...formValues,
-      id: this.dcdId,
+      id: this.dcd.id,
+      provider: this.dcd.provider,
       retentionPeriod,
-      ownerName: formValues.ownerName,
+      isReferenced: this.dcd.isReferenced,
+      perspectives: [
+        {
+          id: this.dcd.perspectives?.[0]?.id,
+          dataContentDefinition: { id: this.dcd.id } as DataContentDefinition,
+          metadataScheme: 'GDPR',
+          metadata: {
+            lawfulBasis: formValues.lawfulBasis,
+            specialCategory: formValues.specialCategory ?? 'NOT_SPECIAL_CATEGORY_DATA',
+            article9Condition: formValues.article9Condition ?? 'NOT_APPLICABLE',
+          },
+        },
+      ],
     };
 
     this.dcdService.putDataContentDefinition(this.dcdId, updated).subscribe(() => {
