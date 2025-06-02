@@ -88,6 +88,23 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
           this.dcdForm.get('article9Condition')?.disable();
         } else {
           this.dcdForm.get('specialCategory')?.enable();
+
+          // Whether article9 should be enabled depends on specialCategory
+          const specialCat = this.dcdForm.get('specialCategory')?.value;
+          if (specialCat === 'NOT_SPECIAL_CATEGORY_DATA') {
+            this.dcdForm.get('article9Condition')?.disable();
+          } else {
+            this.dcdForm.get('article9Condition')?.enable();
+          }
+        }
+      });
+
+      // Handle changes in specialCategory
+      this.dcdForm.get('specialCategory')?.valueChanges.subscribe((value) => {
+        if (value === 'NOT_SPECIAL_CATEGORY_DATA') {
+          this.dcdForm.patchValue({ article9Condition: 'NOT_APPLICABLE' });
+          this.dcdForm.get('article9Condition')?.disable();
+        } else if (this.dcdForm.get('lawfulBasis')?.value !== 'NOT_PERSONAL_DATA') {
           this.dcdForm.get('article9Condition')?.enable();
         }
       });
@@ -103,20 +120,20 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
   onSubmit(): void {
     if (this.dcdForm.invalid || this.isFormUnchanged()) return;
 
-    const formValues = this.dcdForm.value;
+    const formValues = this.dcdForm.getRawValue();
     const retentionPeriod = `P${formValues.retentionValue}${formValues.retentionUnit}`;
 
-      // Enforce GDPR metadata rules
-      const lawfulBasis = formValues.lawfulBasis;
-      let specialCategory = formValues.specialCategory;
-      let article9Condition = formValues.article9Condition;
+    // Enforce GDPR metadata rules
+    const lawfulBasis = formValues.lawfulBasis;
+    let specialCategory = formValues.specialCategory;
+    let article9Condition = formValues.article9Condition;
 
-      if (lawfulBasis === 'NOT_PERSONAL_DATA') {
-        specialCategory = 'NOT_SPECIAL_CATEGORY_DATA';
-        article9Condition = 'NOT_APPLICABLE';
-      } else if (specialCategory === 'NOT_SPECIAL_CATEGORY_DATA') {
-        article9Condition = 'NOT_APPLICABLE';
-      }
+    if (lawfulBasis === 'NOT_PERSONAL_DATA') {
+      specialCategory = 'NOT_SPECIAL_CATEGORY_DATA';
+      article9Condition = 'NOT_APPLICABLE';
+    } else if (specialCategory === 'NOT_SPECIAL_CATEGORY_DATA') {
+      article9Condition = 'NOT_APPLICABLE';
+    }
 
     const updated: DataContentDefinition = {
       ...formValues,
