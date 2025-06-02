@@ -159,4 +159,17 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
       this.router.navigate(['/view-data-content-definition', this.dcdId]);
     });
   }
+
+  shouldDisableSubmit(): boolean {
+    if (this.dcdForm.invalid || this.isFormUnchanged()) {
+      return true;
+    }
+
+    const specialCategory = this.dcdForm.get('specialCategory')?.value;
+    const article9Condition = this.dcdForm.get('article9Condition')?.value;
+
+    return (
+      specialCategory !== 'NOT_SPECIAL_CATEGORY_DATA' && article9Condition === 'NOT_APPLICABLE'
+    );
+  }
 }

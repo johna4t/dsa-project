@@ -83,7 +83,7 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-                <mat-form-field appearance="outline" class="w-100">
+        <mat-form-field appearance="outline" class="w-100">
           <mat-label>Special category</mat-label>
           <mat-select formControlName="specialCategory">
             <mat-option *ngFor="let key of specialCategoryDatasKeys" [value]="key">
@@ -91,7 +91,7 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
-                <mat-form-field appearance="outline" class="w-100">
+        <mat-form-field appearance="outline" class="w-100">
           <mat-label>Special category condition</mat-label>
           <mat-select formControlName="article9Condition">
             <mat-option *ngFor="let key of article9ConditionKeys" [value]="key">
@@ -108,7 +108,7 @@
           color="primary"
           type="submit"
           style="margin: 5px"
-          [disabled]="dcdForm.invalid || isFormUnchanged()"
+          [disabled]="shouldDisableSubmit()"
         >
           Submit
         </button>
