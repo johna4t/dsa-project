@@ -68,7 +68,28 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
         dataContentType: [dcd.dataContentType],
         lawfulBasis: [lawfulBasis],
         specialCategory: [specialCategory],
-        article9Condition: [article9Condition]
+        article9Condition: [article9Condition],
+      });
+
+      // Disable fields if the initial value is NOT_PERSONAL_DATA
+      if (lawfulBasis === 'NOT_PERSONAL_DATA') {
+        this.dcdForm.get('specialCategory')?.disable();
+        this.dcdForm.get('article9Condition')?.disable();
+      }
+
+      // React to changes in lawfulBasis
+      this.dcdForm.get('lawfulBasis')?.valueChanges.subscribe((value) => {
+        if (value === 'NOT_PERSONAL_DATA') {
+          this.dcdForm.patchValue({
+            specialCategory: 'NOT_SPECIAL_CATEGORY_DATA',
+            article9Condition: 'NOT_APPLICABLE',
+          });
+          this.dcdForm.get('specialCategory')?.disable();
+          this.dcdForm.get('article9Condition')?.disable();
+        } else {
+          this.dcdForm.get('specialCategory')?.enable();
+          this.dcdForm.get('article9Condition')?.enable();
+        }
       });
 
       this.originalFormValues = this.dcdForm.value;
@@ -85,6 +106,18 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
     const formValues = this.dcdForm.value;
     const retentionPeriod = `P${formValues.retentionValue}${formValues.retentionUnit}`;
 
+      // Enforce GDPR metadata rules
+      const lawfulBasis = formValues.lawfulBasis;
+      let specialCategory = formValues.specialCategory;
+      let article9Condition = formValues.article9Condition;
+
+      if (lawfulBasis === 'NOT_PERSONAL_DATA') {
+        specialCategory = 'NOT_SPECIAL_CATEGORY_DATA';
+        article9Condition = 'NOT_APPLICABLE';
+      } else if (specialCategory === 'NOT_SPECIAL_CATEGORY_DATA') {
+        article9Condition = 'NOT_APPLICABLE';
+      }
+
     const updated: DataContentDefinition = {
       ...formValues,
       id: this.dcd.id,
@@ -97,9 +130,9 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
           dataContentDefinition: { id: this.dcd.id } as DataContentDefinition,
           metadataScheme: 'GDPR',
           metadata: {
-            lawfulBasis: formValues.lawfulBasis,
-            specialCategory: formValues.specialCategory ?? 'NOT_SPECIAL_CATEGORY_DATA',
-            article9Condition: formValues.article9Condition ?? 'NOT_APPLICABLE',
+            lawfulBasis,
+            specialCategory,
+            article9Condition,
           },
         },
       ],
