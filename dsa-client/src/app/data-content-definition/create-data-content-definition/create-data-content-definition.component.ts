@@ -37,31 +37,35 @@ export class CreateDataContentDefinitionComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private dcdService: DataContentDefinitionService,
-    private userLocalStorageService: UserLocalStorageService
+    private userLocalStorageService: UserLocalStorageService,
   ) {}
 
-ngOnInit(): void {
-  this.dcdForm = this.fb.group({
-    name: ['', Validators.required],
-    description: [''],
-    sourceSystem: ['', Validators.required],
-    ownerEmail: ['', [Validators.required, Validators.email]],
-    retentionValue: [1, [Validators.required, Validators.min(1)]],
-    retentionUnit: ['D', Validators.required],
-    dataContentType: [DataContentType.NOT_SPECIFIED],
-    lawfulBasis: [LawfulBasis.NOT_PERSONAL_DATA],
-    specialCategory: [SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA],
-    article9Condition: [Article9Condition.NOT_APPLICABLE],
-  });
+  ngOnInit(): void {
+    this.dcdForm = this.fb.group({
+      name: ['', Validators.required],
+      description: [''],
+      sourceSystem: ['', Validators.required],
+      ownerEmail: ['', [Validators.required, Validators.email]],
+      retentionValue: [1, [Validators.required, Validators.min(1)]],
+      retentionUnit: ['D', Validators.required],
+      dataContentType: [DataContentType.NOT_SPECIFIED],
+      lawfulBasis: [LawfulBasis.NOT_PERSONAL_DATA],
+      specialCategory: [SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA],
+      article9Condition: [Article9Condition.NOT_APPLICABLE],
+    });
 
-  // Set initial field states if default is NOT_PERSONAL_DATA
-  this.disableGdprFieldsIfNotPersonalData(this.dcdForm.get('lawfulBasis')?.value);
+    // First rule: lawful basis = NOT_PERSONAL_DATA
+    this.disableGdprFieldsIfNotPersonalData(this.dcdForm.get('lawfulBasis')?.value);
+    this.dcdForm.get('lawfulBasis')?.valueChanges.subscribe((value: LawfulBasis) => {
+      this.disableGdprFieldsIfNotPersonalData(value);
+    });
 
-  // Watch for changes in lawfulBasis
-  this.dcdForm.get('lawfulBasis')?.valueChanges.subscribe((value: LawfulBasis) => {
-    this.disableGdprFieldsIfNotPersonalData(value);
-  });
-}
+    // Second rule: special category = NOT_SPECIAL_CATEGORY_DATA
+    this.updateArticle9Readonly(this.dcdForm.get('specialCategory')?.value);
+    this.dcdForm.get('specialCategory')?.valueChanges.subscribe((value: SpecialCategoryData) => {
+      this.updateArticle9Readonly(value);
+    });
+  }
 
   onSubmit(): void {
     if (this.dcdForm.invalid) return;
@@ -87,7 +91,7 @@ ngOnInit(): void {
             article9Condition: formValues.article9Condition,
           },
         },
-      ]
+      ],
     };
 
     this.dcdService.postDataContentDefinition(newDcd).subscribe(() => {
@@ -96,16 +100,27 @@ ngOnInit(): void {
   }
 
   private disableGdprFieldsIfNotPersonalData(value: LawfulBasis): void {
-  if (value === LawfulBasis.NOT_PERSONAL_DATA) {
-    this.dcdForm.patchValue({
-      specialCategory: SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA,
-      article9Condition: Article9Condition.NOT_APPLICABLE,
-    });
-    this.dcdForm.get('specialCategory')?.disable();
-    this.dcdForm.get('article9Condition')?.disable();
-  } else {
-    this.dcdForm.get('specialCategory')?.enable();
-    this.dcdForm.get('article9Condition')?.enable();
+    if (value === LawfulBasis.NOT_PERSONAL_DATA) {
+      this.dcdForm.patchValue({
+        specialCategory: SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA,
+        article9Condition: Article9Condition.NOT_APPLICABLE,
+      });
+      this.dcdForm.get('specialCategory')?.disable();
+      this.dcdForm.get('article9Condition')?.disable();
+    } else {
+      this.dcdForm.get('specialCategory')?.enable();
+      this.dcdForm.get('article9Condition')?.enable();
+    }
   }
-}
+
+  private updateArticle9Readonly(specialCategory: SpecialCategoryData): void {
+    const article9Control = this.dcdForm.get('article9Condition');
+
+    if (specialCategory === SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA) {
+      article9Control?.patchValue(Article9Condition.NOT_APPLICABLE);
+      article9Control?.disable();
+    } else {
+      article9Control?.enable();
+    }
+  }
 }
