@@ -57,6 +57,12 @@ public class DataContentDefinitionService {
             throw new EntityNotFoundException(BusinessValidationException.DATA_SHARING_PARTY, provId);
         }
 
+        if (dcd.getPerspectives() != null) {
+            for (DataContentPerspective perspective : dcd.getPerspectives()) {
+                perspective.setDataContentDefinition(dcd);
+            }
+        }
+
         try {
             Long dcdId = this.dcdRepo.save(dcd).getId();
             logger.info("New DataContentDefinition created with id: {}", dcdId);
