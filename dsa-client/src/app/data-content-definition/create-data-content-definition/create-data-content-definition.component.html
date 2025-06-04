@@ -48,13 +48,47 @@
         </mat-form-field>
       </div>
 
-      <!-- Content type -->
+      <!-- Content type with label map -->
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Content type</mat-label>
         <mat-select formControlName="dataContentType">
-          <mat-option *ngFor="let ct of contentTypes" [value]="ct">{{ ct }}</mat-option>
+          <mat-option *ngFor="let ct of dataContentTypeKeys" [value]="ct">
+            {{ dataContentTypeLabels[ct] }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
+
+      <!-- GDPR Perspective -->
+      <div class="card p-2 mt-4">
+        <h3>GDPR Perspective</h3>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Lawful basis</mat-label>
+          <mat-select formControlName="lawfulBasis">
+            <mat-option *ngFor="let key of lawfulBasisKeys" [value]="key">
+              {{ lawfulBasisLabels[key] }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Special category</mat-label>
+          <mat-select formControlName="specialCategory">
+            <mat-option *ngFor="let key of specialCategoryKeys" [value]="key">
+              {{ specialCategoryLabels[key] }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Article 9 condition</mat-label>
+          <mat-select formControlName="article9Condition">
+            <mat-option *ngFor="let key of article9ConditionKeys" [value]="key">
+              {{ article9ConditionLabels[key] }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
       <div align="right">
         <button mat-flat-button color="primary" type="submit" style="margin:5px;" [disabled]="dcdForm.invalid || dcdForm.pristine">Create</button>
