@@ -40,20 +40,28 @@ export class CreateDataContentDefinitionComponent implements OnInit {
     private userLocalStorageService: UserLocalStorageService
   ) {}
 
-  ngOnInit(): void {
-    this.dcdForm = this.fb.group({
-      name: ['', Validators.required],
-      description: [''],
-      sourceSystem: ['', Validators.required],
-      ownerEmail: ['', [Validators.required, Validators.email]],
-      retentionValue: [1, [Validators.required, Validators.min(1)]],
-      retentionUnit: ['D', Validators.required],
-      dataContentType: [DataContentType.NOT_SPECIFIED],
-      lawfulBasis: [LawfulBasis.NOT_PERSONAL_DATA],
-      specialCategory: [SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA],
-      article9Condition: [Article9Condition.NOT_APPLICABLE],
-    });
-  }
+ngOnInit(): void {
+  this.dcdForm = this.fb.group({
+    name: ['', Validators.required],
+    description: [''],
+    sourceSystem: ['', Validators.required],
+    ownerEmail: ['', [Validators.required, Validators.email]],
+    retentionValue: [1, [Validators.required, Validators.min(1)]],
+    retentionUnit: ['D', Validators.required],
+    dataContentType: [DataContentType.NOT_SPECIFIED],
+    lawfulBasis: [LawfulBasis.NOT_PERSONAL_DATA],
+    specialCategory: [SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA],
+    article9Condition: [Article9Condition.NOT_APPLICABLE],
+  });
+
+  // Set initial field states if default is NOT_PERSONAL_DATA
+  this.disableGdprFieldsIfNotPersonalData(this.dcdForm.get('lawfulBasis')?.value);
+
+  // Watch for changes in lawfulBasis
+  this.dcdForm.get('lawfulBasis')?.valueChanges.subscribe((value: LawfulBasis) => {
+    this.disableGdprFieldsIfNotPersonalData(value);
+  });
+}
 
   onSubmit(): void {
     if (this.dcdForm.invalid) return;
@@ -86,4 +94,18 @@ export class CreateDataContentDefinitionComponent implements OnInit {
       this.router.navigate(['/data-content-definitions']);
     });
   }
+
+  private disableGdprFieldsIfNotPersonalData(value: LawfulBasis): void {
+  if (value === LawfulBasis.NOT_PERSONAL_DATA) {
+    this.dcdForm.patchValue({
+      specialCategory: SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA,
+      article9Condition: Article9Condition.NOT_APPLICABLE,
+    });
+    this.dcdForm.get('specialCategory')?.disable();
+    this.dcdForm.get('article9Condition')?.disable();
+  } else {
+    this.dcdForm.get('specialCategory')?.enable();
+    this.dcdForm.get('article9Condition')?.enable();
+  }
+}
 }
