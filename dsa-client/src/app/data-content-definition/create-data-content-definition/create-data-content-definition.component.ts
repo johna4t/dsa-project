@@ -33,6 +33,8 @@ export class CreateDataContentDefinitionComponent implements OnInit {
   article9ConditionKeys = Object.keys(Article9ConditionLabels) as Article9Condition[];
   article9ConditionLabels = Article9ConditionLabels;
 
+  shouldDisableSubmit = false;
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -46,6 +48,7 @@ export class CreateDataContentDefinitionComponent implements OnInit {
       description: [''],
       sourceSystem: ['', Validators.required],
       ownerEmail: ['', [Validators.required, Validators.email]],
+      ownerName: [''],
       retentionValue: [1, [Validators.required, Validators.min(1)]],
       retentionUnit: ['D', Validators.required],
       dataContentType: [DataContentType.NOT_SPECIFIED],
@@ -54,17 +57,26 @@ export class CreateDataContentDefinitionComponent implements OnInit {
       article9Condition: [Article9Condition.NOT_APPLICABLE],
     });
 
-    // First rule: lawful basis = NOT_PERSONAL_DATA
+    // First GDPR Perspective validation rule: lawful basis = NOT_PERSONAL_DATA
     this.disableGdprFieldsIfNotPersonalData(this.dcdForm.get('lawfulBasis')?.value);
     this.dcdForm.get('lawfulBasis')?.valueChanges.subscribe((value: LawfulBasis) => {
       this.disableGdprFieldsIfNotPersonalData(value);
     });
 
-    // Second rule: special category = NOT_SPECIAL_CATEGORY_DATA
+    // Second GDPR Perspective validation rule: special category = NOT_SPECIAL_CATEGORY_DATA
     this.updateArticle9Readonly(this.dcdForm.get('specialCategory')?.value);
     this.dcdForm.get('specialCategory')?.valueChanges.subscribe((value: SpecialCategoryData) => {
       this.updateArticle9Readonly(value);
     });
+
+    // Third GDPR Perspective validation rule: disable submit if article9Condition = NOT_APPLICABLE with special category ≠ NOT_SPECIAL_CATEGORY_DATA
+    this.dcdForm.get('specialCategory')?.valueChanges.subscribe(() => {
+      this.checkSubmitDisallowedCondition();
+    });
+    this.dcdForm.get('article9Condition')?.valueChanges.subscribe(() => {
+      this.checkSubmitDisallowedCondition();
+    });
+    this.checkSubmitDisallowedCondition(); // also run initially
   }
 
   onSubmit(): void {
@@ -122,5 +134,14 @@ export class CreateDataContentDefinitionComponent implements OnInit {
     } else {
       article9Control?.enable();
     }
+  }
+
+  private checkSubmitDisallowedCondition(): void {
+    const specialCategory = this.dcdForm.get('specialCategory')?.value;
+    const article9 = this.dcdForm.get('article9Condition')?.value;
+
+    this.shouldDisableSubmit =
+      specialCategory !== SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA &&
+      article9 === Article9Condition.NOT_APPLICABLE;
   }
 }

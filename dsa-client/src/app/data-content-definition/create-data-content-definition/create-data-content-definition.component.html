@@ -4,37 +4,62 @@
     <form [formGroup]="dcdForm" (ngSubmit)="onSubmit()">
       <!-- Name -->
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Name</mat-label>
-        <input matInput formControlName="name" required>
+        <mat-label>Data asset name</mat-label>
+        <input matInput
+        placeholder="Enter data asset name"
+        formControlName="name"
+        required />
         <mat-error *ngIf="dcdForm.get('name')?.hasError('required')">Name is required</mat-error>
       </mat-form-field>
 
       <!-- Description -->
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Description</mat-label>
-        <input matInput formControlName="description">
+        <input matInput
+        placeholder="Enter data asset description"
+        formControlName="description" />
       </mat-form-field>
 
       <!-- Source system -->
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Source system</mat-label>
-        <input matInput formControlName="sourceSystem" required>
-        <mat-error *ngIf="dcdForm.get('sourceSystem')?.hasError('required')">Source system is required</mat-error>
+        <input matInput
+        placeholder="Enter source system name"
+        formControlName="sourceSystem"
+        required />
+        <mat-error *ngIf="dcdForm.get('sourceSystem')?.hasError('required')"
+          >Source system is required</mat-error
+        >
       </mat-form-field>
 
       <!-- Owner email -->
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Owner email</mat-label>
-        <input matInput formControlName="ownerEmail" required>
-        <mat-error *ngIf="dcdForm.get('ownerEmail')?.hasError('required')">Email is required</mat-error>
-        <mat-error *ngIf="dcdForm.get('ownerEmail')?.hasError('email')">Enter a valid email</mat-error>
+        <input matInput
+        placeholder="Enter owner email"
+        formControlName="ownerEmail"
+        required />
+        <mat-error *ngIf="dcdForm.get('ownerEmail')?.hasError('required')"
+          >Owner email is required</mat-error
+        >
+        <mat-error *ngIf="dcdForm.get('ownerEmail')?.hasError('email')"
+          >Enter a valid email</mat-error
+        >
+      </mat-form-field>
+
+      <!-- Owner name -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Owner name</mat-label>
+        <input matInput
+        placeholder="Enter owner name"
+        formControlName="ownerName" />
       </mat-form-field>
 
       <!-- Retention period -->
       <div class="d-flex gap-2">
         <mat-form-field appearance="outline" class="flex-grow-1">
           <mat-label>Retention value</mat-label>
-          <input matInput type="number" formControlName="retentionValue" min="1">
+          <input matInput type="number" formControlName="retentionValue" min="1" />
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="flex-grow-1">
@@ -91,8 +116,23 @@
       </div>
 
       <div align="right">
-        <button mat-flat-button color="primary" type="submit" style="margin:5px;" [disabled]="dcdForm.invalid || dcdForm.pristine">Create</button>
-        <button mat-flat-button color="accent" style="margin:5px;" routerLink="/data-content-definitions">Cancel</button>
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          style="margin: 5px"
+          [disabled]="dcdForm.invalid || dcdForm.pristine || shouldDisableSubmit"
+        >
+          Create
+        </button>
+        <button
+          mat-flat-button
+          color="accent"
+          style="margin: 5px"
+          routerLink="/data-content-definitions"
+        >
+          Cancel
+        </button>
       </div>
     </form>
   </div>
