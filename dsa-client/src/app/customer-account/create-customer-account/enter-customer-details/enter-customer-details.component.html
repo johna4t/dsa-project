@@ -9,7 +9,11 @@
         <input matInput
                placeholder="Enter organisation name"
                [(ngModel)]="customerDetails.name"
-               [formControl]="name">
+               [formControl]="name"
+               required
+               minlength="3">
+        <mat-error [hidden]="!name.hasError('required')">Name of organisation required.</mat-error>
+        <mat-error [hidden]="!name.hasError('minlength')">Name of organisation must be minimum of 2 characters.</mat-error>
       </mat-form-field>
 
       <!--Enter branch name-->
