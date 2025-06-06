@@ -126,13 +126,16 @@ public class DataContentDefinitionRepositoryTest {
                 .ownerName("Some One")
                 .build();
 
-        DataContentPerspective dcp = new DataContentPerspective();
-        dcp.setMetadataScheme(MetadataScheme.GDPR);
-        dcp.setMetadata(Map.of(
-                "lawfulBasis", "CONTRACT",
-                "specialCategory", "NOT_SPECIAL_CATEGORY_DATA"
-        ));
-        dcd.addPerspective(dcp);
+        DataContentPerspective dcp = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                        "lawfulBasis", "CONTRACT",
+                        "specialCategory", "NOT_SPECIAL_CATEGORY_DATA"
+                        )
+                )
+                .dataContentDefinition(dcd)
+                .build();
+
 
         this.testSubject.save(dcd);
 
