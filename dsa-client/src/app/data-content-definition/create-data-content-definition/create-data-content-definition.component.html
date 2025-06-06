@@ -1,7 +1,8 @@
 <div class="container" *ngIf="dcdForm">
   <h2>Add new data asset</h2>
-  <div class="card p-2">
-    <form [formGroup]="dcdForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="dcdForm" (ngSubmit)="onSubmit()">
+    <!-- Main form section -->
+    <div class="card p-2">
       <!-- Name -->
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Data asset name</mat-label>
@@ -74,63 +75,61 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
+    </div>
 
-      <!-- GDPR Perspective -->
-      <div class="card p-2 mt-4">
-        <h3>GDPR Perspective</h3>
+    <!-- GDPR Perspective -->
+    <div class="card p-2 mt-4">
+      <h3>GDPR Perspective</h3>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Lawful basis</mat-label>
-          <mat-select formControlName="lawfulBasis">
-            <mat-option *ngFor="let key of lawfulBasisKeys" [value]="key">
-              {{ lawfulBasisLabels[key] }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Lawful basis</mat-label>
+        <mat-select formControlName="lawfulBasis">
+          <mat-option *ngFor="let key of lawfulBasisKeys" [value]="key">
+            {{ lawfulBasisLabels[key] }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Special category</mat-label>
-          <mat-select formControlName="specialCategory">
-            <mat-option *ngFor="let key of specialCategoryKeys" [value]="key">
-              {{ specialCategoryLabels[key] }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Special category</mat-label>
+        <mat-select formControlName="specialCategory">
+          <mat-option *ngFor="let key of specialCategoryKeys" [value]="key">
+            {{ specialCategoryLabels[key] }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
-          <mat-label>Article 9 condition</mat-label>
-          <mat-select formControlName="article9Condition">
-            <mat-option *ngFor="let key of article9ConditionKeys" [value]="key">
-              {{ article9ConditionLabels[key] }}
-            </mat-option>
-          </mat-select>
-          <mat-error
-            *ngIf="dcdForm.get('article9Condition')?.hasError('requiredForSpecialCategory')"
-          >
-            Article 9 condition is required for special category data.
-          </mat-error>
-        </mat-form-field>
-      </div>
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Article 9 condition</mat-label>
+        <mat-select formControlName="article9Condition">
+          <mat-option *ngFor="let key of article9ConditionKeys" [value]="key">
+            {{ article9ConditionLabels[key] }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="dcdForm.get('article9Condition')?.hasError('requiredForSpecialCategory')">
+          Article 9 condition is required for special category data
+        </mat-error>
+      </mat-form-field>
+    </div>
 
-      <div align="right">
-        <button
-          mat-flat-button
-          color="primary"
-          type="submit"
-          style="margin: 5px"
-          [disabled]="dcdForm.invalid || dcdForm.pristine || shouldDisableSubmit"
-        >
-          Create
-        </button>
-        <button
-          mat-flat-button
-          color="accent"
-          style="margin: 5px"
-          routerLink="/data-content-definitions"
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
-  </div>
+    <div align="right">
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        style="margin: 5px"
+        [disabled]="dcdForm.invalid || dcdForm.pristine || shouldDisableSubmit"
+      >
+        Create
+      </button>
+      <button
+        mat-flat-button
+        color="accent"
+        style="margin: 5px"
+        routerLink="/data-content-definitions"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
 </div>
