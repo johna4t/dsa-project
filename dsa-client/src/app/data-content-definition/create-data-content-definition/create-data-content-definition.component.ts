@@ -136,12 +136,32 @@ export class CreateDataContentDefinitionComponent implements OnInit {
     }
   }
 
-  private checkSubmitDisallowedCondition(): void {
-    const specialCategory = this.dcdForm.get('specialCategory')?.value;
-    const article9 = this.dcdForm.get('article9Condition')?.value;
+private checkSubmitDisallowedCondition(): void {
+  const specialCategory = this.dcdForm.get('specialCategory')?.value;
+  const article9 = this.dcdForm.get('article9Condition');
 
-    this.shouldDisableSubmit =
-      specialCategory !== SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA &&
-      article9 === Article9Condition.NOT_APPLICABLE;
+  const requiresArticle9 =
+    specialCategory !== SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA &&
+    article9?.value === Article9Condition.NOT_APPLICABLE;
+
+  this.shouldDisableSubmit = requiresArticle9;
+
+  // Set a custom validation error on the control
+  if (requiresArticle9) {
+    article9?.setErrors({ requiredForSpecialCategory: true });
+  } else {
+    article9?.setErrors(null);
+    article9?.updateValueAndValidity();
   }
+}
+
+  shouldHighlightArticle9(): boolean {
+  const specialCategory = this.dcdForm.get('specialCategory')?.value;
+  const article9 = this.dcdForm.get('article9Condition')?.value;
+
+  return (
+    specialCategory !== SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA &&
+    article9 === Article9Condition.NOT_APPLICABLE
+  );
+}
 }
