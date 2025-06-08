@@ -10,24 +10,23 @@ import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
 import com.sharedsystemshome.dsa.util.JpaLogUtils;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
-
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Entity(name = "DataFlow")
 @Table(name = "DATA_FLOW")
 @JsonInclude(Include.NON_NULL)
 @Valid
-public class DataFlow {
+public class DataFlow implements Owned, Referenceable{
 
     // Data Flow id and primary key
     @Id
@@ -121,14 +120,11 @@ public class DataFlow {
     @Enumerated(EnumType.STRING)
     private SpecialCategoryData specialCategory;
 
-    @JsonIncludeProperties({"id"})
-    @ManyToMany
-    @JoinTable(
-            name = "sharedDataContent",
-            joinColumns = @JoinColumn(name = "dfId"),
-            inverseJoinColumns = @JoinColumn(name = "dcdId", nullable = false)
-    )
-    private List<DataContentDefinition> providedDcds;
+    @OneToMany(
+            mappedBy = "dataFlow",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<SharedDataContent> associatedDataContent = new ArrayList<>();
 
     @JsonInclude
     public Boolean getIsPersonalData() {
@@ -156,7 +152,8 @@ public class DataFlow {
             LawfulBasis lawfulBasis,
             SpecialCategoryData specialCategory,
             String purposeOfSharing,
-            List<DataContentDefinition> providedDcds) {
+            List<DataContentDefinition> dataContent
+    ) {
         this.id = id;
         this.dataSharingAgreement = dataSharingAgreement;
         this.provider = provider;
@@ -166,7 +163,16 @@ public class DataFlow {
         this.lawfulBasis = lawfulBasis;
         this.specialCategory = specialCategory;
         this.purposeOfSharing = purposeOfSharing;
-        this.providedDcds = providedDcds;
+
+        this.associatedDataContent = new ArrayList<>();
+        if (dataContent != null) {
+            dataContent.forEach(dcd -> {
+                SharedDataContent association = new SharedDataContent(this, dcd);
+                this.associatedDataContent.add(association);
+                dcd.getAssociatedDataFlows().add(association); // Sync reverse side
+            });
+        }
+
         this.initialiseDefaultValues();
     }
 
@@ -188,9 +194,6 @@ public class DataFlow {
         if (null == this.specialCategory) {
             this.specialCategory = SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA;
         }
-        if (null == this.providedDcds) {
-            this.providedDcds = new ArrayList<>();
-        }
         if (null != this.provider) {
             this.provider.addProvidedDataFlow(this);
         }
@@ -205,27 +208,31 @@ public class DataFlow {
 
     public void addDataContentDefinition(DataContentDefinition dcd) {
 
-        int max = this.providedDcds.size();
-        boolean dcdExists = false;
-        Long partyId = dcd.getId();
+        boolean alreadyLinked = this.associatedDataContent.stream()
+                .anyMatch(assoc -> assoc.getDataContentDefinition().equals(dcd));
 
-        for (int i = 0; i < max; i++) {
-            if (partyId == this.providedDcds.get(i).getId()) {
-                dcdExists = true;
-            }
-        }
-
-        if (!dcdExists) {
-            this.providedDcds.add(dcd);
+        if (!alreadyLinked) {
+            this.associatedDataContent.add(new SharedDataContent(this, dcd));
         }
     }
+
 
     public void removeDataContentDefinition(DataContentDefinition dcd) {
+        Iterator<SharedDataContent> iterator = this.associatedDataContent.iterator();
+        while (iterator.hasNext()) {
+            SharedDataContent assoc = iterator.next();
+            if (assoc.getDataContentDefinition().equals(dcd)) {
+                // Break both references
+                assoc.setDataFlow(null);
+                assoc.setDataContentDefinition(null);
 
-        List<DataContentDefinition> updatedDcds = new ArrayList<>(this.providedDcds);
-        updatedDcds.remove(dcd);
-        this.providedDcds = updatedDcds;
+                // ✅ Remove from both collections
+                dcd.getAssociatedDataFlows().remove(assoc);  // remove from DCD side
+                iterator.remove();                           // remove from DF side
+            }
+        }
     }
+
 
     public String toJsonString() throws JsonProcessingException {
 
@@ -239,17 +246,50 @@ public class DataFlow {
     public String toString() {
         return "DataFlow{" +
                 "id=" + id +
-                ", dataSharingAgreement=" + dataSharingAgreement.getId() +
+                ", dataSharingAgreement=" + (null != dataSharingAgreement ? dataSharingAgreement.getId() : "null") +
                 ", purposeOfSharing='" + purposeOfSharing + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", provider=" + provider.getId() +
-                ", consumer=" + consumer.getId() +
+                ", provider=" + (null != provider ? provider.getId() : "null") +
+                ", consumer=" + (null != consumer ? consumer.getId() : "null") +
                 ", isPersonalData=" + isPersonalData +
                 ", lawfulBasis=" + lawfulBasis +
                 ", isSpecialCategoryData=" + isSpecialCategoryData +
                 ", specialCategory=" + specialCategory +
-                ", providedDcds=" + JpaLogUtils.getObjectIds(providedDcds, DataContentDefinition::getId) +
+                ", associatedDataContent=" + (null != associatedDataContent ?
+                JpaLogUtils.getObjectIds(associatedDataContent, SharedDataContent::getId) : "null") +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DataFlow other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    @Override
+    public Long ownerId() {
+        return this.dataSharingAgreement.getId();
+    }
+
+    @Override
+    public Long objectId() {
+        return this.getId();
+    }
+
+    @Override
+    public String entityName() {
+        return DataFlow.class.getSimpleName().replaceAll("([a-z])([A-Z])", "$1 $2");
+    }
+
+    @Override
+    public Boolean isReferenced() {
+        return this.associatedDataContent != null && !this.associatedDataContent.isEmpty();
     }
 }

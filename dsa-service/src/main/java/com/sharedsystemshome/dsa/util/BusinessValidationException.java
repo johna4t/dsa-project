@@ -12,6 +12,7 @@ public class BusinessValidationException extends RuntimeException {
     public static String ROLE = "Role";
     public static String TOKEN = "Token";
     public static String USER_LOGIN = "User Login";
+    public static String SHARED_DATA_CONTENT = "Shared Data Content";
 
     public BusinessValidationException(String message) {
         super(message);

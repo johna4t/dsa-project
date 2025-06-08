@@ -2,17 +2,17 @@ package com.sharedsystemshome.dsa.enums;
 
 public enum MetadataScheme {
 
-    GDPR(0);
+    GDPR("GDPR");
 
     // constructor
-    private MetadataScheme(int metadataScheme) {
+    private MetadataScheme(String metadataScheme) {
         this.metadataScheme = metadataScheme;
     }
 
     // internal state
-    private final int metadataScheme;
+    private final String metadataScheme;
 
-    public int getMetadataScheme() {
+    public String getMetadataScheme() {
         return this.metadataScheme;
     }
 }

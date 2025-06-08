@@ -8,6 +8,7 @@ import com.sharedsystemshome.dsa.security.model.Permission;
 import com.sharedsystemshome.dsa.security.model.Role;
 import com.sharedsystemshome.dsa.security.repository.PermissionRepository;
 import com.sharedsystemshome.dsa.security.repository.RoleRepository;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -374,7 +375,7 @@ class CustomerAccountRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov)
                 .consumer(cons)
-                .providedDcds(List.of(dcd))
+                .dataContent(List.of(dcd))
                 .build();
         this.dataFlowRepo.save(dataFlow);
 
@@ -433,14 +434,14 @@ class CustomerAccountRepositoryTest {
                 .dataSharingAgreement(dsa)
                 .provider(prov)
                 .consumer(cons)
-                .providedDcds(List.of(dcd))
+                .dataContent(List.of(dcd))
                 .build();
         this.dataFlowRepo.save(dataFlow);
 
         this.testSubject.deleteById(customer2.getId());
 
         //Then
-        Exception e1 = assertThrows(DataIntegrityViolationException.class, () -> {
+        Exception e1 = assertThrows(ConstraintViolationException.class, () -> {
             //When
             this.testSubject.count();
         });

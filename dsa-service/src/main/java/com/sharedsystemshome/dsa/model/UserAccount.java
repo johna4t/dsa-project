@@ -19,6 +19,7 @@ import jakarta.validation.constraints.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Entity(name = "UserAccount")
@@ -266,10 +267,23 @@ public class UserAccount implements UserDetails {
                 ", isAccountNonExpired=" + isAccountNonExpired +
                 ", isAccountNonLocked=" + isAccountNonLocked +
                 ", isCredentialsNonExpired=" + isCredentialsNonExpired +
-                ", parentAccount=" + parentAccount.getId() +
-                ", roles=" + JpaLogUtils.getObjectIds(roles, Role::getId) +
-                ", tokens=" + JpaLogUtils.getObjectIds(tokens, Token::getId) +
-                ", revokedTokens=" + JpaLogUtils.getObjectIds(revokedTokens, Token::getId) +
+                ", parentAccount=" + (null != parentAccount ? parentAccount.getId() : "null") +
+                ", roles=" + (null != roles ?
+                JpaLogUtils.getObjectIds(roles, Role::getId) : "null") +
+                ", tokens=" + (null != tokens ?
+                JpaLogUtils.getObjectIds(tokens, Token::getId) : "null") +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UserAccount other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

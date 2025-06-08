@@ -13,7 +13,7 @@ export class EnterCustomerDetailsComponent {
 
   customerDetails: CustomerAccount = new CustomerAccount();
 
-  readonly namesMinLength: number = 3;
+  readonly namesMinLength: number = 2;
   name = new FormControl('', [Validators.minLength(this.namesMinLength), Validators.required]);
 
   departmentName = new FormControl('', [Validators.minLength(this.namesMinLength), Validators.required]);

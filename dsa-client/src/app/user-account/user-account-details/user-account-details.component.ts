@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserAccount } from '../user-account';
 import { ActivatedRoute } from '@angular/router';
 import { UserAccountService } from '../user-account.service';
@@ -9,11 +9,11 @@ import { Router } from '@angular/router';
   templateUrl: './user-account-details.component.html',
   styleUrls: ['./user-account-details.component.css']
 })
-export class UserAccountDetailsComponent {
+export class UserAccountDetailsComponent implements OnInit {
 
-  id: number = 0;
+  id = 0;
   userAccount: UserAccount = new UserAccount();
-  rolesDisplay: string = ''; 
+  rolesDisplay = '';
   constructor(private route: ActivatedRoute,
     private userAccountService: UserAccountService,
     private router: Router) { }
@@ -24,10 +24,10 @@ export class UserAccountDetailsComponent {
     this.userAccountService.getUserAccountById(this.id).subscribe(
       data => {
         this.userAccount = data;
-        this.formatRoles(); 
+        this.formatRoles();
       },
       error => {
-        console.error('Error fetching user account:', error);
+        console.error('Error fetching user account: ', error);
       }
     )
   }

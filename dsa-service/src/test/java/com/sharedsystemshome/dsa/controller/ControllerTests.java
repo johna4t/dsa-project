@@ -1,7 +1,6 @@
 package com.sharedsystemshome.dsa.controller;
 
 import com.sharedsystemshome.dsa.security.controller.AuthenticationControllerTest;
-//import com.sharedsystemshome.dsa.security.controller.AuthorizationConfigTest;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 import org.junit.platform.suite.api.SuiteDisplayName;

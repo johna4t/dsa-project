@@ -2,26 +2,22 @@ package com.sharedsystemshome.dsa.enums;
 
 public enum LawfulBasis {
 
-    NOT_PERSONAL_DATA(0),
-    //Article 6 Conditions
-    CONSENT(10),
-    CONTRACT(20),
-    LEGAL_OBLIGATION(30),
-    VITAL_INTERESTS(40),
-    PUBLIC_TASK(50),
-    LEGITIMATE_INTERESTS(60),
-    SPECIAL_CATEGORY(70),
-    CRIMINAL_OFFENCE_DATA(80);
+    NOT_PERSONAL_DATA("N/A"),
+    CONSENT("Consent"),
+    CONTRACT("Performance of contract"),
+    LEGAL_OBLIGATION("Legal obligation"),
+    VITAL_INTERESTS("Public tasks"),
+    LEGITIMATE_INTERESTS("Legitimate interest");
 
     // constructor
-    private LawfulBasis(int lawfulBasis) {
+    private LawfulBasis(String lawfulBasis) {
         this.lawfulBasis = lawfulBasis;
     }
 
     // internal state
-    private int lawfulBasis;
+    private final String lawfulBasis;
 
-    public int getLawfulBasis() {
+    public String getLawfulBasis() {
         return this.lawfulBasis;
     }
 }

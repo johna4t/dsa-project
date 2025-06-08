@@ -1,9 +1,8 @@
-
 import { DataSharingParty } from '../data-sharing-party/data-sharing-party';
 import { DataContentPerspective } from '../data-content-perspective/data-content-perspective';
 
 export class DataContentDefinition {
-  id?: number;
+  id = 0;
   provider!: DataSharingParty;
   name = '';
   description?: string;
@@ -12,4 +11,6 @@ export class DataContentDefinition {
   perspectives: DataContentPerspective[] = [];
   ownerEmail = '';
   ownerName?: string;
+  sourceSystem = '';
+  isReferenced = false;
 }

@@ -1,17 +1,41 @@
-# Node
+# ========================
+# Angular (dsa-client)
+# ========================
 dsa-client/node_modules/
 dsa-client/dist/
 dsa-client/.angular/
 dsa-client/.env
+dsa-client/.output/
+dsa-client/tmp/
 
-# Java
+# ========================
+# Java (dsa-service)
+# ========================
 dsa-service/target/
 dsa-service/logs/
 dsa-service/bin/
+dsa-service/.classpath
+dsa-service/.project
+dsa-service/.settings/
 
-# System
-*.log
-.DS_Store
-*.iml
+# ========================
+# IDE and Editor Settings
+# ========================
 .idea/
 .vscode/
+*.iml
+
+# ========================
+# OS/System Files
+# ========================
+*.log
+.DS_Store
+Thumbs.db
+
+# ========================
+# Global Git ignores (optional if you're syncing with system-wide .gitignore)
+# ========================
+*.swp
+*.bak
+*~
+

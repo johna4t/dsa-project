@@ -4,6 +4,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { MatCardModule } from '@angular/material/card';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ExtractDomainPipe } from './extractDomain.pipe';
@@ -47,6 +48,9 @@ import { UpdateUserAccountComponent } from './user-account/update-user-account/u
 import { UserProfileDetailsComponent } from './user-profile/user-profile-details/user-profile-details.component';
 import { UpdateUserProfileComponent } from './user-profile/update-user-profile/update-user-profile.component';
 import { DataContentDefinitionListComponent } from './data-content-definition/data-content-definition-list/data-content-definition-list.component';
+import { CreateDataContentDefinitionComponent } from './data-content-definition/create-data-content-definition/create-data-content-definition.component';
+import { UpdateDataContentDefinitionComponent } from './data-content-definition/update-data-content-definition/update-data-content-definition.component';
+import { DataContentDefinitionDetailsComponent } from './data-content-definition/data-content-definition-details/data-content-definition-details.component';
 
 @NgModule({
   declarations: [
@@ -77,7 +81,10 @@ import { DataContentDefinitionListComponent } from './data-content-definition/da
     UpdateUserAccountComponent,
     UserProfileDetailsComponent,
     UpdateUserProfileComponent,
-    DataContentDefinitionListComponent
+    DataContentDefinitionListComponent,
+    CreateDataContentDefinitionComponent,
+    UpdateDataContentDefinitionComponent,
+    DataContentDefinitionDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -95,7 +102,8 @@ import { DataContentDefinitionListComponent } from './data-content-definition/da
     MatTableModule,
     MatDialogModule,
     MatSelectModule,
-    MatOptionModule
+    MatOptionModule,
+    MatCardModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

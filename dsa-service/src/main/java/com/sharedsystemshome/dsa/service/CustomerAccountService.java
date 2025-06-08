@@ -17,8 +17,6 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 import java.util.Objects;
 
-import static com.sharedsystemshome.dsa.util.BusinessValidationException.*;
-
 @Service
 @RequiredArgsConstructor
 @Validated

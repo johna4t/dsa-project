@@ -1,7 +1,9 @@
 package com.sharedsystemshome.dsa.service;
 
+import com.sharedsystemshome.dsa.enums.DataContentType;
+import com.sharedsystemshome.dsa.enums.LawfulBasis;
 import com.sharedsystemshome.dsa.enums.MetadataScheme;
-import com.sharedsystemshome.dsa.model.CustomerAccount;
+import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
 import com.sharedsystemshome.dsa.model.DataContentDefinition;
 import com.sharedsystemshome.dsa.model.DataContentPerspective;
 import com.sharedsystemshome.dsa.model.DataSharingParty;
@@ -10,6 +12,8 @@ import com.sharedsystemshome.dsa.repository.DataContentDefinitionRepository;
 import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
 import com.sharedsystemshome.dsa.util.BusinessValidationException;
 import com.sharedsystemshome.dsa.util.CustomValidator;
+import com.sharedsystemshome.dsa.util.EntityNotFoundException;
+import org.junit.Ignore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,7 +75,6 @@ class DataContentDefinitionServiceTest {
                 .name("Test DCD")
                 .provider(prov)
                 .build();
-//        prov.addDataContentDefinition(dcd);
 
         Long dcdId = 1L;
         DataContentDefinition savedDcd = DataContentDefinition.builder()
@@ -78,10 +82,8 @@ class DataContentDefinitionServiceTest {
                 .name("Test DCD")
                 .provider(prov)
                 .build();
-//        prov.addDataContentDefinition(dcd);
 
         when(this.dcdMockRepo.save(dcd)).thenReturn(savedDcd);
-
 
         Long result = dcdService.createDataContentDefinition(dcd);
 
@@ -161,37 +163,288 @@ class DataContentDefinitionServiceTest {
     public void testGetDataContentDefinitions() {
 
         List<DataContentDefinition> dcds = new ArrayList<>();
-        when(this.dcdMockRepo.findAll()).thenReturn(dcds);
+        when(this.dcdMockRepo.findByProviderId(anyLong())).thenReturn(dcds);
 
-        List<DataContentDefinition> result = this.dcdService.getDataContentDefinitions();
+        List<DataContentDefinition> result = this.dcdService.getDataContentDefinitions(anyLong());
 
         assertNotNull(result);
         assertEquals(dcds, result);
-        verify(this.dcdMockRepo, times(1)).findAll();
+        verify(this.dcdMockRepo, times(1)).findByProviderId(anyLong());
     }
 
     @Test
     public void testUpdateDataContentDefinition_WithValidData() {
 
         Long dcdId = 1L;
-        String newDesc = "New description";
+
+        String oldName = "Test DCD";
+        String oldDesc = "Old description";
+        DataContentType oldDataContentType = DataContentType.STRUCTURED_ELECTRONIC_DATA;
+        String oldOwnerName = "John Smith";
+        String oldOwnerEmail = "js@email.com";
+        Period oldRetention = Period.ofWeeks(6);
+        String oldSource = "System X";
+        DataContentPerspective dcp1 = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(
+                        Map.of(
+                                "lawfulBasis", "CONTRACT",
+                                        "specialCategory", "NOT_SPECIAL_CATEGORY_DATA"
+                        )
+                )
+                .build();
 
         DataContentDefinition dcd = DataContentDefinition.builder()
                 .id(dcdId)
-                .name("Test DCD")
-                .description("Old description")
+                .name(oldName)
+                .description(oldDesc)
+                .dataContentType(oldDataContentType)
+                .ownerName(oldOwnerName)
+                .ownerEmail(oldOwnerEmail)
+                .retentionPeriod(oldRetention)
+                .sourceSystem(oldSource)
+                .perspectives(List.of(dcp1))
+                .build();
+
+        when(this.dcdMockRepo.findById(dcdId)).thenReturn(Optional.of(dcd));
+
+        String newName = "New Test DCD";
+        String newDesc = "New description";
+        DataContentType newDataContentType = DataContentType.OTHER_MEDIUM;
+        String newOwnerName = "Jane Brown";
+        String newOwnerEmail = "jb@email.com";
+        Period newRetention = Period.ofMonths(7);
+        String newSource = "System Y";
+        DataContentPerspective dcp2 = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(
+                        Map.of(
+                                "lawfulBasis", LawfulBasis.LEGAL_OBLIGATION,
+                                "specialCategory", SpecialCategoryData.GENETIC
+                        )
+                )
+                .build();
+
+        this.dcdService.updateDataContentDefinition(
+                dcdId,
+                newName, // name
+                newDesc, // description
+                newDataContentType,
+                newOwnerName,
+                newOwnerEmail, // ownerName
+                newRetention,
+                newSource, // Source system
+                List.of(dcp2)
+        );
+
+        assertEquals(newName, dcd.getName());
+        assertEquals(newDesc, dcd.getDescription());
+        assertEquals(newDataContentType, dcd.getDataContentType());
+        assertEquals(newOwnerName, dcd.getOwnerName());
+        assertEquals(newOwnerEmail, dcd.getOwnerEmail());
+        assertEquals(newSource, dcd.getSourceSystem());
+        assertEquals(MetadataScheme.GDPR, dcd.getPerspectives().get(0).getMetadataScheme());
+        assertEquals(LawfulBasis.LEGAL_OBLIGATION, dcd.getPerspectives().get(0).getMetadata().get("lawfulBasis"));
+        assertEquals(SpecialCategoryData.GENETIC, dcd.getPerspectives().get(0).getMetadata().get("specialCategory"));
+        verify(this.dcdMockRepo, times(1)).findById(dcdId);
+        verify(this.dspMockRepo, times(0)).findById(anyLong());
+    }
+
+    @Test
+    public void testUpdateDataContentDefinition_WithNoChange() {
+
+        Long dcdId = 1L;
+
+        String oldName = "Test DCD";
+        String oldDesc = "Old description";
+        DataContentType oldDataContentType = DataContentType.STRUCTURED_ELECTRONIC_DATA;
+        String oldOwnerName = "John Smith";
+        String oldOwnerEmail = "js@email.com";
+        Period oldRetention = Period.ofWeeks(6);
+        String oldSource = "System X";
+        DataContentPerspective dcp1 = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(
+                        Map.of(
+                                "lawfulBasis", LawfulBasis.CONTRACT,
+                                "specialCategory", SpecialCategoryData.GENETIC
+                        )
+                )
+                .build();
+
+        DataContentDefinition dcd = DataContentDefinition.builder()
+                .id(dcdId)
+                .name(oldName)
+                .description(oldDesc)
+                .dataContentType(oldDataContentType)
+                .ownerName(oldOwnerName)
+                .ownerEmail(oldOwnerEmail)
+                .retentionPeriod(oldRetention)
+                .sourceSystem(oldSource)
+                .perspectives(List.of(dcp1))
                 .build();
 
         when(this.dcdMockRepo.findById(dcdId)).thenReturn(Optional.of(dcd));
 
         this.dcdService.updateDataContentDefinition(
                 dcdId,
-                null,
-                newDesc,
-                null
+                oldName, // name
+                oldDesc, // description
+                oldDataContentType,
+                oldOwnerName,
+                oldOwnerEmail, // ownerName
+                oldRetention,
+                oldSource, // Source system
+                List.of(dcp1)
         );
 
+        assertEquals(oldName, dcd.getName());
+        assertEquals(oldDesc, dcd.getDescription());
+        assertEquals(oldDataContentType, dcd.getDataContentType());
+        assertEquals(oldOwnerName, dcd.getOwnerName());
+        assertEquals(oldOwnerEmail, dcd.getOwnerEmail());
+        assertEquals(oldSource, dcd.getSourceSystem());
+        assertEquals(MetadataScheme.GDPR, dcd.getPerspectives().get(0).getMetadataScheme());
+        assertEquals(LawfulBasis.CONTRACT, dcd.getPerspectives().get(0).getMetadata().get("lawfulBasis"));
+        assertEquals(SpecialCategoryData.GENETIC, dcd.getPerspectives().get(0).getMetadata().get("specialCategory"));
+        verify(this.dcdMockRepo, times(1)).findById(dcdId);
+        verify(this.dspMockRepo, times(0)).findById(anyLong());
+    }
+
+    @Test
+    public void testUpdateDataContentDefinition_WithEmptyString() {
+
+        Long dcdId = 1L;
+
+        String oldName = "Test DCD";
+        String oldDesc = "Old description";
+        DataContentType oldDataContentType = DataContentType.STRUCTURED_ELECTRONIC_DATA;
+        String oldOwnerName = "John Smith";
+        String oldOwnerEmail = "js@email.com";
+        Period oldRetention = Period.ofWeeks(6);
+        String oldSource = "System X";
+        DataContentPerspective dcp1 = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(
+                        Map.of(
+                                "lawfulBasis", "CONTRACT",
+                                "specialCategory", "NOT_SPECIAL_CATEGORY_DATA"
+                        )
+                )
+                .build();
+
+        DataContentDefinition dcd = DataContentDefinition.builder()
+                .id(dcdId)
+                .name(oldName)
+                .description(oldDesc)
+                .dataContentType(oldDataContentType)
+                .ownerName(oldOwnerName)
+                .ownerEmail(oldOwnerEmail)
+                .retentionPeriod(oldRetention)
+                .sourceSystem(oldSource)
+                .perspectives(List.of(dcp1))
+                .build();
+
+        when(this.dcdMockRepo.findById(dcdId)).thenReturn(Optional.of(dcd));
+
+        String newName = "";
+        String newDesc = "";
+        DataContentType newDataContentType = DataContentType.OTHER_MEDIUM;
+        String newOwnerName = "";
+        String newOwnerEmail = "";
+        Period newRetention = Period.ofMonths(7);
+        String newSource = "";
+        DataContentPerspective dcp2 = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(
+                        Map.of(
+                                "lawfulBasis", LawfulBasis.LEGAL_OBLIGATION,
+                                "specialCategory", SpecialCategoryData.GENETIC
+                        )
+                )
+                .build();
+
+        this.dcdService.updateDataContentDefinition(
+                dcdId,
+                newName, // name
+                newDesc, // description
+                newDataContentType,
+                newOwnerName,
+                newOwnerEmail, // ownerName
+                newRetention,
+                newSource, // Source system
+                List.of(dcp2)
+        );
+
+        assertEquals(oldName, dcd.getName());
         assertEquals(newDesc, dcd.getDescription());
+        assertEquals(newDataContentType, dcd.getDataContentType());
+        assertEquals(newOwnerName, dcd.getOwnerName());
+        assertEquals(oldOwnerEmail, dcd.getOwnerEmail());
+        assertEquals(newSource, dcd.getSourceSystem());
+        assertEquals(MetadataScheme.GDPR, dcd.getPerspectives().get(0).getMetadataScheme());
+        assertEquals(LawfulBasis.LEGAL_OBLIGATION, dcd.getPerspectives().get(0).getMetadata().get("lawfulBasis"));
+        assertEquals(SpecialCategoryData.GENETIC, dcd.getPerspectives().get(0).getMetadata().get("specialCategory"));
+        verify(this.dcdMockRepo, times(1)).findById(dcdId);
+        verify(this.dspMockRepo, times(0)).findById(anyLong());
+    }
+    @Test
+    public void testUpdateDataContentDefinition_WithNullData() {
+
+        Long dcdId = 1L;
+
+        String oldName = "Test DCD";
+        String oldDesc = "Old description";
+        DataContentType oldDataContentType = DataContentType.STRUCTURED_ELECTRONIC_DATA;
+        String oldOwnerName = "John Smith";
+        String oldOwnerEmail = "js@email.com";
+        Period oldRetention = Period.ofWeeks(6);
+        String oldSource = "System X";
+        DataContentPerspective dcp1 = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(
+                        Map.of(
+                                "lawfulBasis", LawfulBasis.CONTRACT,
+                                "specialCategory", SpecialCategoryData.GENETIC
+                        )
+                )
+                .build();
+
+        DataContentDefinition dcd = DataContentDefinition.builder()
+                .id(dcdId)
+                .name(oldName)
+                .description(oldDesc)
+                .dataContentType(oldDataContentType)
+                .ownerName(oldOwnerName)
+                .ownerEmail(oldOwnerEmail)
+                .retentionPeriod(oldRetention)
+                .sourceSystem(oldSource)
+                .perspectives(List.of(dcp1))
+                .build();
+
+        when(this.dcdMockRepo.findById(dcdId)).thenReturn(Optional.of(dcd));
+
+        this.dcdService.updateDataContentDefinition(
+                dcdId,
+                null, // name
+                null, // description
+                null,
+                null,
+                null, // ownerName
+                null,
+                null, // Source system
+                new ArrayList<>()
+        );
+
+        assertEquals(oldName, dcd.getName());
+        assertEquals(oldDesc, dcd.getDescription());
+        assertEquals(oldDataContentType, dcd.getDataContentType());
+        assertEquals(oldOwnerName, dcd.getOwnerName());
+        assertEquals(oldOwnerEmail, dcd.getOwnerEmail());
+        assertEquals(oldSource, dcd.getSourceSystem());
+        assertEquals(MetadataScheme.GDPR, dcd.getPerspectives().get(0).getMetadataScheme());
+        assertEquals(LawfulBasis.CONTRACT, dcd.getPerspectives().get(0).getMetadata().get("lawfulBasis"));
+        assertEquals(SpecialCategoryData.GENETIC, dcd.getPerspectives().get(0).getMetadata().get("specialCategory"));
         verify(this.dcdMockRepo, times(1)).findById(dcdId);
         verify(this.dspMockRepo, times(0)).findById(anyLong());
     }
@@ -210,43 +463,21 @@ class DataContentDefinitionServiceTest {
 
         when(this.dcdMockRepo.findById(dcdId)).thenReturn(Optional.empty());
 
-        Exception e = assertThrows(BusinessValidationException.class,
+        Exception e = assertThrows(EntityNotFoundException.class,
                 () -> this.dcdService.updateDataContentDefinition(
                         dcdId,
                         null,
                         newDesc,
-                        null/*,
-                        null*/
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        new ArrayList<>()
+
                 ));
 
         assertEquals("Data Content Definition with id = " + dcdId + " not found.", e.getMessage());
-
-        verify(this.dcdMockRepo, times(1)).findById(dcdId);
-        verify(this.dspMockRepo, times(0)).findById(anyLong());
-    }
-
-    @Test
-    public void testUpdateDataContentDefinition_WithSameData() {
-
-        Long dcdId = 1L;
-        String newDesc = "Old description";
-
-        DataContentDefinition dcd = DataContentDefinition.builder()
-                .id(dcdId)
-                .name("Test DCD")
-                .description("Old description")
-                .build();
-
-        when(this.dcdMockRepo.findById(dcdId)).thenReturn(Optional.of(dcd));
-
-        this.dcdService.updateDataContentDefinition(
-                dcdId,
-                null,
-                newDesc,
-                null
-        );
-
-        assertEquals(newDesc, dcd.getDescription());
 
         verify(this.dcdMockRepo, times(1)).findById(dcdId);
         verify(this.dspMockRepo, times(0)).findById(anyLong());
@@ -378,6 +609,73 @@ class DataContentDefinitionServiceTest {
         assertEquals(42L, id);
     }
 
+
+    @Test
+    void testFindDataContentDefinitions() {
+        Long dspId = 1L;
+
+        DataSharingParty dsp = DataSharingParty.builder()
+                .id(dspId)
+                .description("Service Test DSP")
+                .build();
+
+        DataContentDefinition dcd1 = DataContentDefinition.builder()
+                .name("Service DCD with GDPR")
+                .provider(dsp)
+                .build();
+
+        DataContentPerspective dcp1 = new DataContentPerspective();
+        dcp1.setMetadataScheme(MetadataScheme.GDPR);
+        dcp1.setMetadata(Map.of(
+                "lawfulBasis", LawfulBasis.NOT_PERSONAL_DATA,
+                "specialCategory", SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA
+        ));
+        dcd1.addPerspective(dcp1);
+
+
+        DataContentDefinition dcd2 = DataContentDefinition.builder()
+                .name("Service DCD with GDPR")
+                .provider(dsp)
+                .build();
+
+        DataContentPerspective dcp2 = new DataContentPerspective();
+        dcp2.setMetadataScheme(MetadataScheme.GDPR);
+        dcp2.setMetadata(Map.of(
+                "lawfulBasis", LawfulBasis.CONTRACT,
+                "specialCategory", SpecialCategoryData.POLITICAL
+        ));
+        dcd2.addPerspective(dcp2);
+
+        List<DataContentDefinition> dcds = List.of(dcd1, dcd2);
+        when(this.dcdMockRepo.findByProviderId(dspId)).thenReturn(dcds);
+
+        // When: the controller method is called
+        List<DataContentDefinition> result = dcdService.getDataContentDefinitions(dspId);
+
+        // Then expect...
+        assertEquals(2, result.size(), "Method returns two dcds");
+
+        verify(this.dcdMockRepo, times(1)).findByProviderId(dspId);
+
+    }
+
+    @Test
+    void testFindDataContentDefinitionsWithNullDcds() {
+
+        // Given: DCDs returned is null
+        List<DataContentDefinition> dcds = null;
+        Long dspId = 1L;
+
+        // When: the controller method is called
+        when(this.dcdMockRepo.findByProviderId(dspId)).thenReturn(dcds);
+        List<DataContentDefinition> result = dcdService.getDataContentDefinitions(dspId);
+
+        // Then expect...
+        assertEquals(0, result.size(), "Method returns zero DCDs");
+
+        verify(this.dcdMockRepo, times(1)).findByProviderId(dspId);
+
+    }
 
 
 }

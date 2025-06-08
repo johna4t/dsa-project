@@ -12,6 +12,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 //@Data
 @Entity(name = "DataSharingParty")
@@ -195,10 +196,25 @@ public class DataSharingParty {
         return "DataSharingParty{" +
                 "id=" + id +
                 ", description='" + description + '\'' +
-                ", providerDcds=" + JpaLogUtils.getObjectIds(providerDcds, DataContentDefinition::getId) +
-                ", providedDataFlows=" + JpaLogUtils.getObjectIds(providedDataFlows, DataFlow::getId) +
-                ", consumedDataFlows=" + JpaLogUtils.getObjectIds(consumedDataFlows, DataFlow::getId) +
-                ", account=" + account.getId() +
+                ", providerDcds=" + (null != providerDcds ?
+                JpaLogUtils.getObjectIds(providerDcds, DataContentDefinition::getId) : "null") +
+                ", providedDataFlows=" + (null != providedDataFlows ?
+                JpaLogUtils.getObjectIds(providedDataFlows, DataFlow::getId) : "null") +
+                ", consumedDataFlows=" + (null != consumedDataFlows ?
+                JpaLogUtils.getObjectIds(consumedDataFlows, DataFlow::getId) : "null") +
+                ", account=" + (null != account ? account.getId() : "null") +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DataSharingParty other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

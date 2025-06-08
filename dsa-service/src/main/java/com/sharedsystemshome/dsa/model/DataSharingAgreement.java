@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Entity(name = "DataSharingAgreement")
@@ -156,11 +157,22 @@ public class DataSharingAgreement {
                 ", controllerRelationship=" + controllerRelationship +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
-                ", dataFlows=" + JpaLogUtils.getObjectIds(dataFlows, DataFlow::getId) +
-                ", accountHolder=" + accountHolder.getId() +
+                ", dataFlows=" + (null != dataFlows ?
+                JpaLogUtils.getObjectIds(dataFlows, DataFlow::getId) : "null") +
+                ", accountHolder=" + (null != accountHolder ? accountHolder.getId() : "null") +
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DataSharingAgreement other)) return false;
+        return id != null && id.equals(other.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }
 

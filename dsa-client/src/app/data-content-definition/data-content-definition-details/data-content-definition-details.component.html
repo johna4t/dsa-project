@@ -1,0 +1,88 @@
+<div class="container" mt-5>
+  <div *ngIf="dcd">
+    <form>
+      <h2>Data asset details: {{ dcd.name }}</h2>
+
+      <!-- Main form section -->
+      <div class="card p-2">
+        <!-- Name (Readonly) -->
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Name</mat-label>
+          <input matInput [value]="dcd.name" readonly />
+        </mat-form-field>
+
+        <!-- Description (Readonly) -->
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Description</mat-label>
+          <input matInput [value]="dcd.description" readonly />
+        </mat-form-field>
+
+        <!-- Source system (Readonly) -->
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Source system</mat-label>
+          <input matInput [value]="dcd.sourceSystem" readonly />
+        </mat-form-field>
+
+        <!-- Data content type (Readonly) -->
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Content type</mat-label>
+          <input matInput [value]="getDataContentTypeLabel()" readonly />
+        </mat-form-field>
+
+        <!-- Owner email (Readonly) -->
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Owner email</mat-label>
+          <input matInput [value]="dcd.ownerEmail" readonly />
+        </mat-form-field>
+
+        <!-- Owner name (Readonly) -->
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Owner name</mat-label>
+          <input matInput [value]="dcd.ownerName" readonly />
+        </mat-form-field>
+
+        <!-- Retention period (Readonly) -->
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Retention period</mat-label>
+          <input matInput [value]="getFormattedRetentionPeriod()" readonly />
+        </mat-form-field>
+      </div>
+
+      <!-- GDPR Perspective section -->
+      <div *ngIf="dcd?.perspectives?.length" class="card p-2 mt-3">
+        <h3>GDPR Perspective</h3>
+        <h4>Applicable to personal data only.</h4>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Lawful basis for processing</mat-label>
+          <input matInput [value]="getLawfulBasisLabel()" readonly />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Special category</mat-label>
+          <input matInput [value]="getSpecialCategoryLabel()" readonly />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-100">
+          <mat-label>Article 9 condition</mat-label>
+          <input matInput [value]="getArticle9ConditionLabel()" readonly />
+        </mat-form-field>
+      </div>
+
+      <!-- Buttons section -->
+      <div class="mt-3" align="right">
+        <button mat-flat-button color="primary" (click)="updateDataContentDefinition(dcd.id)">
+          Edit
+        </button>
+        <button
+          mat-flat-button
+          color="accent"
+          style="margin: 5px"
+          routerLink="/data-content-definitions"
+        >
+          Back
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

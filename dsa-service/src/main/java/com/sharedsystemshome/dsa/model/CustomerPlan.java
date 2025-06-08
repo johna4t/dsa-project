@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 @Data
@@ -73,6 +74,18 @@ public class CustomerPlan {
                 ", maxUsers=" + maxUsers +
                 ", maxPartners=" + maxPartners +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CustomerPlan other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
 }

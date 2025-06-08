@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sharedsystemshome.dsa.datatype.Address;
+import com.sharedsystemshome.dsa.enums.Article9Condition;
 import com.sharedsystemshome.dsa.enums.MetadataScheme;
 import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
 import com.sharedsystemshome.dsa.model.*;
@@ -227,7 +228,10 @@ public class ApplicationConfig {
                 .metadataScheme(MetadataScheme.GDPR)
                 .metadata(Map.of(
                         "lawfulBasis", LawfulBasis.CONSENT.name(),
-                        "specialCategory", SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA.name()))
+                        "specialCategory", SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA.name(),
+                        "article9Condition", Article9Condition.NOT_APPLICABLE.name()
+                        )
+                )
                 .dataContentDefinition(this.dcds.get("dcdA"))
                 .build();
 
@@ -235,7 +239,10 @@ public class ApplicationConfig {
                 .metadataScheme(MetadataScheme.GDPR)
                 .metadata(Map.of(
                         "lawfulBasis", LawfulBasis.CONTRACT.name(),
-                        "specialCategory", SpecialCategoryData.HEALTH.name()))
+                        "specialCategory", SpecialCategoryData.HEALTH.name(),
+                        "article9Condition", Article9Condition.PUBLIC_HEALTH.name()
+                    )
+                )
                 .dataContentDefinition(this.dcds.get("dcdB"))
                 .build();
 
@@ -243,16 +250,22 @@ public class ApplicationConfig {
                 .metadataScheme(MetadataScheme.GDPR)
                 .metadata(Map.of(
                         "lawfulBasis", LawfulBasis.LEGITIMATE_INTERESTS.name(),
-                        "specialCategory", SpecialCategoryData.POLITICAL.name()))
-                .dataContentDefinition(this.dcds.get("dcdB"))
+                        "specialCategory", SpecialCategoryData.POLITICAL.name(),
+                        "article9Condition", Article9Condition.VITAL_INTERESTS.name()
+                        )
+                )
+                .dataContentDefinition(this.dcds.get("dcdC"))
                 .build();
 
         DataContentPerspective dcp99 = DataContentPerspective.builder()
                 .metadataScheme(MetadataScheme.GDPR)
                 .metadata(Map.of(
                         "lawfulBasis", LawfulBasis.NOT_PERSONAL_DATA.name(),
-                        "specialCategory", SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA.name()))
-                .dataContentDefinition(this.dcds.get("dcdB"))
+                        "specialCategory", SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA.name(),
+                        "article9Condition", Article9Condition.NOT_APPLICABLE.name()
+                        )
+                )
+                .dataContentDefinition(this.dcds.get("dcd99"))
                 .build();
 
         dcpRepo.saveAll(List.of(dcpA, dcpB, dcpC, dcp99));
@@ -353,7 +366,7 @@ public class ApplicationConfig {
                 .provider(this.dsps.get("dspA"))
                 .consumer(this.dsps.get("dspB"))
                 .lawfulBasis(LawfulBasis.CONSENT)
-                .providedDcds(List.of(this.dcds.get("dcdA")))
+                .dataContent(List.of(this.dcds.get("dcdA")))
                 .build();
 
         DataFlow dataFlowB = DataFlow.builder()
@@ -361,7 +374,7 @@ public class ApplicationConfig {
                 .dataSharingAgreement(this.dsas.get("dsaB"))
                 .provider(this.dsps.get("dspC"))
                 .consumer(this.dsps.get("dspB"))
-                .providedDcds(List.of(this.dcds.get("dcdC")))
+                .dataContent(List.of(this.dcds.get("dcdC")))
                 .build();
 
         DataFlow dataFlowC = DataFlow.builder()
@@ -369,7 +382,7 @@ public class ApplicationConfig {
                 .dataSharingAgreement(this.dsas.get("dsaC"))
                 .provider(this.dsps.get("dspC"))
                 .consumer(this.dsps.get("dspA"))
-                .providedDcds(List.of(this.dcds.get("dcdC")))
+                .dataContent(List.of(this.dcds.get("dcdC")))
                 .build();
 
         dfRepo.saveAll(List.of(dataFlowA, dataFlowB, dataFlowC));

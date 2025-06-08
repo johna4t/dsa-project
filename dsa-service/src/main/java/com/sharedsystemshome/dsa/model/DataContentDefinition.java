@@ -2,34 +2,32 @@ package com.sharedsystemshome.dsa.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharedsystemshome.dsa.enums.DataContentType;
 import com.sharedsystemshome.dsa.enums.MetadataScheme;
 import com.sharedsystemshome.dsa.util.JpaLogUtils;
-import com.sharedsystemshome.dsa.util.conversion.DurationStringConverter;
 import com.sharedsystemshome.dsa.util.conversion.PeriodStringConverter;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.Duration;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Function;
 
 @Data
 @Entity(name = "DataContentDefinition")
 @Table(name = "DATA_CONTENT_DEFINITION")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Valid
-public class DataContentDefinition {
+public class DataContentDefinition implements Referenceable, Owned {
 
     // DCD id and primary key
     @Id
@@ -80,7 +78,7 @@ public class DataContentDefinition {
     @Convert(converter = PeriodStringConverter.class)
     private Period retentionPeriod;
 
-    @JsonIncludeProperties({"id"})
+//    @JsonIncludeProperties({"id"})
     @OneToMany(mappedBy = "dataContentDefinition", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DataContentPerspective> perspectives;
 
@@ -88,15 +86,25 @@ public class DataContentDefinition {
             columnDefinition = "TEXT")
     private String ownerName;
 
+    @NotBlank(message = "Data Content Definition owner email null or empty.")
     @Column(name = "OWNER_EMAIL",
             columnDefinition = "TEXT",
             nullable = false)
     private String ownerEmail;
 
+    @NotBlank(message = "Data Content Definition source system null or empty.")
     @Column(name = "SOURCE_SYSTEM",
             columnDefinition = "TEXT",
             nullable = false)
     private String sourceSystem;
+
+    @JsonIncludeProperties({"id"})
+    @OneToMany(
+            mappedBy = "dataContentDefinition",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<SharedDataContent> associatedDataFlows = new ArrayList<>();
 
     @Builder
     public DataContentDefinition(
@@ -168,16 +176,53 @@ public class DataContentDefinition {
     public String toString() {
         return "DataContentDefinition{" +
                 "id=" + id +
-                ", provider=" + provider +
+                ", provider=" + (null != provider ? provider.getId() : "null") +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", dataContentType=" + dataContentType +
                 ", retentionPeriod=" + retentionPeriod +
-                ", perspectives=" + JpaLogUtils.getObjectIds(perspectives, DataContentPerspective::getId) +
+                ", perspectives=" + (null != perspectives ?
+                JpaLogUtils.getObjectIds(perspectives, DataContentPerspective::getId) : "null") +
                 ", ownerName='" + ownerName + '\'' +
                 ", ownerEmail='" + ownerEmail + '\'' +
                 ", sourceSystem='" + sourceSystem + '\'' +
+                ", associatedDataFlows=" + (null != associatedDataFlows ?
+                JpaLogUtils.getObjectIds(associatedDataFlows, SharedDataContent::getId) : "null") +
                 '}';
     }
 
+    @Transient
+    @Override
+    @JsonProperty("isReferenced")
+    public Boolean isReferenced() {
+        return this.associatedDataFlows != null && !this.associatedDataFlows.isEmpty();
+    }
+
+    @Override
+    public Long ownerId() {
+        return this.provider.getId();
+    }
+
+    @Override
+    public Long objectId() {
+        return this.getId();
+    }
+
+    @Override
+    public String entityName() {
+
+        return DataContentDefinition.class.getSimpleName().replaceAll("([a-z])([A-Z])", "$1 $2");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DataContentDefinition other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 import java.util.Objects;
 
-import static com.sharedsystemshome.dsa.util.BusinessValidationException.*;
-
-
 @Service
 @RequiredArgsConstructor
 @Validated
