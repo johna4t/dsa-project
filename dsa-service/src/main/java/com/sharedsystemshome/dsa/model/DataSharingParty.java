@@ -42,6 +42,16 @@ public class DataSharingParty {
     private List<DataContentDefinition> providerDcds;
 
     @JsonIgnore
+    @Setter(AccessLevel.NONE)
+    @OneToMany(
+            mappedBy = "controller",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
+    private List<DataProcessor> processors;
+
+    @JsonIgnore
 //    @JsonIncludeProperties({"id"})
     @Setter(AccessLevel.NONE)
     @OneToMany(
@@ -76,7 +86,8 @@ public class DataSharingParty {
 //                            CustomerAccount account,
                             String description,
                             List<DataFlow> providedDataFlows,
-                            List<DataFlow> consumedDataFlows
+                            List<DataFlow> consumedDataFlows,
+                            List<DataProcessor> processors
     ) {
         this.id = id;
         // Set owning entity
@@ -85,6 +96,7 @@ public class DataSharingParty {
         this.description = description;
         this.providedDataFlows = providedDataFlows;
         this.consumedDataFlows = consumedDataFlows;
+        this.processors = processors;
         this.initialiseDefaultValues();
     }
 
@@ -97,6 +109,7 @@ public class DataSharingParty {
         this.providerDcds = new ArrayList<DataContentDefinition>();
         this.providedDataFlows = new ArrayList<DataFlow>();
         this.consumedDataFlows = new ArrayList<DataFlow>();
+        this.processors = new ArrayList<DataProcessor>();
     }
 
     public void addProvidedDataFlow(DataFlow dataFlow) {
@@ -117,6 +130,16 @@ public class DataSharingParty {
     public void deleteDataContentDefinition(DataContentDefinition dcd) {
         this.providerDcds.remove(dcd);
         dcd.setProvider(null);
+    }
+
+    public void addDataProcessor(DataProcessor processor){
+        this.processors.add(processor);
+        processor.setController(this);
+    }
+
+    public void deleteDataProcessor(DataProcessor processor) {
+        this.processors.remove(processor);
+        processor.setController(null);
     }
 
     public String toJsonString() throws JsonProcessingException {
@@ -203,6 +226,8 @@ public class DataSharingParty {
                 ", consumedDataFlows=" + (null != consumedDataFlows ?
                 JpaLogUtils.getObjectIds(consumedDataFlows, DataFlow::getId) : "null") +
                 ", account=" + (null != account ? account.getId() : "null") +
+                ", processors=" + (null != processors ?
+                JpaLogUtils.getObjectIds(processors, DataProcessor::getId) : "null") +
                 '}';
     }
 

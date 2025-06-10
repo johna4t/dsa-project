@@ -106,6 +106,14 @@ public class DataContentDefinition implements Referenceable, Owned {
     )
     private List<SharedDataContent> associatedDataFlows = new ArrayList<>();
 
+    @JsonIncludeProperties({"id"})
+    @OneToMany(
+            mappedBy = "dataContentDefinition",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<DataProcessingActivity> associatedDataProcessing = new ArrayList<>();
+
     @Builder
     public DataContentDefinition(
             Long id,

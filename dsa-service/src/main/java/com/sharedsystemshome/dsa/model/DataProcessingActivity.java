@@ -1,46 +1,49 @@
 package com.sharedsystemshome.dsa.model;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.sharedsystemshome.dsa.enums.MetadataScheme;
+import com.sharedsystemshome.dsa.util.BusinessValidationException;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
+import static com.sharedsystemshome.dsa.util.BusinessValidationException.DATA_CONTENT_PERSPECTIVE;
+
 @Data
 @Entity
-@Table( name = "shared_data_content",
+@Table( name = "data_processing_activity",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"dataFlowId", "dcdId"}
                 )
         })
 @NoArgsConstructor
-public class SharedDataContent {
+public class DataProcessingActivity {
 
     @Id
     @SequenceGenerator(
-            name = "shareddatacontent_sequence",
-            sequenceName = "shareddatacontent_sequence",
+            name = "data_processing_activity_sequence",
+            sequenceName = "data_processing_activity_sequence",
             allocationSize = 1,
-            initialValue = 110000001
+            initialValue = 115000001
     )
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "shareddatacontent_sequence"
+            generator = "data_processing_activity_sequence"
 
     )
     private Long id;
 
-    // Many-to-One with DataFlow (cascade delete allowed)
+    // Many-to-One with DataProcessor (cascade delete allowed)
     @JsonIncludeProperties({"id"})
     @ManyToOne(optional = false)
     @JoinColumn(
-            name = "dataFlowId",
+            name = "processorId",
             referencedColumnName = "id",
             nullable = false)
-    private DataFlow dataFlow;
+    private DataProcessor dataProcessor;
 
     // Many-to-One with DataContentDefinition (deletion blocked if referenced)
     @JsonIncludeProperties({"id"})
@@ -52,10 +55,10 @@ public class SharedDataContent {
     private DataContentDefinition dataContentDefinition;
 
     @Builder
-    public SharedDataContent(
-            DataFlow dataFlow,
+    public DataProcessingActivity(
+            DataProcessor dataProcessor,
             DataContentDefinition dataContentDefinition) {
-        this.dataFlow = dataFlow;
+        this.dataProcessor = dataProcessor;
         this.dataContentDefinition = dataContentDefinition;
     }
 
@@ -63,7 +66,7 @@ public class SharedDataContent {
     public String toString() {
         return "SharedDataContent{" +
                 "id=" + id +
-                ", dataFlow=" + (null != dataFlow ? dataFlow.getId() : "null") +
+                ", dataProcessor=" + (null != dataProcessor ? dataProcessor.getId() : "null") +
                 ", dataContentDefinition=" + (null != dataContentDefinition ? dataContentDefinition.getId() : "null") +
                 '}';
     }
@@ -71,7 +74,7 @@ public class SharedDataContent {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SharedDataContent other)) return false;
+        if (!(o instanceof DataProcessingActivity other)) return false;
         return id != null && id.equals(other.id);
     }
 
