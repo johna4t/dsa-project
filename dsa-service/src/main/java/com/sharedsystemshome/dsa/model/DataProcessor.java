@@ -68,17 +68,14 @@ public class DataProcessor implements Referenceable, Owned {
             columnDefinition = "TEXT")
     private String website;
 
+
     @JsonIncludeProperties({"id", "name"})
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "data_processor_accreditation",
-            joinColumns = @JoinColumn(
-                    name = "user_id"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "accreditation_id",
-                    nullable = false)
-    )
+    @OneToMany(
+            mappedBy = "dataProcessor",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<DataProcessorAccreditation> accreditations;
+
 
     @JsonIncludeProperties({"id"})
     @OneToMany(
@@ -86,8 +83,9 @@ public class DataProcessor implements Referenceable, Owned {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<DataProcessingActivity> associatedDataContent = new ArrayList<>();
+    private List<DataProcessingActivity> associatedDataContent;
 
+    @Builder
     public DataProcessor(Long id,
                          DataSharingParty controller,
                          String name,
@@ -119,13 +117,31 @@ public class DataProcessor implements Referenceable, Owned {
 
         if(null == this.accreditations) {
             this.accreditations = new ArrayList<>();
-            this.accreditations.add(DataProcessorAccreditation.builder().build());
+        }
+
+        this.accreditations.forEach(a -> a.setDataProcessor(this));
+
+        if(null == this.associatedDataContent) {
+            this.associatedDataContent = new ArrayList<>();
         }
 
         if(null != this.controller){
             this.controller.addDataProcessor(this);
         }
 
+    }
+
+    public void addAccreditation(DataProcessorAccreditation accreditation) {
+        if (accreditation != null) {
+            accreditation.setDataProcessor(this);  // Ensure the owning side is set
+            this.accreditations.add(accreditation);
+        }
+    }
+
+    public void removeAccreditation(DataProcessorAccreditation accreditation) {
+        if (accreditation != null && this.accreditations.remove(accreditation)) {
+            accreditation.setDataProcessor(null);
+        }
     }
 
     @Override
