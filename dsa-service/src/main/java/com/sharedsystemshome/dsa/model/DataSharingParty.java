@@ -25,7 +25,7 @@ public class DataSharingParty {
             updatable = false)
     private Long id;
 
-
+    @Setter
     @Column(name = "DESCRIPTION",
             columnDefinition = "TEXT")
     private String description;
@@ -50,6 +50,7 @@ public class DataSharingParty {
             fetch = FetchType.EAGER
     )
     private List<DataProcessor> processors;
+
 
     @JsonIgnore
 //    @JsonIncludeProperties({"id"})
@@ -177,6 +178,10 @@ public class DataSharingParty {
         return providerDcds;
     }
 
+    public List<DataProcessor> getProcessors() {
+        return processors;
+    }
+
     public List<DataFlow> getProvidedDataFlows() {
         return providedDataFlows;
     }
@@ -189,26 +194,6 @@ public class DataSharingParty {
         return account;
     }
 
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setProviderDcds(List<DataContentDefinition> providerDcds) {
-        this.providerDcds = providerDcds;
-    }
-
-    public void setProvidedDataFlows(List<DataFlow> providedDataFlows) {
-        this.providedDataFlows = providedDataFlows;
-    }
-
-    public void setConsumedDataFlows(List<DataFlow> consumedDataFlows) {
-        this.consumedDataFlows = consumedDataFlows;
-    }
 
     public void setAccount(CustomerAccount account) {
         this.account = account;

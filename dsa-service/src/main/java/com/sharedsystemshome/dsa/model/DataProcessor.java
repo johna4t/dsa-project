@@ -83,7 +83,7 @@ public class DataProcessor implements Referenceable, Owned {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<DataProcessingActivity> associatedDataContent;
+    private List<DataProcessingActivity> associatedDataProcessing;;
 
     @Builder
     public DataProcessor(Long id,
@@ -92,8 +92,7 @@ public class DataProcessor implements Referenceable, Owned {
                          String email,
                          String description,
                          String website,
-                         List<DataProcessorAccreditation> accreditations,
-                         List<DataProcessingActivity> associatedDataContent
+                         List<DataProcessorAccreditation> accreditations
     ) {
         this.id = id;
         // Set owning entity
@@ -103,7 +102,6 @@ public class DataProcessor implements Referenceable, Owned {
         this.description = description;
         this.website = website;
         this.accreditations = accreditations;
-        this.associatedDataContent = associatedDataContent;
 
         initialiseDefaultValues();
     }
@@ -121,8 +119,8 @@ public class DataProcessor implements Referenceable, Owned {
 
         this.accreditations.forEach(a -> a.setDataProcessor(this));
 
-        if(null == this.associatedDataContent) {
-            this.associatedDataContent = new ArrayList<>();
+        if(null == this.associatedDataProcessing) {
+            this.associatedDataProcessing = new ArrayList<>();
         }
 
         if(null != this.controller){
@@ -155,8 +153,8 @@ public class DataProcessor implements Referenceable, Owned {
                 ", website='" + website + '\'' +
                 ", accreditations=" + (null != accreditations ?
                 JpaLogUtils.getObjectIds(accreditations, DataProcessorAccreditation::getId) : "null") +
-                ", associatedDataContent=" + (null != associatedDataContent ?
-                JpaLogUtils.getObjectIds(associatedDataContent, DataProcessingActivity::getId) : "null") +
+                ", associatedDataContent=" + (null != associatedDataProcessing ?
+                JpaLogUtils.getObjectIds(associatedDataProcessing, DataProcessingActivity::getId) : "null") +
                 '}';
     }
 
@@ -164,7 +162,7 @@ public class DataProcessor implements Referenceable, Owned {
     @Override
     @JsonProperty("isReferenced")
     public Boolean isReferenced() {
-        return this.associatedDataContent != null && !this.associatedDataContent.isEmpty();
+        return this.associatedDataProcessing != null && !this.associatedDataProcessing.isEmpty();
     }
 
     @Override
