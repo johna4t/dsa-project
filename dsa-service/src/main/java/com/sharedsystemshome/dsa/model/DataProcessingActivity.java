@@ -16,10 +16,10 @@ import static com.sharedsystemshome.dsa.util.BusinessValidationException.DATA_CO
 
 
 @Data
-@Entity(name = "DataProcessorActivity")
-@Table( name = "DATA_PROCESSOR_ACTIVITY",
+@Entity(name = "DataProcessingActivity")
+@Table( name = "DATA_PROCESSING_ACTIVITY",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"dataFlowId", "dcdId"}
+                @UniqueConstraint(columnNames = {"processorId", "dcdId"}
                 )
         })
 @NoArgsConstructor
@@ -67,7 +67,7 @@ public class DataProcessingActivity {
 
     @Override
     public String toString() {
-        return "SharedDataContent{" +
+        return "DataProcessingActivity{" +
                 "id=" + id +
                 ", dataProcessor=" + (null != dataProcessor ? dataProcessor.getId() : "null") +
                 ", dataContentDefinition=" + (null != dataContentDefinition ? dataContentDefinition.getId() : "null") +
