@@ -2,7 +2,7 @@ package com.sharedsystemshome.dsa.model;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sharedsystemshome.dsa.enums.ProcessingAccreditationStandard;
+import com.sharedsystemshome.dsa.enums.ProcessingCertificationStandard;
 
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -14,22 +14,22 @@ import java.util.Objects;
 
 
 @Entity
-@Table(name = "DATA_PROCESSOR_ACCREDITATION",
+@Table(name = "DATA_PROCESSOR_CERTIFICATION",
         uniqueConstraints = @UniqueConstraint(columnNames = {"data_processor_id", "name"}))
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Valid
-public class DataProcessorAccreditation {
+public class DataProcessorCertification {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dp_accred_seq")
-    @SequenceGenerator(name = "dp_accred_seq", sequenceName = "dp_accred_seq", allocationSize = 1, initialValue = 114000001)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dp_cert_seq")
+    @SequenceGenerator(name = "dp_cert_seq", sequenceName = "dp_cert_seq", allocationSize = 1, initialValue = 114000001)
     private Long id;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "name", nullable = false)
-    private ProcessingAccreditationStandard name;
+    private ProcessingCertificationStandard name;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "data_processor_id", nullable = false)
@@ -38,22 +38,22 @@ public class DataProcessorAccreditation {
     // Optional: certification date, URL, etc.
 
     @Builder
-    public DataProcessorAccreditation(Long id,
-                                      ProcessingAccreditationStandard name,
+    public DataProcessorCertification(Long id,
+                                      ProcessingCertificationStandard name,
                                       DataProcessor dataProcessor) {
         this.id = id;
-        this.name = name != null ? name : ProcessingAccreditationStandard.NONE;
+        this.name = name != null ? name : ProcessingCertificationStandard.NONE;
         this.dataProcessor = dataProcessor;
     }
 
-    public DataProcessorAccreditation() {
-        this.name = ProcessingAccreditationStandard.NONE;
+    public DataProcessorCertification() {
+        this.name = ProcessingCertificationStandard.NONE;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DataProcessorAccreditation that)) return false;
+        if (!(o instanceof DataProcessorCertification that)) return false;
         return Objects.equals(dataProcessor, that.dataProcessor) &&
                 name == that.name;
     }

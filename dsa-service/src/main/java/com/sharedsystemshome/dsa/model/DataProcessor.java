@@ -74,7 +74,7 @@ public class DataProcessor implements Referenceable, Owned {
             mappedBy = "dataProcessor",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    private List<DataProcessorAccreditation> accreditations;
+    private List<DataProcessorCertification> certifications;
 
 
     @JsonIncludeProperties({"id"})
@@ -92,7 +92,7 @@ public class DataProcessor implements Referenceable, Owned {
                          String email,
                          String description,
                          String website,
-                         List<DataProcessorAccreditation> accreditations
+                         List<DataProcessorCertification> certifications
     ) {
         this.id = id;
         // Set owning entity
@@ -102,8 +102,8 @@ public class DataProcessor implements Referenceable, Owned {
         this.description = description;
         this.website = website;
 
-        if(null != accreditations) {
-            this.accreditations = new ArrayList<>(accreditations);
+        if(null != certifications) {
+            this.certifications = new ArrayList<>(certifications);
         }
 
         initialiseDefaultValues();
@@ -116,11 +116,11 @@ public class DataProcessor implements Referenceable, Owned {
 
     private void initialiseDefaultValues(){
 
-        if(null == this.accreditations) {
-            this.accreditations = new ArrayList<>();
+        if(null == this.certifications) {
+            this.certifications = new ArrayList<>();
         }
 
-        this.accreditations.forEach(a -> a.setDataProcessor(this));
+        this.certifications.forEach(a -> a.setDataProcessor(this));
 
         if(null == this.associatedDataProcessing) {
             this.associatedDataProcessing = new ArrayList<>();
@@ -132,16 +132,16 @@ public class DataProcessor implements Referenceable, Owned {
 
     }
 
-    public void addAccreditation(DataProcessorAccreditation accreditation) {
-        if (accreditation != null) {
-            accreditation.setDataProcessor(this);  // Ensure the owning side is set
-            this.accreditations.add(accreditation);
+    public void addCertification(DataProcessorCertification certification) {
+        if (certification != null) {
+            certification.setDataProcessor(this);  // Ensure the owning side is set
+            this.certifications.add(certification);
         }
     }
 
-    public void removeAccreditation(DataProcessorAccreditation accreditation) {
-        if (accreditation != null && this.accreditations.remove(accreditation)) {
-            accreditation.setDataProcessor(null);
+    public void removeCertification(DataProcessorCertification certification) {
+        if (certification != null && this.certifications.remove(certification)) {
+            certification.setDataProcessor(null);
         }
     }
 
@@ -154,8 +154,8 @@ public class DataProcessor implements Referenceable, Owned {
                 ", email='" + email + '\'' +
                 ", description='" + description + '\'' +
                 ", website='" + website + '\'' +
-                ", accreditations=" + (null != accreditations ?
-                JpaLogUtils.getObjectIds(accreditations, DataProcessorAccreditation::getId) : "null") +
+                ", certifications=" + (null != certifications ?
+                JpaLogUtils.getObjectIds(certifications, com.sharedsystemshome.dsa.model.DataProcessorCertification::getId) : "null") +
                 ", associatedDataContent=" + (null != associatedDataProcessing ?
                 JpaLogUtils.getObjectIds(associatedDataProcessing, DataProcessingActivity::getId) : "null") +
                 '}';

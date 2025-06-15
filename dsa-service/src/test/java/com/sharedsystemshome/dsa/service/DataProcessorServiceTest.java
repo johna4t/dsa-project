@@ -2,7 +2,6 @@ package com.sharedsystemshome.dsa.service;
 
 import com.sharedsystemshome.dsa.enums.*;
 import com.sharedsystemshome.dsa.model.*;
-import com.sharedsystemshome.dsa.repository.CustomerAccountRepository;
 import com.sharedsystemshome.dsa.repository.DataProcessorRepository;
 import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
 import com.sharedsystemshome.dsa.util.BusinessValidationException;
@@ -54,18 +53,18 @@ class DataProcessorServiceTest {
                 .build();
         when(this.dspMockRepo.existsById(conId)).thenReturn(true);
 
-        DataProcessorAccreditation iso22301 = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.ISO_IEC_22301)
+        DataProcessorCertification iso22301 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.ISO_IEC_22301)
                 .build();
-        DataProcessorAccreditation cyber = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.CYBER_ESSENTIALS)
+        DataProcessorCertification cyber = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.CYBER_ESSENTIALS)
                 .build();
 
         DataProcessor dp = DataProcessor.builder()
                 .name("Test DCD")
                 .email("someone@email.com")
                 .controller(con)
-                .accreditations(List.of(iso22301, cyber))
+                .certifications(List.of(iso22301, cyber))
                 .build();
 
         Long dpId = 1L;
@@ -163,23 +162,23 @@ class DataProcessorServiceTest {
                 .build();
 
 
-        DataProcessorAccreditation acc1 = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.CYBER_ESSENTIALS)
+        DataProcessorCertification acc1 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.CYBER_ESSENTIALS)
                 .build();
         DataProcessor dp1 = DataProcessor.builder()
                 .name("DP1")
                 .controller(con)
-                .accreditations(List.of(acc1))
+                .certifications(List.of(acc1))
                 .build();
 
 
-        DataProcessorAccreditation acc2 = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.ISO_IEC_20000_1)
+        DataProcessorCertification acc2 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.ISO_IEC_20000_1)
                 .build();
         DataProcessor dp2 = DataProcessor.builder()
                 .name("DP2")
                 .controller(con)
-                .accreditations(List.of(acc1,acc2))
+                .certifications(List.of(acc1,acc2))
                 .build();
 
 
@@ -206,11 +205,11 @@ class DataProcessorServiceTest {
         String oldEmail = "js@email.com";
         String oldWebsite = "www.old.com";
 
-        DataProcessorAccreditation iso22301 = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.ISO_IEC_22301)
+        DataProcessorCertification iso22301 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.ISO_IEC_22301)
                 .build();
-        DataProcessorAccreditation cyber = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.CYBER_ESSENTIALS)
+        DataProcessorCertification cyber = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.CYBER_ESSENTIALS)
                 .build();
 
         DataProcessor dp = DataProcessor.builder()
@@ -219,7 +218,7 @@ class DataProcessorServiceTest {
                 .description(oldDesc)
                 .website(oldWebsite)
                 .email(oldEmail)
-                .accreditations(List.of(iso22301, cyber))
+                .certifications(List.of(iso22301, cyber))
                 .build();
 
         when(this.dpMockRepo.findById(dpId)).thenReturn(Optional.of(dp));
@@ -229,8 +228,8 @@ class DataProcessorServiceTest {
         String newWebsite = "new.com";
         String newEmail = "jb@email.com";
 
-        DataProcessorAccreditation nist = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.NIST_Privacy_Framework)
+        DataProcessorCertification nist = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.NIST_Privacy_Framework)
                 .build();
 
         this.dpService.updateDataProcessor(
@@ -248,14 +247,14 @@ class DataProcessorServiceTest {
         assertEquals(newEmail, dp.getEmail());
         assertEquals(newDesc, dp.getDescription());
 
-        List<ProcessingAccreditationStandard> accreditations = dp.getAccreditations().stream()
-                .map(DataProcessorAccreditation::getName)
+        List<ProcessingCertificationStandard> accreditations = dp.getCertifications().stream()
+                .map(com.sharedsystemshome.dsa.model.DataProcessorCertification::getName)
                 .toList();
 
         assertEquals(2, accreditations.size());
-        assertTrue(accreditations.contains(ProcessingAccreditationStandard.CYBER_ESSENTIALS));
-        assertTrue(accreditations.contains(ProcessingAccreditationStandard.NIST_Privacy_Framework));
-        assertFalse(accreditations.contains(ProcessingAccreditationStandard.ISO_IEC_22301));
+        assertTrue(accreditations.contains(ProcessingCertificationStandard.CYBER_ESSENTIALS));
+        assertTrue(accreditations.contains(ProcessingCertificationStandard.NIST_Privacy_Framework));
+        assertFalse(accreditations.contains(ProcessingCertificationStandard.ISO_IEC_22301));
 
         verify(this.dpMockRepo, times(1)).findById(dpId);
         verify(this.dspMockRepo, times(0)).findById(anyLong());
@@ -270,8 +269,8 @@ class DataProcessorServiceTest {
         String oldEmail = "js@email.com";
         String oldWebsite = "www.old.com";
 
-        DataProcessorAccreditation acc = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.CYBER_ESSENTIALS)
+        DataProcessorCertification acc = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.CYBER_ESSENTIALS)
                 .build();
 
         DataProcessor dp = DataProcessor.builder()
@@ -280,7 +279,7 @@ class DataProcessorServiceTest {
                 .description(oldDesc)
                 .email(oldEmail)
                 .website(oldWebsite)
-                .accreditations(new ArrayList<>(List.of(acc)))
+                .certifications(new ArrayList<>(List.of(acc)))
                 .build();
 
         when(this.dpMockRepo.findById(dpId)).thenReturn(Optional.of(dp));
@@ -301,12 +300,12 @@ class DataProcessorServiceTest {
         assertEquals(oldEmail, dp.getEmail());
         assertEquals(oldWebsite, dp.getWebsite());
 
-        List<ProcessingAccreditationStandard> accreditationTypes = dp.getAccreditations().stream()
-                .map(DataProcessorAccreditation::getName)
+        List<ProcessingCertificationStandard> accreditationTypes = dp.getCertifications().stream()
+                .map(com.sharedsystemshome.dsa.model.DataProcessorCertification::getName)
                 .toList();
 
         assertEquals(1, accreditationTypes.size());
-        assertTrue(accreditationTypes.contains(ProcessingAccreditationStandard.CYBER_ESSENTIALS));
+        assertTrue(accreditationTypes.contains(ProcessingCertificationStandard.CYBER_ESSENTIALS));
 
         verify(this.dpMockRepo, times(1)).findById(dpId);
         verify(this.dspMockRepo, times(0)).findById(anyLong());
@@ -322,8 +321,8 @@ class DataProcessorServiceTest {
         String oldEmail = "js@email.com";
         String oldWebsite = "www.old.com";
 
-        DataProcessorAccreditation oldAcc = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.CYBER_ESSENTIALS)
+        DataProcessorCertification oldAcc = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.CYBER_ESSENTIALS)
                 .build();
 
         DataProcessor dp = DataProcessor.builder()
@@ -332,7 +331,7 @@ class DataProcessorServiceTest {
                 .description(oldDesc)
                 .email(oldEmail)
                 .website(oldWebsite)
-                .accreditations(new ArrayList<>(List.of(oldAcc)))
+                .certifications(new ArrayList<>(List.of(oldAcc)))
                 .build();
 
         when(this.dpMockRepo.findById(dpId)).thenReturn(Optional.of(dp));
@@ -343,8 +342,8 @@ class DataProcessorServiceTest {
         String newEmail = "";        // should not overwrite
         String newWebsite = "";      // should overwrite
 
-        DataProcessorAccreditation newAcc = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.NIST_Privacy_Framework)
+        DataProcessorCertification newAcc = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.NIST_Privacy_Framework)
                 .build();
 
         this.dpService.updateDataProcessor(
@@ -363,13 +362,13 @@ class DataProcessorServiceTest {
         assertEquals(newWebsite, dp.getWebsite()); // updated even though it's an empty string
 
         // Accreditations replaced
-        List<ProcessingAccreditationStandard> accs = dp.getAccreditations().stream()
-                .map(DataProcessorAccreditation::getName)
+        List<ProcessingCertificationStandard> accs = dp.getCertifications().stream()
+                .map(com.sharedsystemshome.dsa.model.DataProcessorCertification::getName)
                 .toList();
 
         assertEquals(1, accs.size());
-        assertTrue(accs.contains(ProcessingAccreditationStandard.NIST_Privacy_Framework));
-        assertFalse(accs.contains(ProcessingAccreditationStandard.CYBER_ESSENTIALS));
+        assertTrue(accs.contains(ProcessingCertificationStandard.NIST_Privacy_Framework));
+        assertFalse(accs.contains(ProcessingCertificationStandard.CYBER_ESSENTIALS));
 
         // Verify correct repo interaction
         verify(this.dpMockRepo, times(1)).findById(dpId);
@@ -386,8 +385,8 @@ class DataProcessorServiceTest {
         String oldEmail = "js@email.com";
         String oldWebsite = "www.old.com";
 
-        DataProcessorAccreditation oldAcc = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.CYBER_ESSENTIALS)
+        DataProcessorCertification oldAcc = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.CYBER_ESSENTIALS)
                 .build();
 
         DataProcessor dp = DataProcessor.builder()
@@ -396,7 +395,7 @@ class DataProcessorServiceTest {
                 .description(oldDesc)
                 .email(oldEmail)
                 .website(oldWebsite)
-                .accreditations(new ArrayList<>(List.of(oldAcc)))
+                .certifications(new ArrayList<>(List.of(oldAcc)))
                 .build();
 
         when(this.dpMockRepo.findById(dpId)).thenReturn(Optional.of(dp));
@@ -418,8 +417,8 @@ class DataProcessorServiceTest {
         assertEquals(oldWebsite, dp.getWebsite());
 
         // ✅ Accreditations should be cleared
-        assertNotNull(dp.getAccreditations());
-        assertTrue(dp.getAccreditations().isEmpty());
+        assertNotNull(dp.getCertifications());
+        assertTrue(dp.getCertifications().isEmpty());
 
         // ✅ Repository interactions
         verify(this.dpMockRepo, times(1)).findById(dpId);
@@ -431,13 +430,13 @@ class DataProcessorServiceTest {
         Long dpId = 2L;
 
         // Create DataProcessor with an accreditation
-        DataProcessorAccreditation acc = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.ISO_IEC_27001)
+        DataProcessorCertification acc = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.ISO_IEC_27001)
                 .build();
 
         DataProcessor dp = DataProcessor.builder()
                 .id(dpId)
-                .accreditations(new ArrayList<>(List.of(acc))) // mutable and managed
+                .certifications(new ArrayList<>(List.of(acc))) // mutable and managed
                 .build();
 
         // Simulate a parent controller relationship
@@ -468,7 +467,7 @@ class DataProcessorServiceTest {
         assertNull(dp.getController());
 
         // Assert accreditations are cleared (orphan removal should handle DB deletion)
-        assertTrue(dp.getAccreditations().isEmpty());
+        assertTrue(dp.getCertifications().isEmpty());
     }
 
     @Test

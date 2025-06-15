@@ -1,6 +1,9 @@
 package com.sharedsystemshome.dsa.enums;
 
-public enum ProcessingAccreditationStandard {
+import lombok.Getter;
+
+@Getter
+public enum ProcessingCertificationStandard {
 
     NONE("No Accreditations"),
 
@@ -24,15 +27,12 @@ public enum ProcessingAccreditationStandard {
     COBIT("Control Objectives for Information and Related Technologies");
 
     // constructor
-    private ProcessingAccreditationStandard(String processingAccreditationStandard) {
+    private ProcessingCertificationStandard(String processingAccreditationStandard) {
         this.processingAccreditationStandard = processingAccreditationStandard;
     }
 
     // internal state
     private final String processingAccreditationStandard;
 
-    public String getProcessingAccreditationStandard() {
-        return this.processingAccreditationStandard;
-    }
 }
 

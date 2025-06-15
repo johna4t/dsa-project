@@ -1,6 +1,6 @@
 package com.sharedsystemshome.dsa.repository;
 
-import com.sharedsystemshome.dsa.enums.ProcessingAccreditationStandard;
+import com.sharedsystemshome.dsa.enums.ProcessingCertificationStandard;
 import com.sharedsystemshome.dsa.model.*;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import java.time.Period;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -62,16 +61,16 @@ public class DataProcessorRepositoryTest {
         String desc = "Test DA desc.";
         String email = "contact@dpa.com";
         String url = "www.dpa.com";
-        DataProcessorAccreditation iso22301 = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.ISO_IEC_22301)
+        DataProcessorCertification iso22301 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.ISO_IEC_22301)
                 .build();
-        DataProcessorAccreditation cyber = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.CYBER_ESSENTIALS)
+        DataProcessorCertification cyber = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.CYBER_ESSENTIALS)
                 .build();
 
         DataProcessor dp = DataProcessor.builder()
                 .email(email)
-                .accreditations(List.of(iso22301, cyber))
+                .certifications(List.of(iso22301, cyber))
                 .website(url)
                 .controller(controller)
                 .description(desc)
@@ -94,16 +93,16 @@ public class DataProcessorRepositoryTest {
         assertEquals("Test DA desc.", saved.getDescription());
 
         // Assert 2 accreditations linked
-        assertEquals(2, saved.getAccreditations().size());
+        assertEquals(2, saved.getCertifications().size());
 
         // Assert correct standards
-        assertTrue(saved.getAccreditations().stream()
-                .anyMatch(a -> a.getName() == ProcessingAccreditationStandard.ISO_IEC_22301));
-        assertTrue(saved.getAccreditations().stream()
-                .anyMatch(a -> a.getName() == ProcessingAccreditationStandard.CYBER_ESSENTIALS));
+        assertTrue(saved.getCertifications().stream()
+                .anyMatch(a -> a.getName() == ProcessingCertificationStandard.ISO_IEC_22301));
+        assertTrue(saved.getCertifications().stream()
+                .anyMatch(a -> a.getName() == ProcessingCertificationStandard.CYBER_ESSENTIALS));
 
         // Assert correct back-references
-        saved.getAccreditations().forEach(a -> assertEquals(dpId, a.getDataProcessor().getId()));
+        saved.getCertifications().forEach(a -> assertEquals(dpId, a.getDataProcessor().getId()));
 
     }
 
@@ -124,13 +123,13 @@ public class DataProcessorRepositoryTest {
         this.customerRepo.save(cust);
 
         // Create one accreditation standard, duplicated
-        ProcessingAccreditationStandard standard = ProcessingAccreditationStandard.CYBER_ESSENTIALS;
+        ProcessingCertificationStandard standard = ProcessingCertificationStandard.CYBER_ESSENTIALS;
 
-        DataProcessorAccreditation a1 = DataProcessorAccreditation.builder()
+        DataProcessorCertification a1 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
                 .name(standard)
                 .build();
 
-        DataProcessorAccreditation a2 = DataProcessorAccreditation.builder()
+        DataProcessorCertification a2 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
                 .name(standard) // duplicate
                 .build();
 
@@ -140,7 +139,7 @@ public class DataProcessorRepositoryTest {
                 .description("duplicate test")
                 .controller(controller)
                 .website("www.test.com")
-                .accreditations(List.of(a1, a2))
+                .certifications(List.of(a1, a2))
                 .build();
 
         // Expect DataIntegrityViolationException due to UNIQUE constraint
@@ -177,7 +176,7 @@ public class DataProcessorRepositoryTest {
 
         DataProcessor saved = this.testSubject.findById(id).orElseThrow();
         // Assert 0 accreditations
-        assertEquals(0, saved.getAccreditations().size());
+        assertEquals(0, saved.getCertifications().size());
     }
 
     @Test
@@ -212,22 +211,22 @@ public class DataProcessorRepositoryTest {
                 .controller(controller)
                 .build();
 
-        DataProcessorAccreditation acc1 = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.CYBER_ESSENTIALS)
+        DataProcessorCertification acc1 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.CYBER_ESSENTIALS)
                 .build();
 
-        DataProcessorAccreditation acc2 = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.COBIT)
+        DataProcessorCertification acc2 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.COBIT)
                 .build();
 
-        dp.addAccreditation(acc1);
-        dp.addAccreditation(acc2);
+        dp.addCertification(acc1);
+        dp.addCertification(acc2);
 
         dp = this.testSubject.saveAndFlush(dp);
 
         DataProcessor saved = this.testSubject.findById(dp.getId()).get();
 
-        assertEquals(2, saved.getAccreditations().size());
+        assertEquals(2, saved.getCertifications().size());
 
     }
 
@@ -250,31 +249,31 @@ public class DataProcessorRepositoryTest {
                 .controller(controller)
                 .build();
 
-        DataProcessorAccreditation acc1 = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.CYBER_ESSENTIALS)
+        DataProcessorCertification acc1 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.CYBER_ESSENTIALS)
                 .build();
 
-        DataProcessorAccreditation acc2 = DataProcessorAccreditation.builder()
-                .name(ProcessingAccreditationStandard.COBIT)
+        DataProcessorCertification acc2 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
+                .name(ProcessingCertificationStandard.COBIT)
                 .build();
 
-        dp.addAccreditation(acc1);
-        dp.addAccreditation(acc2);
+        dp.addCertification(acc1);
+        dp.addCertification(acc2);
 
         DataProcessor saved = this.testSubject.saveAndFlush(dp);
 
-        assertEquals(2, saved.getAccreditations().size());
+        assertEquals(2, saved.getCertifications().size());
 
         // Remove accreditation
-        dp.removeAccreditation(acc1);
+        dp.removeCertification(acc1);
         DataProcessor updated =this.testSubject.saveAndFlush(dp);
 
         // Reload and confirm it's removed
-        assertEquals(1, updated.getAccreditations().size());
+        assertEquals(1, updated.getCertifications().size());
 
-        boolean acc1Exists = updated.getAccreditations().stream()
+        boolean acc1Exists = updated.getCertifications().stream()
                 .anyMatch(a -> a.getName() == acc1.getName());
-        boolean acc2Exists = updated.getAccreditations().stream()
+        boolean acc2Exists = updated.getCertifications().stream()
                 .anyMatch(a -> a.getName() == acc2.getName());
 
         assertFalse(acc1Exists, acc1.getName() + " should have been removed.");

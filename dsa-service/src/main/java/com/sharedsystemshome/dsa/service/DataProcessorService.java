@@ -97,7 +97,7 @@ public class DataProcessorService {
                 dp.getDescription(),
                 dp.getEmail(),
                 dp.getWebsite(),
-                dp.getAccreditations()
+                dp.getCertifications()
         );
 
     }
@@ -109,7 +109,7 @@ public class DataProcessorService {
             String description,
             String email,
             String website,
-            List<DataProcessorAccreditation> accreditations) {
+            List<DataProcessorCertification> accreditations) {
 
         logger.debug("Entering method DataProcessor::updateDataProcessor");
 
@@ -149,17 +149,17 @@ public class DataProcessorService {
             }
         }
         if (accreditations != null) {
-            List<DataProcessorAccreditation> existing = new ArrayList<>(dp.getAccreditations());
+            List<DataProcessorCertification> existing = new ArrayList<>(dp.getCertifications());
 
             // Remove ones that no longer exist
             existing.stream()
                     .filter(e -> accreditations.stream().noneMatch(i -> i.getName() == e.getName()))
-                    .forEach(dp::removeAccreditation);
+                    .forEach(dp::removeCertification);
 
             // Add new ones
             accreditations.stream()
                     .filter(i -> existing.stream().noneMatch(e -> e.getName() == i.getName()))
-                    .forEach(i -> dp.addAccreditation(DataProcessorAccreditation.builder()
+                    .forEach(i -> dp.addCertification(com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
                             .name(i.getName())
                             .build()));
 
@@ -189,7 +189,7 @@ public class DataProcessorService {
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_PROCESSOR, id));
 
-        dp.getAccreditations().clear();
+        dp.getCertifications().clear();
 
         con.deleteDataProcessor(dpToRemove);
 
