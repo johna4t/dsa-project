@@ -39,24 +39,27 @@ public class DataContentDefinitionService {
     private final CustomValidator<DataContentDefinition> validator;
 
     // CREATE
-    public Long createDataContentDefinition (DataContentDefinition dcd) {
-        logger.debug("Entering method (DataContentDefinition::createDataContentDefinition with dcd: {}", dcd);
+    public Long createDataContentDefinition(DataContentDefinition dcd) {
+        logger.debug("Entering DataContentDefinition::createDataContentDefinition with DCD: {}", dcd);
 
-        if (null == dcd) {
+        if (dcd == null) {
             throw new NullOrEmptyValueException(BusinessValidationException.DATA_CONTENT_DEFINITION);
         }
 
+        // Validate
         this.validator.validate(dcd);
 
-        // Get id of parent provider DataSharingParty
-        Long provId = dcd.getProvider().getId();
-
-        if(null == provId){
+        // Provider presence check
+        if (dcd.getProvider() == null || dcd.getProvider().getId() == null) {
             throw new NullOrEmptyValueException("Provider " + BusinessValidationException.DATA_SHARING_PARTY + " id");
-        } else if(!this.dspRepo.existsById(provId)){
+        }
+
+        Long provId = dcd.getProvider().getId();
+        if (!this.dspRepo.existsById(provId)) {
             throw new EntityNotFoundException(BusinessValidationException.DATA_SHARING_PARTY, provId);
         }
 
+        // Link perspectives
         if (dcd.getPerspectives() != null) {
             for (DataContentPerspective perspective : dcd.getPerspectives()) {
                 perspective.setDataContentDefinition(dcd);
@@ -66,12 +69,12 @@ public class DataContentDefinitionService {
         try {
             Long dcdId = this.dcdRepo.save(dcd).getId();
             logger.info("New DataContentDefinition created with id: {}", dcdId);
-
             return dcdId;
         } catch (Exception e) {
             throw new AddOrUpdateTransactionException(BusinessValidationException.DATA_CONTENT_DEFINITION, e);
         }
     }
+
 
     //READ
     @GetMapping

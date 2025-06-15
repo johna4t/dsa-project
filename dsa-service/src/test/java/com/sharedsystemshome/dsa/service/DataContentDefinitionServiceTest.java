@@ -13,7 +13,6 @@ import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
 import com.sharedsystemshome.dsa.util.BusinessValidationException;
 import com.sharedsystemshome.dsa.util.CustomValidator;
 import com.sharedsystemshome.dsa.util.EntityNotFoundException;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -136,7 +135,7 @@ class DataContentDefinitionServiceTest {
     }
 
     @Test
-    public void testDataContentDefinitionById_Exists() {
+    public void testGetDataContentDefinitionById_Exists() {
         Long dcdId = 1L;
         DataContentDefinition dcd = new DataContentDefinition();
 
@@ -619,23 +618,16 @@ class DataContentDefinitionServiceTest {
                 .description("Service Test DSP")
                 .build();
 
-        DataContentDefinition dcd1 = DataContentDefinition.builder()
-                .name("Service DCD with GDPR")
-                .provider(dsp)
-                .build();
-
         DataContentPerspective dcp1 = new DataContentPerspective();
         dcp1.setMetadataScheme(MetadataScheme.GDPR);
         dcp1.setMetadata(Map.of(
                 "lawfulBasis", LawfulBasis.NOT_PERSONAL_DATA,
                 "specialCategory", SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA
         ));
-        dcd1.addPerspective(dcp1);
-
-
-        DataContentDefinition dcd2 = DataContentDefinition.builder()
+        DataContentDefinition dcd1 = DataContentDefinition.builder()
                 .name("Service DCD with GDPR")
                 .provider(dsp)
+                .perspectives(List.of(dcp1))
                 .build();
 
         DataContentPerspective dcp2 = new DataContentPerspective();
@@ -644,7 +636,12 @@ class DataContentDefinitionServiceTest {
                 "lawfulBasis", LawfulBasis.CONTRACT,
                 "specialCategory", SpecialCategoryData.POLITICAL
         ));
-        dcd2.addPerspective(dcp2);
+        DataContentDefinition dcd2 = DataContentDefinition.builder()
+                .name("Service DCD with GDPR")
+                .provider(dsp)
+                .perspectives(List.of(dcp2))
+                .build();
+
 
         List<DataContentDefinition> dcds = List.of(dcd1, dcd2);
         when(this.dcdMockRepo.findByProviderId(dspId)).thenReturn(dcds);
