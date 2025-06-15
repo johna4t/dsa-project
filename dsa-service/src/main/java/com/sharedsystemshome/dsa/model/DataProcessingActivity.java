@@ -1,9 +1,11 @@
 package com.sharedsystemshome.dsa.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.sharedsystemshome.dsa.enums.MetadataScheme;
 import com.sharedsystemshome.dsa.util.BusinessValidationException;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,9 +14,10 @@ import java.util.Objects;
 
 import static com.sharedsystemshome.dsa.util.BusinessValidationException.DATA_CONTENT_PERSPECTIVE;
 
+
 @Data
-@Entity
-@Table( name = "data_processing_activity",
+@Entity(name = "DataProcessorActivity")
+@Table( name = "DATA_PROCESSOR_ACTIVITY",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"dataFlowId", "dcdId"}
                 )
