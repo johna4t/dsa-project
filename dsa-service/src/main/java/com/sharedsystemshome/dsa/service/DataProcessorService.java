@@ -149,14 +149,19 @@ public class DataProcessorService {
             }
         }
         if (accreditations != null) {
+            List<DataProcessorAccreditation> existing = new ArrayList<>(dp.getAccreditations());
 
-            dp.getAccreditations().clear(); // orphanRemoval = true handles DB cleanup
+            // Remove ones that no longer exist
+            existing.stream()
+                    .filter(e -> accreditations.stream().noneMatch(i -> i.getName() == e.getName()))
+                    .forEach(dp::removeAccreditation);
 
-            for (DataProcessorAccreditation acc : accreditations) {
-                dp.addAccreditation(DataProcessorAccreditation.builder()
-                        .name(acc.getName())
-                        .build());
-            }
+            // Add new ones
+            accreditations.stream()
+                    .filter(i -> existing.stream().noneMatch(e -> e.getName() == i.getName()))
+                    .forEach(i -> dp.addAccreditation(DataProcessorAccreditation.builder()
+                            .name(i.getName())
+                            .build()));
 
             logger.info("Updated value of property DataProcessor::accreditations for DataProcessor with id: {}", id);
         }
@@ -168,16 +173,25 @@ public class DataProcessorService {
     public void deleteDataProcessor(Long id) {
         logger.debug("Entering deleteDataProcessor with id: {}", id);
 
-        DataProcessor dp = this.dpRepo.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_PROCESSOR, id));
+        DataProcessor dp = this.dpRepo.findById(id).
+                orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_PROCESSOR, id));
 
-        if (dp.isReferenced()) {
+        if(dp.isReferenced()){
             throw new AddOrUpdateTransactionException(BusinessValidationException.DATA_PROCESSOR);
         }
 
         Long conId = dp.getController().getId();
         DataSharingParty con = this.dspRepo.findById(conId)
                 .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_SHARING_PARTY, conId));
+
+        DataProcessor dpToRemove = con.getProcessors().stream()
+                .filter(dcd2 -> Objects.equals(dcd2.getId(), id))
+                .findFirst()
+                .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_PROCESSOR, id));
+
+        dp.getAccreditations().clear();
+
+        con.deleteDataProcessor(dpToRemove);
 
         // Remove from controller's list and break link
         con.deleteDataProcessor(dp);

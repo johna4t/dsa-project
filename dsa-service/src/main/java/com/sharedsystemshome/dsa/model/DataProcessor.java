@@ -101,7 +101,10 @@ public class DataProcessor implements Referenceable, Owned {
         this.email = email;
         this.description = description;
         this.website = website;
-        this.accreditations = accreditations;
+
+        if(null != accreditations) {
+            this.accreditations = new ArrayList<>(accreditations);
+        }
 
         initialiseDefaultValues();
     }
