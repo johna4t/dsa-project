@@ -109,7 +109,7 @@ public class DataProcessorService {
             String description,
             String email,
             String website,
-            List<DataProcessorCertification> accreditations) {
+            List<DataProcessorCertification> certifications) {
 
         logger.debug("Entering method DataProcessor::updateDataProcessor");
 
@@ -148,22 +148,22 @@ public class DataProcessorService {
                         "for DataProcessor with id: {}", oldEmail, email, id);
             }
         }
-        if (accreditations != null) {
+        if (certifications != null) {
             List<DataProcessorCertification> existing = new ArrayList<>(dp.getCertifications());
 
             // Remove ones that no longer exist
             existing.stream()
-                    .filter(e -> accreditations.stream().noneMatch(i -> i.getName() == e.getName()))
+                    .filter(e -> certifications.stream().noneMatch(i -> i.getName() == e.getName()))
                     .forEach(dp::removeCertification);
 
             // Add new ones
-            accreditations.stream()
+            certifications.stream()
                     .filter(i -> existing.stream().noneMatch(e -> e.getName() == i.getName()))
                     .forEach(i -> dp.addCertification(com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
                             .name(i.getName())
                             .build()));
 
-            logger.info("Updated value of property DataProcessor::accreditations for DataProcessor with id: {}", id);
+            logger.info("Updated value of property DataProcessor::certifications for DataProcessor with id: {}", id);
         }
 
     }

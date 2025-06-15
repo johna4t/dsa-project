@@ -247,14 +247,14 @@ class DataProcessorServiceTest {
         assertEquals(newEmail, dp.getEmail());
         assertEquals(newDesc, dp.getDescription());
 
-        List<ProcessingCertificationStandard> accreditations = dp.getCertifications().stream()
+        List<ProcessingCertificationStandard> certifications = dp.getCertifications().stream()
                 .map(com.sharedsystemshome.dsa.model.DataProcessorCertification::getName)
                 .toList();
 
-        assertEquals(2, accreditations.size());
-        assertTrue(accreditations.contains(ProcessingCertificationStandard.CYBER_ESSENTIALS));
-        assertTrue(accreditations.contains(ProcessingCertificationStandard.NIST_Privacy_Framework));
-        assertFalse(accreditations.contains(ProcessingCertificationStandard.ISO_IEC_22301));
+        assertEquals(2, certifications.size());
+        assertTrue(certifications.contains(ProcessingCertificationStandard.CYBER_ESSENTIALS));
+        assertTrue(certifications.contains(ProcessingCertificationStandard.NIST_Privacy_Framework));
+        assertFalse(certifications.contains(ProcessingCertificationStandard.ISO_IEC_22301));
 
         verify(this.dpMockRepo, times(1)).findById(dpId);
         verify(this.dspMockRepo, times(0)).findById(anyLong());
@@ -300,12 +300,12 @@ class DataProcessorServiceTest {
         assertEquals(oldEmail, dp.getEmail());
         assertEquals(oldWebsite, dp.getWebsite());
 
-        List<ProcessingCertificationStandard> accreditationTypes = dp.getCertifications().stream()
+        List<ProcessingCertificationStandard> certificationTypes = dp.getCertifications().stream()
                 .map(com.sharedsystemshome.dsa.model.DataProcessorCertification::getName)
                 .toList();
 
-        assertEquals(1, accreditationTypes.size());
-        assertTrue(accreditationTypes.contains(ProcessingCertificationStandard.CYBER_ESSENTIALS));
+        assertEquals(1, certificationTypes.size());
+        assertTrue(certificationTypes.contains(ProcessingCertificationStandard.CYBER_ESSENTIALS));
 
         verify(this.dpMockRepo, times(1)).findById(dpId);
         verify(this.dspMockRepo, times(0)).findById(anyLong());
@@ -361,7 +361,7 @@ class DataProcessorServiceTest {
         assertEquals(oldEmail, dp.getEmail()); // email unchanged due to empty string
         assertEquals(newWebsite, dp.getWebsite()); // updated even though it's an empty string
 
-        // Accreditations replaced
+        // Certifications replaced
         List<ProcessingCertificationStandard> accs = dp.getCertifications().stream()
                 .map(com.sharedsystemshome.dsa.model.DataProcessorCertification::getName)
                 .toList();
@@ -400,14 +400,14 @@ class DataProcessorServiceTest {
 
         when(this.dpMockRepo.findById(dpId)).thenReturn(Optional.of(dp));
 
-        // Call service with all null fields and empty accreditations
+        // Call service with all null fields and empty certifications
         this.dpService.updateDataProcessor(
                 dpId,
                 null,       // name
                 null,       // description
                 null,       // email
                 null,       // website
-                new ArrayList<>() // accreditations: should clear all
+                new ArrayList<>() // certifications: should clear all
         );
 
         // ✅ Assert all original fields remain unchanged
@@ -416,7 +416,7 @@ class DataProcessorServiceTest {
         assertEquals(oldEmail, dp.getEmail());
         assertEquals(oldWebsite, dp.getWebsite());
 
-        // ✅ Accreditations should be cleared
+        // ✅ Certifications should be cleared
         assertNotNull(dp.getCertifications());
         assertTrue(dp.getCertifications().isEmpty());
 
@@ -426,10 +426,10 @@ class DataProcessorServiceTest {
     }
 
     @Test
-    public void testDeleteDataProcessor_WithAccreditations() {
+    public void testDeleteDataProcessor_WithCertifications() {
         Long dpId = 2L;
 
-        // Create DataProcessor with an accreditation
+        // Create DataProcessor with a certification
         DataProcessorCertification acc = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
                 .name(ProcessingCertificationStandard.ISO_IEC_27001)
                 .build();
@@ -466,7 +466,7 @@ class DataProcessorServiceTest {
         // Assert the processor is now unlinked
         assertNull(dp.getController());
 
-        // Assert accreditations are cleared (orphan removal should handle DB deletion)
+        // Assert certifications are cleared (orphan removal should handle DB deletion)
         assertTrue(dp.getCertifications().isEmpty());
     }
 

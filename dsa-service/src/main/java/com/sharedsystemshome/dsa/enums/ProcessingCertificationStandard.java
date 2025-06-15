@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum ProcessingCertificationStandard {
 
-    NONE("No Accreditations"),
+    NONE("No Certifications"),
 
     // Infosec & Cyber standards
     ISO_IEC_27001("Information Security Management System (ISMS)"),
@@ -27,12 +27,12 @@ public enum ProcessingCertificationStandard {
     COBIT("Control Objectives for Information and Related Technologies");
 
     // constructor
-    private ProcessingCertificationStandard(String processingAccreditationStandard) {
-        this.processingAccreditationStandard = processingAccreditationStandard;
+    private ProcessingCertificationStandard(String processingCertificationStandard) {
+        this.processingCertificationStandard = processingCertificationStandard;
     }
 
     // internal state
-    private final String processingAccreditationStandard;
+    private final String processingCertificationStandard;
 
 }
 

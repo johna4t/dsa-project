@@ -92,7 +92,7 @@ public class DataProcessorRepositoryTest {
         assertEquals("www.dpa.com", saved.getWebsite());
         assertEquals("Test DA desc.", saved.getDescription());
 
-        // Assert 2 accreditations linked
+        // Assert 2 certifications linked
         assertEquals(2, saved.getCertifications().size());
 
         // Assert correct standards
@@ -107,7 +107,7 @@ public class DataProcessorRepositoryTest {
     }
 
     @Test
-    void testSave_WithDuplicateAccreditations() {
+    void testSave_WithDuplicateCertifications() {
         // Setup controller
         DataSharingParty controller = DataSharingParty.builder()
                 .description("Mid and South Essex NHS Foundation Trust")
@@ -122,7 +122,7 @@ public class DataProcessorRepositoryTest {
                 .build();
         this.customerRepo.save(cust);
 
-        // Create one accreditation standard, duplicated
+        // Create one certification standard, duplicated
         ProcessingCertificationStandard standard = ProcessingCertificationStandard.CYBER_ESSENTIALS;
 
         DataProcessorCertification a1 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
@@ -175,7 +175,7 @@ public class DataProcessorRepositoryTest {
         assertTrue(this.testSubject.existsById(id));
 
         DataProcessor saved = this.testSubject.findById(id).orElseThrow();
-        // Assert 0 accreditations
+        // Assert 0 certifications
         assertEquals(0, saved.getCertifications().size());
     }
 
@@ -193,7 +193,7 @@ public class DataProcessorRepositoryTest {
     }
 
     @Test
-    void testAddAccreditation() {
+    void testAddCertification() {
 
         DataSharingParty controller = DataSharingParty.builder().description("Test Org").build();
 
@@ -231,7 +231,7 @@ public class DataProcessorRepositoryTest {
     }
 
     @Test
-    void testRemoveAccreditation() {
+    void testRemoveCertification() {
 
         DataSharingParty controller = DataSharingParty.builder().description("Test Org").build();
 
@@ -264,7 +264,7 @@ public class DataProcessorRepositoryTest {
 
         assertEquals(2, saved.getCertifications().size());
 
-        // Remove accreditation
+        // Remove certification
         dp.removeCertification(acc1);
         DataProcessor updated =this.testSubject.saveAndFlush(dp);
 
