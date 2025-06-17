@@ -55,22 +55,12 @@ public class UserContextService {
     }
 
     public String getCurrentUserName() {
-//        Authentication auth = getUserContext();
-//        return (auth != null && auth.getPrincipal() instanceof UserAccount) ? ((UserAccount) auth.getPrincipal()).getUsername() : null;
 
         return getCurrentUser().getUsername();
 
     }
 
     public Long getCurrentCustomerAccountId() {
-//        Authentication auth = getUserContext();
-//        if (auth != null) {
-//            Object details = auth.getDetails();
-//            if (details instanceof Long) {
-//                return (Long) details;
-//            }
-//        }
-//        return null;
 
         CustomerAccount cust = getCurrentUser().getParentAccount();
 
