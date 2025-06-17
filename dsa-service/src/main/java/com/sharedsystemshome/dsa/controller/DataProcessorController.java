@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "api/v1/data-processor")
+@RequestMapping(path = "api/v1/data-processors")
 public class DataProcessorController {
 
     private final DataProcessorService dpService;
