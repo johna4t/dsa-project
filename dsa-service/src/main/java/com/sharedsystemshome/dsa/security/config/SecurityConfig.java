@@ -46,6 +46,7 @@ public class SecurityConfig {
             "/api/v1/data-sharing-parties/**",
             "/api/v1/data-content-definitions/**",
             "/api/v1/data-flows/**",
+            "/api/v1/data-processors/**",
             "/api/v1/data-sharing-agreements/**",
             "/api/v1/personal-profiles/*",
             "/api/v1/auth/logout"
