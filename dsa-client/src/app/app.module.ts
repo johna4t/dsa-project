@@ -51,6 +51,10 @@ import { DataContentDefinitionListComponent } from './data-content-definition/da
 import { CreateDataContentDefinitionComponent } from './data-content-definition/create-data-content-definition/create-data-content-definition.component';
 import { UpdateDataContentDefinitionComponent } from './data-content-definition/update-data-content-definition/update-data-content-definition.component';
 import { DataContentDefinitionDetailsComponent } from './data-content-definition/data-content-definition-details/data-content-definition-details.component';
+import { CreateDataProcessorComponent } from './data-processor/create-data-processor/create-data-processor.component';
+import { UpdateDataProcessorComponent } from './data-processor/update-data-processor/update-data-processor.component';
+import { DataProcessorDetailsComponent } from './data-processor/data-processor-details/data-processor-details.component';
+import { DataProcessorListComponent } from './data-processor/data-processor-list/data-processor-list.component';
 
 @NgModule({
   declarations: [
@@ -84,7 +88,11 @@ import { DataContentDefinitionDetailsComponent } from './data-content-definition
     DataContentDefinitionListComponent,
     CreateDataContentDefinitionComponent,
     UpdateDataContentDefinitionComponent,
-    DataContentDefinitionDetailsComponent
+    DataContentDefinitionDetailsComponent,
+    CreateDataProcessorComponent,
+    UpdateDataProcessorComponent,
+    DataProcessorDetailsComponent,
+    DataProcessorListComponent
   ],
   imports: [
     BrowserModule,
