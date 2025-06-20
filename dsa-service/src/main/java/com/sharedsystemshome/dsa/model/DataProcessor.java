@@ -3,16 +3,15 @@ package com.sharedsystemshome.dsa.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.sharedsystemshome.dsa.enums.ProcessingCertificationStandard;
 import com.sharedsystemshome.dsa.util.JpaLogUtils;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @Entity(name = "DataProcessor")
@@ -70,11 +69,13 @@ public class DataProcessor implements Referenceable, Owned {
 
 
     @JsonIncludeProperties({"id", "name"})
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     @OneToMany(
             mappedBy = "dataProcessor",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    private List<DataProcessorCertification> certifications;
+    private List<DataProcessorCertification> certifications = new ArrayList<>();;
 
 
     @JsonIncludeProperties({"id"})
@@ -92,7 +93,7 @@ public class DataProcessor implements Referenceable, Owned {
                          String email,
                          String description,
                          String website,
-                         List<DataProcessorCertification> certifications
+                         List<ProcessingCertificationStandard> certifications
     ) {
         this.id = id;
         // Set owning entity
@@ -102,9 +103,7 @@ public class DataProcessor implements Referenceable, Owned {
         this.description = description;
         this.website = website;
 
-        if(null != certifications) {
-            this.certifications = new ArrayList<>(certifications);
-        }
+        this.setCertifications(certifications);
 
         initialiseDefaultValues();
     }
@@ -116,11 +115,11 @@ public class DataProcessor implements Referenceable, Owned {
 
     private void initialiseDefaultValues(){
 
-        if(null == this.certifications) {
+        if (this.certifications == null) {
             this.certifications = new ArrayList<>();
+        } else {
+            this.certifications.forEach(a -> a.setDataProcessor(this));
         }
-
-        this.certifications.forEach(a -> a.setDataProcessor(this));
 
         if(null == this.associatedDataProcessing) {
             this.associatedDataProcessing = new ArrayList<>();
@@ -132,16 +131,62 @@ public class DataProcessor implements Referenceable, Owned {
 
     }
 
-    public void addCertification(DataProcessorCertification certification) {
-        if (certification != null) {
-            certification.setDataProcessor(this);  // Ensure the owning side is set
-            this.certifications.add(certification);
+    public List<ProcessingCertificationStandard> getCertifications(){
+        if (this.certifications == null) {
+            return Collections.emptyList();
+        }
+        return this.certifications.stream()
+                .map(DataProcessorCertification::getName)
+                .distinct()
+                .toList();
+    }
+
+    public void setCertifications(List<ProcessingCertificationStandard> certifications) {
+        // Always reinitialize with a new mutable list
+        // Always start with a new mutable list
+        this.certifications = new ArrayList<>();
+
+        if (certifications != null) {
+            // Use a Set to ensure uniqueness
+            Set<ProcessingCertificationStandard> uniqueCerts = new LinkedHashSet<>(certifications);
+
+            for (ProcessingCertificationStandard cert : uniqueCerts) {
+                if (cert != null) {
+                    this.certifications.add(
+                            DataProcessorCertification.builder()
+                                    .name(cert)
+                                    .dataProcessor(this)
+                                    .build()
+                    );
+                }
+            }
         }
     }
 
-    public void removeCertification(DataProcessorCertification certification) {
-        if (certification != null && this.certifications.remove(certification)) {
-            certification.setDataProcessor(null);
+    public void addCertification(ProcessingCertificationStandard standard) {
+        if (standard != null) {
+            boolean exists = this.certifications.stream()
+                    .anyMatch(existing -> existing.getName() == standard);
+
+            if (!exists) {
+                DataProcessorCertification certification = DataProcessorCertification.builder()
+                        .name(standard)
+                        .dataProcessor(this)
+                        .build();
+                this.certifications.add(certification);
+            }
+        }
+    }
+
+    public void removeCertification(ProcessingCertificationStandard standard) {
+        if (standard != null) {
+            this.certifications.removeIf(existing -> {
+                boolean match = existing.getName() == standard;
+                if (match) {
+                    existing.setDataProcessor(null);
+                }
+                return match;
+            });
         }
     }
 

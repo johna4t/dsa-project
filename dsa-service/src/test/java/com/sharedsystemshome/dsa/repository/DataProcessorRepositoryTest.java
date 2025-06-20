@@ -61,16 +61,12 @@ public class DataProcessorRepositoryTest {
         String desc = "Test DA desc.";
         String email = "contact@dpa.com";
         String url = "www.dpa.com";
-        DataProcessorCertification iso22301 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
-                .name(ProcessingCertificationStandard.ISO_IEC_22301)
-                .build();
-        DataProcessorCertification cyber = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
-                .name(ProcessingCertificationStandard.CYBER_ESSENTIALS)
-                .build();
 
         DataProcessor dp = DataProcessor.builder()
                 .email(email)
-                .certifications(List.of(iso22301, cyber))
+                .certifications(List.of(
+                        ProcessingCertificationStandard.ISO_IEC_22301,
+                        ProcessingCertificationStandard.CYBER_ESSENTIALS))
                 .website(url)
                 .controller(controller)
                 .description(desc)
@@ -86,7 +82,7 @@ public class DataProcessorRepositoryTest {
         assertEquals(1, this.testSubject.count());
         assertTrue(this.testSubject.existsById(dpId));
 
-        var saved = this.testSubject.findById(dpId).orElseThrow();
+        DataProcessor saved = this.testSubject.findById(dpId).orElseThrow();
         assertEquals("Test DP A", saved.getName());
         assertEquals("contact@dpa.com", saved.getEmail());
         assertEquals("www.dpa.com", saved.getWebsite());
@@ -97,12 +93,9 @@ public class DataProcessorRepositoryTest {
 
         // Assert correct standards
         assertTrue(saved.getCertifications().stream()
-                .anyMatch(a -> a.getName() == ProcessingCertificationStandard.ISO_IEC_22301));
+                .anyMatch(a -> a == ProcessingCertificationStandard.ISO_IEC_22301));
         assertTrue(saved.getCertifications().stream()
-                .anyMatch(a -> a.getName() == ProcessingCertificationStandard.CYBER_ESSENTIALS));
-
-        // Assert correct back-references
-        saved.getCertifications().forEach(a -> assertEquals(dpId, a.getDataProcessor().getId()));
+                .anyMatch(a -> a == ProcessingCertificationStandard.CYBER_ESSENTIALS));
 
     }
 
@@ -139,13 +132,20 @@ public class DataProcessorRepositoryTest {
                 .description("duplicate test")
                 .controller(controller)
                 .website("www.test.com")
-                .certifications(List.of(a1, a2))
+                .certifications(List.of(
+                        ProcessingCertificationStandard.CYBER_ESSENTIALS,
+                        ProcessingCertificationStandard.CYBER_ESSENTIALS))
                 .build();
 
-        // Expect DataIntegrityViolationException due to UNIQUE constraint
-        assertThrows(DataIntegrityViolationException.class, () -> {
-            this.testSubject.saveAndFlush(dp); // force immediate flush to catch DB constraint error
-        });
+        // When Processor is added to repository.
+        Long dpId = this.testSubject.save(dp).getId();
+
+        // Expect only one in the list added
+        assertEquals(1, this.testSubject.count());
+
+        DataProcessor saved = this.testSubject.findById(dpId).orElseThrow();
+        assertEquals(ProcessingCertificationStandard.CYBER_ESSENTIALS, saved.getCertifications().get(0));
+
     }
 
     @Test
@@ -211,16 +211,8 @@ public class DataProcessorRepositoryTest {
                 .controller(controller)
                 .build();
 
-        DataProcessorCertification acc1 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
-                .name(ProcessingCertificationStandard.CYBER_ESSENTIALS)
-                .build();
-
-        DataProcessorCertification acc2 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
-                .name(ProcessingCertificationStandard.COBIT)
-                .build();
-
-        dp.addCertification(acc1);
-        dp.addCertification(acc2);
+        dp.addCertification(ProcessingCertificationStandard.CYBER_ESSENTIALS);
+        dp.addCertification(ProcessingCertificationStandard.COBIT);
 
         dp = this.testSubject.saveAndFlush(dp);
 
@@ -249,35 +241,27 @@ public class DataProcessorRepositoryTest {
                 .controller(controller)
                 .build();
 
-        DataProcessorCertification acc1 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
-                .name(ProcessingCertificationStandard.CYBER_ESSENTIALS)
-                .build();
-
-        DataProcessorCertification acc2 = com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
-                .name(ProcessingCertificationStandard.COBIT)
-                .build();
-
-        dp.addCertification(acc1);
-        dp.addCertification(acc2);
+        dp.addCertification(ProcessingCertificationStandard.CYBER_ESSENTIALS);
+        dp.addCertification(ProcessingCertificationStandard.COBIT);
 
         DataProcessor saved = this.testSubject.saveAndFlush(dp);
 
         assertEquals(2, saved.getCertifications().size());
 
         // Remove certification
-        dp.removeCertification(acc1);
+        dp.removeCertification(ProcessingCertificationStandard.CYBER_ESSENTIALS);
         DataProcessor updated =this.testSubject.saveAndFlush(dp);
 
         // Reload and confirm it's removed
         assertEquals(1, updated.getCertifications().size());
 
         boolean acc1Exists = updated.getCertifications().stream()
-                .anyMatch(a -> a.getName() == acc1.getName());
+                .anyMatch(a -> a == ProcessingCertificationStandard.CYBER_ESSENTIALS);
         boolean acc2Exists = updated.getCertifications().stream()
-                .anyMatch(a -> a.getName() == acc2.getName());
+                .anyMatch(a -> a == ProcessingCertificationStandard.COBIT);
 
-        assertFalse(acc1Exists, acc1.getName() + " should have been removed.");
-        assertTrue(acc2Exists, acc2.getName() + " should still be present.");
+        assertFalse(acc1Exists, ProcessingCertificationStandard.CYBER_ESSENTIALS + " should have been removed.");
+        assertTrue(acc2Exists, ProcessingCertificationStandard.COBIT + " should still be present.");
 
     }
 

@@ -62,16 +62,12 @@ public class DataProcessorControllerTest {
     void testPostDataProcessor() throws Exception {
         Long dpId = 5L;
 
-        // Create certification
-        DataProcessorCertification cert = DataProcessorCertification.builder()
-                .name(ProcessingCertificationStandard.ISO_IEC_22301)
-                .build();
 
         // Create the original request DataProcessor
         DataProcessor dpRequest = DataProcessor.builder()
                 .name("dp 1")
                 .description("dp 1 desc")
-                .certifications(new ArrayList<>(List.of(cert)))
+                .certifications(new ArrayList<>(List.of(ProcessingCertificationStandard.ISO_IEC_22301)))
                 .build();
 
         // Clone the validated version of the same object, assuming validateAccess returns it
@@ -109,14 +105,10 @@ public class DataProcessorControllerTest {
     @WithMockUser(username = "user", roles = "MEMBER")
     void testPostDataProcessor_WithUnauthorisedAccess() throws Exception {
         // Given
-        DataProcessorCertification cert = DataProcessorCertification.builder()
-                .name(ProcessingCertificationStandard.NIST_Privacy_Framework)
-                .build();
-
         DataProcessor dpRequest = DataProcessor.builder()
                 .name("dp 2")
                 .description("unauthorised attempt")
-                .certifications(new ArrayList<>(List.of(cert)))
+                .certifications(new ArrayList<>(List.of(ProcessingCertificationStandard.NIST_Privacy_Framework)))
                 .build();
 
         // Simulate security failure

@@ -1,5 +1,6 @@
 package com.sharedsystemshome.dsa.service;
 
+import com.sharedsystemshome.dsa.enums.ProcessingCertificationStandard;
 import com.sharedsystemshome.dsa.model.*;
 import com.sharedsystemshome.dsa.repository.DataProcessorRepository;
 import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
@@ -109,7 +110,7 @@ public class DataProcessorService {
             String description,
             String email,
             String website,
-            List<DataProcessorCertification> certifications) {
+            List<ProcessingCertificationStandard> certifications) {
 
         logger.debug("Entering method DataProcessor::updateDataProcessor");
 
@@ -148,21 +149,8 @@ public class DataProcessorService {
                         "for DataProcessor with id: {}", oldEmail, email, id);
             }
         }
-        if (certifications != null) {
-            List<DataProcessorCertification> existing = new ArrayList<>(dp.getCertifications());
-
-            // Remove ones that no longer exist
-            existing.stream()
-                    .filter(e -> certifications.stream().noneMatch(i -> i.getName() == e.getName()))
-                    .forEach(dp::removeCertification);
-
-            // Add new ones
-            certifications.stream()
-                    .filter(i -> existing.stream().noneMatch(e -> e.getName() == i.getName()))
-                    .forEach(i -> dp.addCertification(com.sharedsystemshome.dsa.model.DataProcessorCertification.builder()
-                            .name(i.getName())
-                            .build()));
-
+        if (null != certifications) {
+            dp.setCertifications(certifications);
             logger.info("Updated value of property DataProcessor::certifications for DataProcessor with id: {}", id);
         }
 
@@ -189,7 +177,7 @@ public class DataProcessorService {
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_PROCESSOR, id));
 
-        dp.getCertifications().clear();
+        dp.setCertifications(null);
 
         con.deleteDataProcessor(dpToRemove);
 
