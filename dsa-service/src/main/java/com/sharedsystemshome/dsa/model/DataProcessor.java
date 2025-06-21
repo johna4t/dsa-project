@@ -1,5 +1,6 @@
 package com.sharedsystemshome.dsa.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -53,9 +54,7 @@ public class DataProcessor implements Referenceable, Owned {
             columnDefinition = "TEXT")
     private String name;
 
-    @NotBlank(message = "Data Processor email is null or empty.")
     @Column(name = "EMAIL",
-            nullable = false,
             columnDefinition = "TEXT")
     private String email;
 
@@ -63,13 +62,14 @@ public class DataProcessor implements Referenceable, Owned {
             columnDefinition = "TEXT")
     private String description;
 
+    @NotBlank(message = "Data Processor website is null or empty.")
     @Column(name = "WEBSITE",
+            nullable = false,
             columnDefinition = "TEXT")
     private String website;
 
 
     @JsonIncludeProperties({"id", "name"})
-    @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     @OneToMany(
             mappedBy = "dataProcessor",
@@ -84,7 +84,17 @@ public class DataProcessor implements Referenceable, Owned {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<DataProcessingActivity> associatedDataProcessing;;
+    private List<DataProcessingActivity> associatedDataProcessing;
+
+/*    @JsonIncludeProperties({"id"})
+    @OneToOne
+    @MapsId
+    @JsonIgnore
+    @JoinColumn(
+            name = "selfAsParty",
+            nullable = false
+    )
+    private DataSharingParty selfAsParty;*/
 
     @Builder
     public DataProcessor(Long id,
@@ -200,7 +210,7 @@ public class DataProcessor implements Referenceable, Owned {
                 ", description='" + description + '\'' +
                 ", website='" + website + '\'' +
                 ", certifications=" + (null != certifications ?
-                JpaLogUtils.getObjectIds(certifications, com.sharedsystemshome.dsa.model.DataProcessorCertification::getId) : "null") +
+                JpaLogUtils.getObjectIds(certifications, DataProcessorCertification::getId) : "null") +
                 ", associatedDataContent=" + (null != associatedDataProcessing ?
                 JpaLogUtils.getObjectIds(associatedDataProcessing, DataProcessingActivity::getId) : "null") +
                 '}';

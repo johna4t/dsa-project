@@ -168,7 +168,7 @@ public class DataProcessorRepositoryTest {
         DataProcessor dp = DataProcessor.builder()
                 .controller(controller)
                 .name("Minimum DP")
-                .email("min@example.com")
+                .website("min.com")
                 .build();
 
         Long id = this.testSubject.save(dp).getId();
@@ -207,12 +207,13 @@ public class DataProcessorRepositoryTest {
 
         DataProcessor dp = DataProcessor.builder()
                 .name("DP Test")
-                .email("test@dp.com")
+                .website("dp.com")
                 .controller(controller)
+                .certifications(List.of(
+                        ProcessingCertificationStandard.CYBER_ESSENTIALS,
+                        ProcessingCertificationStandard.COBIT)
+                )
                 .build();
-
-        dp.addCertification(ProcessingCertificationStandard.CYBER_ESSENTIALS);
-        dp.addCertification(ProcessingCertificationStandard.COBIT);
 
         dp = this.testSubject.saveAndFlush(dp);
 
@@ -237,7 +238,7 @@ public class DataProcessorRepositoryTest {
 
         DataProcessor dp = DataProcessor.builder()
                 .name("DP Test")
-                .email("test@dp.com")
+                .website("dp.com")
                 .controller(controller)
                 .build();
 

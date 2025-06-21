@@ -329,8 +329,8 @@ class DataProcessorServiceTest {
         // Assert that fields were updated or preserved as expected
         assertEquals(oldName, dp.getName()); // name unchanged due to empty string
         assertEquals(newDesc, dp.getDescription()); // updated because it's not null
-        assertEquals(oldEmail, dp.getEmail()); // email unchanged due to empty string
-        assertEquals(newWebsite, dp.getWebsite()); // updated even though it's an empty string
+        assertEquals(newEmail, dp.getEmail()); // email updated even though it's an empty string
+        assertEquals(oldWebsite, dp.getWebsite()); // website unchanged due to empty string
 
         // Certifications replaced
         List<ProcessingCertificationStandard> accs = dp.getCertifications();

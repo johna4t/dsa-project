@@ -81,6 +81,15 @@ public class DataSharingParty {
     )
     private CustomerAccount account;
 
+/*    @OneToOne(
+            mappedBy = "selfAsParty",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
+    @PrimaryKeyJoinColumn
+    private DataProcessor selfAsProcessor;*/
+
     @Builder
     public DataSharingParty(Long id,
                             // Owning entity

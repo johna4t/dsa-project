@@ -133,7 +133,7 @@ public class DataProcessorService {
                         "for DataProcessor with id: {}", oldDescription, description, id);
             }
         }
-        if (null != website) {
+        if (null != website && !website.isEmpty()) {
             String oldWebsite = dp.getWebsite();
             if (!Objects.equals(oldWebsite, website)) {
                 dp.setWebsite(website);
@@ -141,7 +141,7 @@ public class DataProcessorService {
                         "for DataProcessor with id: {}", oldWebsite, website, id);
             }
         }
-        if (null != email && !email.isEmpty()) {
+        if (null != email) {
             String oldEmail = dp.getEmail();
             if (!Objects.equals(oldEmail, email)) {
                 dp.setEmail(email);
