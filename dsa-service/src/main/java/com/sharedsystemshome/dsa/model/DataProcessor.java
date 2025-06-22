@@ -86,16 +86,6 @@ public class DataProcessor implements Referenceable, Owned {
     )
     private List<DataProcessingActivity> associatedDataProcessing;
 
-/*    @JsonIncludeProperties({"id"})
-    @OneToOne
-    @MapsId
-    @JsonIgnore
-    @JoinColumn(
-            name = "selfAsParty",
-            nullable = false
-    )
-    private DataSharingParty selfAsParty;*/
-
     @Builder
     public DataProcessor(Long id,
                          DataSharingParty controller,
