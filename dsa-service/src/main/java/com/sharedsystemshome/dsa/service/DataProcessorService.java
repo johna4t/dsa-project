@@ -182,7 +182,7 @@ public class DataProcessorService {
         con.deleteDataProcessor(dpToRemove);
 
         // Remove from controller's list and break link
-        con.deleteDataProcessor(dp);
+        // con.deleteDataProcessor(dp);
 
         try {
             this.dspRepo.save(con); // cascade + orphanRemoval handles actual delete
