@@ -203,7 +203,9 @@ public class DataContentDefinition implements Referenceable, Owned {
     @Override
     @JsonProperty("isReferenced")
     public Boolean isReferenced() {
-        return this.associatedDataFlows != null && !this.associatedDataFlows.isEmpty();
+
+        return (this.associatedDataFlows != null && !this.associatedDataFlows.isEmpty())
+                || (this.associatedDataProcessing != null && !this.associatedDataProcessing.isEmpty());
     }
 
     @Override
