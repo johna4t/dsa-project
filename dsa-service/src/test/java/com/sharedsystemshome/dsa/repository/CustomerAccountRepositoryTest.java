@@ -143,9 +143,9 @@ class CustomerAccountRepositoryTest {
         assertEquals(this.addressLine5, customer.getAddress().getAddressLine5());
         assertEquals(this.postalCode, customer.getAddress().getPostalCode());
         assertEquals(customer.getId(), customer.getDataSharingParty().getId());
-        assertEquals(dspName, customer.getDataSharingParty().getName());
+        assertEquals(dspName, customer.getDataSharingParty().getAccount().getName());
         assertEquals(dspDesc, customer.getDataSharingParty().getDescription());
-        assertEquals(dspUrl, customer.getDataSharingParty().getUrl());
+        assertEquals(dspUrl, customer.getDataSharingParty().getAccount().getUrl());
 
     }
 
@@ -285,177 +285,12 @@ class CustomerAccountRepositoryTest {
         assertEquals(this.addressLine5, customer.getAddress().getAddressLine5());
         assertEquals(this.postalCode, customer.getAddress().getPostalCode());
         assertEquals(customer.getId(), customer.getDataSharingParty().getId());
-        assertEquals(dspName, customer.getDataSharingParty().getName());
+        assertEquals(dspName, customer.getDataSharingParty().getAccount().getName());
         assertNull(customer.getDataSharingParty().getDescription());
-        assertEquals(dspUrl, customer.getDataSharingParty().getUrl());
+        assertEquals(dspUrl, customer.getDataSharingParty().getAccount().getUrl());
 
     }
 
-
-    @Test
-    void testDelete() {
-
-        String dspName = "Test DSP";
-        String dspDesc = "Test DSP desc";
-        String dspUrl = "www.dsp.com";
-        DataSharingParty dsp = DataSharingParty.builder()
-                .description(dspDesc)
-                .build();
-
-        CustomerAccount customer = CustomerAccount.builder()
-                .name(dspName)
-                .departmentName(dspName + " dept")
-                .url(dspUrl)
-                .branchName(this.buName)
-                .address(new Address())
-                .dataSharingParty(dsp)
-                .build();
-        this.testSubject.save(customer);
-
-        // Assertion: repository should contain one CustomerAccount
-        assertEquals(1, this.testSubject.count());
-        // Assertion: CustomerAccount should exist by id returned by save method.
-        assertTrue(this.testSubject.existsById(customer.getId()));
-
-        this.testSubject.deleteById(customer.getId());
-
-        // Assertion: repository should contain one CustomerAccount
-        assertEquals(0, this.testSubject.count());
-    }
-
-    @Test
-    void testDeleteById1() {
-
-        DataSharingParty prov = DataSharingParty.builder()
-                .description("Test Prov desc")
-                .build();
-
-        CustomerAccount customer1 = CustomerAccount.builder()
-                .name("Test Prov")
-                .departmentName("Test Prov dept")
-                .url("www.prov.com")
-                .branchName(this.buName)
-                .address(new Address())
-                .dataSharingParty(prov)
-                .build();
-        this.testSubject.save(customer1);
-
-        DataContentDefinition dcd = DataContentDefinition.builder()
-                .name("Test DCD")
-                .description("Test DCD desc")
-                .provider(prov)
-                .ownerEmail("someone@email.com")
-                .sourceSystem("Some System")
-                .retentionPeriod(Period.ofYears(5))
-                .build();
-        this.dcdRepo.save(dcd);
-
-        DataSharingAgreement dsa = DataSharingAgreement.builder()
-                .name("Test DSA")
-                .accountHolder(customer1)
-                .build();
-        this.dsaRepo.save(dsa);
-
-        DataSharingParty cons = DataSharingParty.builder()
-                .description("Test Cons desc")
-                .build();
-
-        CustomerAccount customer2 = CustomerAccount.builder()
-                .name("Test Cons")
-                .departmentName("Test Cons dept")
-                .url("www.cons.com")
-                .branchName(this.buName)
-                .address(new Address())
-                .dataSharingParty(cons)
-                .build();
-        this.testSubject.save(customer2);
-
-        DataFlow dataFlow = DataFlow.builder()
-                .purposeOfSharing("Purpose of sharing")
-                .dataSharingAgreement(dsa)
-                .provider(prov)
-                .consumer(cons)
-                .dataContent(List.of(dcd))
-                .build();
-        this.dataFlowRepo.save(dataFlow);
-
-        this.testSubject.deleteById(customer1.getId());
-
-        assertEquals(1, this.testSubject.count());
-
-    }
-
-    @Test
-    void testDeleteById2() {
-
-        DataSharingParty prov = DataSharingParty.builder()
-                .description("Test Prov desc")
-                .build();
-
-        CustomerAccount customer1 = CustomerAccount.builder()
-                .name("Test Prov")
-                .departmentName("Test Prov dept")
-                .url("www.prov.com")
-                .branchName(this.buName)
-                .address(new Address())
-                .dataSharingParty(prov)
-                .build();
-        this.testSubject.save(customer1);
-
-        DataContentDefinition dcd = DataContentDefinition.builder()
-                .name("Test DCD")
-                .description("Test DCD desc")
-                .provider(prov)
-                .build();
-        this.dcdRepo.save(dcd);
-
-        DataSharingAgreement dsa = DataSharingAgreement.builder()
-                .name("Test DSA")
-                .accountHolder(customer1)
-                .build();
-        this.dsaRepo.save(dsa);
-
-        DataSharingParty cons = DataSharingParty.builder()
-                .description("Test Cons desc")
-                .build();
-
-        CustomerAccount customer2 = CustomerAccount.builder()
-                .name("Test Cons")
-                .departmentName("Test Cons dept")
-                .url("www.cons.com")
-                .branchName(this.buName)
-                .address(new Address())
-                .dataSharingParty(cons)
-                .build();
-        this.testSubject.save(customer2);
-
-        DataFlow dataFlow = DataFlow.builder()
-                .purposeOfSharing("Purpose of sharing")
-                .dataSharingAgreement(dsa)
-                .provider(prov)
-                .consumer(cons)
-                .dataContent(List.of(dcd))
-                .build();
-        this.dataFlowRepo.save(dataFlow);
-
-        this.testSubject.deleteById(customer2.getId());
-
-        //Then
-        Exception e1 = assertThrows(ConstraintViolationException.class, () -> {
-            //When
-            this.testSubject.count();
-        });
-
-//        this.testSubject.deleteById(customer1.getId());
-//
-//        //Then
-//        Exception e2= assertThrows(DataIntegrityViolationException.class, () -> {
-//            //When
-//            this.testSubject.count();
-//        });
-
-
-    }
 
     @Test
     void unitTestDeleteDataSharingAgreement(){

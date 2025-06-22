@@ -210,6 +210,10 @@ public class DataProcessor implements Referenceable, Owned {
     @Override
     @JsonProperty("isReferenced")
     public Boolean isReferenced() {
+
+        // if processor represents DSP
+        if (this.controller.getSelfAsProcessor().getId().equals(id)) return true;
+
         return this.associatedDataProcessing != null && !this.associatedDataProcessing.isEmpty();
     }
 

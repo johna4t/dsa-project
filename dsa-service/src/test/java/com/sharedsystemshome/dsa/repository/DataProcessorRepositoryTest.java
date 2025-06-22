@@ -78,8 +78,8 @@ public class DataProcessorRepositoryTest {
 
         // Then
 
-        // Assert processor exists
-        assertEquals(1, this.testSubject.count());
+        // Assert added processor + selfAsProcessor exist
+        assertEquals(2, this.testSubject.count());
         assertTrue(this.testSubject.existsById(dpId));
 
         DataProcessor saved = this.testSubject.findById(dpId).orElseThrow();
@@ -138,10 +138,11 @@ public class DataProcessorRepositoryTest {
                 .build();
 
         // When Processor is added to repository.
-        Long dpId = this.testSubject.save(dp).getId();
+        DataProcessor savedDp = this.testSubject.save(dp);
+        Long dpId = savedDp.getId();
 
         // Expect only one in the list added
-        assertEquals(1, this.testSubject.count());
+        assertEquals(1, savedDp.getCertifications().size());
 
         DataProcessor saved = this.testSubject.findById(dpId).orElseThrow();
         assertEquals(ProcessingCertificationStandard.CYBER_ESSENTIALS, saved.getCertifications().get(0));

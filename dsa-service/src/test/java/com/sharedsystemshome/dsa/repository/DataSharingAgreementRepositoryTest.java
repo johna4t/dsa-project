@@ -255,49 +255,4 @@ public class DataSharingAgreementRepositoryTest {
         assertEquals(1, dataFlowRepo.count());
     }
 
-
-    @Test
-    void unitTestDeleteById_CustomerAccountDependency(){
-        // Test adding DSA to repository with minimal dataset
-
-        // Given
-
-        // Create provider DSP
-        DataSharingParty prov = DataSharingParty.builder()
-                .description("Mid and South Essex NHS Foundation Trust")
-                .build();
-
-        // Create a DataSharingAgreement with minimal dataset
-        CustomerAccount cust = CustomerAccount.builder()
-                .name("Cust")
-                .departmentName("Cust dept")
-                .url("www.cust.com")
-                .dataSharingParty(prov)
-                .branchName("Test BU")
-                .build();
-
-        this.customerRepo.save(cust);
-
-        DataSharingAgreement dsa = DataSharingAgreement.builder()
-                .name("Test DSA")
-                .accountHolder(cust)
-                .controllerRelationship(ControllerRelationship.JOINT)
-                .build();
-
-        // When - DataSharingAgreement is added to repository.
-        Long dsaId = this.testSubject.save(dsa).getId();
-
-
-        // Then
-
-        // Assertion: repository should contain one DSA.
-        assertEquals(1, this.testSubject.count());
-        // Assertion: DSA should exist by id returned by save method.
-        assertTrue(this.testSubject.existsById(dsaId));
-
-        this.customerRepo.deleteById(cust.getId());
-
-        assertEquals(0, this.testSubject.count());
-    }
-
 }

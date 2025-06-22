@@ -1,7 +1,9 @@
 package com.sharedsystemshome.dsa.service;
 
+import com.sharedsystemshome.dsa.datatype.Address;
 import com.sharedsystemshome.dsa.enums.*;
 import com.sharedsystemshome.dsa.model.*;
+import com.sharedsystemshome.dsa.repository.CustomerAccountRepository;
 import com.sharedsystemshome.dsa.repository.DataProcessorRepository;
 import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
 import com.sharedsystemshome.dsa.util.BusinessValidationException;
@@ -28,6 +30,9 @@ class DataProcessorServiceTest {
     @Mock
     private DataSharingPartyRepository dspMockRepo;
 
+    @Mock
+    private CustomerAccountRepository custMockRepo;
+
     private DataProcessorService dpService;
 
 
@@ -53,6 +58,20 @@ class DataProcessorServiceTest {
                 .build();
         when(this.dspMockRepo.existsById(conId)).thenReturn(true);
 
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
 
         DataProcessor dp = DataProcessor.builder()
                 .name("Test DCD")
@@ -75,6 +94,9 @@ class DataProcessorServiceTest {
 
         assertNotNull(result);
         assertEquals(dpId, result);
+        // Need to create id for selfAsProcessor
+        // org.opentest4j.AssertionFailedError: expected: not <null>
+        assertNotNull(dp.getController().getSelfAsProcessor().getId());
         verify(this.dspMockRepo, times(1)).existsById(conId);
         verify(this.dpMockRepo, times(1)).save(dp);
     }
@@ -393,36 +415,50 @@ class DataProcessorServiceTest {
 
     @Test
     public void testDeleteDataProcessor_WithCertifications() {
-        Long dpId = 2L;
+        // Simulate a parent controller relationship
 
+        Long conId = 1L;
+        DataSharingParty con = DataSharingParty.builder()
+                .id(conId)
+                .build();
+        when(this.dspMockRepo.existsById(conId)).thenReturn(true);
+
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
+
+        Long dpId = 2L;
         DataProcessor dp = DataProcessor.builder()
                 .id(dpId)
+                .controller(con)
                 .certifications(new ArrayList<>(List.of(ProcessingCertificationStandard.ISO_IEC_27001))) // mutable and managed
                 .build();
 
-        // Simulate a parent controller relationship
-        Long provId = 1L;
-        DataSharingParty controller = DataSharingParty.builder()
-                .id(provId)
-                .build();
-
-        dp.setController(controller);
-        controller.addDataProcessor(dp); // maintains bidirectional link
-
         // Mocks
         when(this.dpMockRepo.findById(dpId)).thenReturn(Optional.of(dp));
-        when(this.dspMockRepo.findById(provId)).thenReturn(Optional.of(controller));
+        when(this.dspMockRepo.findById(conId)).thenReturn(Optional.of(con));
 
         // Perform the delete
         this.dpService.deleteDataProcessor(dpId);
 
         // Verify interactions
         verify(this.dpMockRepo, times(1)).findById(dpId);
-        verify(this.dspMockRepo, times(1)).findById(provId);
-        verify(this.dspMockRepo, times(1)).save(controller);
+        verify(this.dspMockRepo, times(1)).findById(conId);
+        verify(this.dspMockRepo, times(1)).save(con);
 
         // Assert that processor was removed from controller
-        assertFalse(controller.getProcessors().contains(dp));
+        assertFalse(con.getProcessors().contains(dp));
 
         // Assert the processor is now unlinked
         assertNull(dp.getController());
@@ -432,15 +468,60 @@ class DataProcessorServiceTest {
     }
 
     @Test
-    public void testDeleteDataProcessor_WithInvalidConId(){
+    public void testDeleteDataProcessor_WithInvalidDpId(){
 
-        // Given
+        // Simulate a parent controller relationship
+
+        Long conId = 1L;
+        DataSharingParty con = DataSharingParty.builder()
+                .id(conId)
+                .build();
+
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
+
         Long dpId = 2L;
         DataProcessor dp = DataProcessor.builder()
                 .id(dpId)
+                .name("Test DCD")
+                .email("someone@email.com")
+                .controller(con)
+                .certifications(List.of(
+                        ProcessingCertificationStandard.ISO_IEC_22301,
+                        ProcessingCertificationStandard.CYBER_ESSENTIALS))
                 .build();
 
-        when(this.dpMockRepo.findById(dpId)).thenReturn(Optional.of(dp));
+        when(this.dpMockRepo.findById(dpId)).thenReturn(Optional.empty());
+
+        // When - call the deleteDataContentDefinition method
+        Exception e = assertThrows(BusinessValidationException.class, () -> {
+            this.dpService.deleteDataProcessor(dpId);
+        });
+
+        // Then expect...
+        assertEquals("Data Processor with id = " + dpId + " not found.", e.getMessage());
+
+        verify(this.dpMockRepo, times(1)).findById(dpId);
+        verify(this.dspMockRepo, times(0)).findById(conId);
+        verify(this.dspMockRepo, times(0)).save(con);
+    }
+
+    @Test
+    public void testDeleteDataProcessor_WithInvalidConId(){
+
+        // Simulate a parent controller relationship
 
         Long conId = 1L;
         DataSharingParty con = DataSharingParty.builder()
@@ -449,7 +530,33 @@ class DataProcessorServiceTest {
 
         when(this.dspMockRepo.findById(conId)).thenReturn(Optional.empty());
 
-        con.addDataProcessor(dp);
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
+
+        Long dpId = 2L;
+        DataProcessor dp = DataProcessor.builder()
+                .id(dpId)
+                .name("Test DCD")
+                .email("someone@email.com")
+                .controller(con)
+                .certifications(List.of(
+                        ProcessingCertificationStandard.ISO_IEC_22301,
+                        ProcessingCertificationStandard.CYBER_ESSENTIALS))
+                .build();
+
+        when(this.dpMockRepo.findById(dpId)).thenReturn(Optional.of(dp));
 
         // When - call the deleteDataContentDefinition method
         Exception e = assertThrows(BusinessValidationException.class, () -> {

@@ -3,6 +3,7 @@ package com.sharedsystemshome.dsa.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sharedsystemshome.dsa.datatype.Address;
 import com.sharedsystemshome.dsa.model.CustomerAccount;
+import com.sharedsystemshome.dsa.model.DataSharingParty;
 import com.sharedsystemshome.dsa.service.CustomerAccountService;
 import com.sharedsystemshome.dsa.service.DataSharingPartyService;
 import org.junit.jupiter.api.AfterEach;
@@ -48,6 +49,7 @@ class CustomerAccountControllerTest {
     @Test
     void testPostCustomerAccount() throws Exception {
 
+        DataSharingParty dsp = DataSharingParty.builder().build();
         Long custId = 5L;
         Address address = new Address(
                 "10 Penny Lane",
@@ -56,7 +58,14 @@ class CustomerAccountControllerTest {
         CustomerAccount customer = CustomerAccount.builder()
                 .branchName("BU 1")
                 .address(address)
+                .dataSharingParty(dsp)
                 .build();
+
+        // Simulate saving customer
+        dsp.setAccount(customer);
+
+        // Simulate db generating id
+        dsp.getSelfAsProcessor().setId(101L);
 
         when(this.customerMockService.createCustomerAccount(any())).thenReturn(custId);
 
@@ -80,21 +89,37 @@ class CustomerAccountControllerTest {
     @Test
     void testGetCustomerAccounts() throws Exception {
 
+        DataSharingParty dsp1 = DataSharingParty.builder().build();
         Long custId1 = 1L;
         String buName1 = "BU 1";
         CustomerAccount customer1 = CustomerAccount.builder()
                 .id(custId1)
+                .dataSharingParty(dsp1)
                 .branchName(buName1)
                 .address(new Address("11 Penny Lane", "AB1 2CD"))
                 .build();
 
+        // Simulate saving customer
+        dsp1.setAccount(customer1);
+
+        // Simulate db generating id
+        dsp1.getSelfAsProcessor().setId(101L);
+
+        DataSharingParty dsp2 = DataSharingParty.builder().build();
         Long custId2 = 2L;
         String buName2 = "BU 2";
         CustomerAccount customer2 = CustomerAccount.builder()
                 .id(custId2)
+                .dataSharingParty(dsp2)
                 .branchName(buName2)
                 .address(new Address("12 Penny Lane", "AB1 2CD"))
                 .build();
+
+        // Simulate saving customer
+        dsp2.setAccount(customer2);
+
+        // Simulate db generating id
+        dsp2.getSelfAsProcessor().setId(102L);
 
         List<CustomerAccount> customers = new ArrayList<>();
         customers.add(customer1);
@@ -122,21 +147,37 @@ class CustomerAccountControllerTest {
     @Test
     void testGetCustomerAccountById() throws Exception {
 
+        DataSharingParty dsp1 = DataSharingParty.builder().build();
         Long custId1 = 1L;
         String buName1 = "BU 1";
         CustomerAccount customer1 = CustomerAccount.builder()
                 .id(custId1)
                 .branchName(buName1)
                 .address(new Address("11 Penny Lane", "AB1 2CD"))
+                .dataSharingParty(dsp1)
                 .build();
 
+        // Simulate saving customer
+        dsp1.setAccount(customer1);
+
+        // Simulate db generating id
+        dsp1.getSelfAsProcessor().setId(101L);
+
+        DataSharingParty dsp2 = DataSharingParty.builder().build();
         Long custId2 = 2L;
         String buName2 = "BU 2";
         CustomerAccount customer2 = CustomerAccount.builder()
                 .id(custId2)
                 .branchName(buName2)
                 .address(new Address("12 Penny Lane", "AB1 2CD"))
+                .dataSharingParty(dsp2)
                 .build();
+
+        // Simulate saving customer
+        dsp2.setAccount(customer2);
+
+        // Simulate db generating id
+        dsp2.getSelfAsProcessor().setId(102L);
 
         List<CustomerAccount> customers = new ArrayList<>();
         customers.add(customer1);
@@ -163,6 +204,7 @@ class CustomerAccountControllerTest {
     @Test
     void testPutCustomerAccount() throws Exception {
 
+        DataSharingParty dsp = DataSharingParty.builder().build();
         Long custId = 5L;
         Address address = new Address(
                 "55 Beasley Street",
@@ -174,7 +216,14 @@ class CustomerAccountControllerTest {
                 .branchName("BU 1A")
                 .url("new url")
                 .address(address)
+                .dataSharingParty(dsp)
                 .build();
+
+        // Simulate saving customer
+        dsp.setAccount(updatedCust);
+
+        // Simulate db generating id
+        dsp.getSelfAsProcessor().setId(101L);
 
         String payload = new ObjectMapper()
                 .writerWithDefaultPrettyPrinter().writeValueAsString(updatedCust);

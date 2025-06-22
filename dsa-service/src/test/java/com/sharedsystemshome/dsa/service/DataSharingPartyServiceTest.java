@@ -203,26 +203,27 @@ public class DataSharingPartyServiceTest {
     @Test
     public void testDeleteDataSharingParty_Exists() {
         Long id = 1L;
+        DataSharingParty dsp = DataSharingParty.builder().build();
 
-        when(this.dspMockRepo.existsById(id)).thenReturn(true);
+        when(this.dspMockRepo.findById(id)).thenReturn(Optional.of(dsp));
 
         this.dspService.deleteDataSharingParty(id);
 
-        verify(this.dspMockRepo, times(1)).existsById(id);
-        verify(this.dspMockRepo, times(1)).deleteById(id);
+        verify(this.dspMockRepo, times(1)).findById(id);
+        verify(this.dspMockRepo, times(1)).delete(dsp);
     }
 
     @Test
     public void testDeleteDataSharingParty_NotExists() {
         Long id = 1L;
 
-        when(this.dspMockRepo.existsById(id)).thenReturn(false);
+        when(this.dspMockRepo.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(BusinessValidationException.class,
                 () -> this.dspService.deleteDataSharingParty(id));
 
-        verify(this.dspMockRepo, times(1)).existsById(id);
-        verify(this.dspMockRepo, times(0)).deleteById(id);
+        verify(this.dspMockRepo, times(1)).findById(id);
+        verify(this.dspMockRepo, times(0)).delete(new DataSharingParty());
     }
 
     @Test

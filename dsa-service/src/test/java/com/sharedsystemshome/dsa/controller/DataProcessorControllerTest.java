@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sharedsystemshome.dsa.enums.DataContentType;
 import com.sharedsystemshome.dsa.enums.ProcessingCertificationStandard;
-import com.sharedsystemshome.dsa.model.DataContentDefinition;
-import com.sharedsystemshome.dsa.model.DataProcessor;
-import com.sharedsystemshome.dsa.model.DataProcessorCertification;
-import com.sharedsystemshome.dsa.model.DataSharingParty;
+import com.sharedsystemshome.dsa.model.*;
 import com.sharedsystemshome.dsa.security.service.UserContextService;
 import com.sharedsystemshome.dsa.security.util.SecurityValidationException;
 import com.sharedsystemshome.dsa.service.DataProcessorService;
@@ -27,6 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -60,14 +58,35 @@ public class DataProcessorControllerTest {
     @Test
     @WithMockUser(username = "user", roles = "MEMBER")
     void testPostDataProcessor() throws Exception {
+
+        Long conId = 1L;
+        DataSharingParty con = DataSharingParty.builder()
+                .id(conId)
+                .build();
+
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .dataSharingParty(con)
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
+
         Long dpId = 5L;
-
-
         // Create the original request DataProcessor
         DataProcessor dpRequest = DataProcessor.builder()
                 .name("dp 1")
                 .description("dp 1 desc")
                 .certifications(new ArrayList<>(List.of(ProcessingCertificationStandard.ISO_IEC_22301)))
+                .controller(con)
                 .build();
 
         // Clone the validated version of the same object, assuming validateAccess returns it
@@ -104,11 +123,34 @@ public class DataProcessorControllerTest {
     @Test
     @WithMockUser(username = "user", roles = "MEMBER")
     void testPostDataProcessor_WithUnauthorisedAccess() throws Exception {
+
+        Long conId = 1L;
+        DataSharingParty con = DataSharingParty.builder()
+                .id(conId)
+                .build();
+
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .dataSharingParty(con)
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
+
         // Given
         DataProcessor dpRequest = DataProcessor.builder()
                 .name("dp 2")
                 .description("unauthorised attempt")
                 .certifications(new ArrayList<>(List.of(ProcessingCertificationStandard.NIST_Privacy_Framework)))
+                .controller(con)
                 .build();
 
         // Simulate security failure
@@ -141,31 +183,45 @@ public class DataProcessorControllerTest {
 
     @Test
     void testGetDataProcessors() throws Exception {
-        Long customerAccountId = 99L;
 
-        when(userContextMockService.getCurrentCustomerAccountId()).thenReturn(customerAccountId);
-
-        Long provId = 1L;
-        DataSharingParty prov = DataSharingParty.builder()
-                .id(provId)
+        Long conId = 1L;
+        DataSharingParty con = DataSharingParty.builder()
+                .id(conId)
                 .build();
+
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
+
+        when(userContextMockService.getCurrentCustomerAccountId()).thenReturn(conId);
 
         Long dpId1 = 2L;
         DataProcessor dp1 = DataProcessor.builder()
                 .id(dpId1)
                 .name("dp 1")
-                .controller(prov)
+                .controller(con)
                 .build();
 
         Long dpId2 = 3L;
         DataProcessor dp2 = DataProcessor.builder()
                 .id(dpId2)
                 .name("dp 2")
-                .controller(prov)
+                .controller(con)
                 .build();
 
         List<DataProcessor> dps = List.of(dp1, dp2);
-        when(this.dpMockService.getDataProcessors(customerAccountId)).thenReturn(dps);
+        when(this.dpMockService.getDataProcessors(conId)).thenReturn(dps);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/api/v1/data-processors"))
@@ -175,7 +231,7 @@ public class DataProcessorControllerTest {
                 .andExpect(jsonPath("$[0].id").value(dpId1))
                 .andExpect(jsonPath("$[1].id").value(dpId2));
 
-        verify(this.dpMockService, times(1)).getDataProcessors(customerAccountId);
+        verify(this.dpMockService, times(1)).getDataProcessors(conId);
     }
 
 
@@ -185,10 +241,31 @@ public class DataProcessorControllerTest {
     @WithMockUser(username = "user", roles = "SUPER_ADMIN")
     void testGetDataProcessorById() throws Exception {
 
+        Long conId = 1L;
+        DataSharingParty con = DataSharingParty.builder()
+                .id(conId)
+                .build();
+
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
+
         Long dpId = 3L;
         DataProcessor dp = DataProcessor.builder()
                 .id(dpId)
                 .name("dp 2")
+                .controller(con)
                 .build();
 
         when(dpMockService.getDataProcessorById(dpId)).thenReturn(dp);

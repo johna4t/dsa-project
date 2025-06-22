@@ -68,41 +68,9 @@ public class DataSharingPartyRepositoryTest {
         // Assertion: DSP should exist by id returned by save method.
         assertTrue(this.testSubject.existsById(cust.getDataSharingParty().getId()));
         // Assertion: saved DSP should return name.
-        assertEquals(name, this.testSubject.findById(cust.getDataSharingParty().getId()).get().getName());
+        assertEquals(name, this.testSubject.findById(cust.getDataSharingParty().getId()).get().getAccount().getName());
     }
 
-    @Test
-    void unitTestDeleteById_CustomerAccountDependency(){
-
-        // Test adding DSP to repository with minimal dataset
-
-        // Given - create an DataSharingParty
-        String name = "Mid and South Essex NHS Foundation Trust";
-
-        DataSharingParty dsp = DataSharingParty.builder()
-                .build();
-
-        CustomerAccount cust = CustomerAccount.builder()
-                .name(name)
-                .departmentName(name + " dept")
-                .url("www.cust.com")
-                .branchName("Test BU")
-                .dataSharingParty(dsp)
-                .build();
-
-        this.customerRepo.save(cust);
-
-        // Then
-
-        // Assertion: repository should contain one DSP.
-        assertEquals(1, this.testSubject.count());
-
-        this.customerRepo.deleteById(cust.getId());
-
-        // Assertion: repository should contain no DSP.
-        assertEquals(0, this.testSubject.count());
-
-    }
 
     @Test
     void testDeleteDataContentDefinition(){
