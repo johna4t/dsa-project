@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-//@Data
+@Data
 @Entity(name = "DataSharingParty")
 @Table(name = "DATA_SHARING_PARTY")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -25,7 +25,6 @@ public class DataSharingParty {
             updatable = false)
     private Long id;
 
-    @Setter
     @Column(name = "DESCRIPTION",
             columnDefinition = "TEXT")
     private String description;
@@ -42,7 +41,6 @@ public class DataSharingParty {
     private List<DataContentDefinition> providerDcds;
 
     @JsonIgnore
-    @Setter(AccessLevel.NONE)
     @OneToMany(
             mappedBy = "controller",
             cascade = CascadeType.ALL,
@@ -50,7 +48,6 @@ public class DataSharingParty {
             fetch = FetchType.EAGER
     )
     private List<DataProcessor> processors;
-
 
     @JsonIgnore
 //    @JsonIncludeProperties({"id"})
@@ -81,14 +78,14 @@ public class DataSharingParty {
     )
     private CustomerAccount account;
 
-/*    @OneToOne(
-            mappedBy = "selfAsParty",
+    @OneToOne(
             cascade = CascadeType.ALL,
             orphanRemoval = true,
-            fetch = FetchType.EAGER
-    )
-    @PrimaryKeyJoinColumn
-    private DataProcessor selfAsProcessor;*/
+            fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "processor_id",
+            referencedColumnName = "id")
+    private DataProcessor selfAsProcessor;
 
     @Builder
     public DataSharingParty(Long id,
@@ -167,45 +164,18 @@ public class DataSharingParty {
         return !this.consumedDataFlows.isEmpty();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return this.account.getName();
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getUrl() {
-        return this.account.getUrl();
-    }
-
-    public List<DataContentDefinition> getProviderDcds() {
-        return providerDcds;
-    }
-
-    public List<DataProcessor> getProcessors() {
-        return processors;
-    }
-
-    public List<DataFlow> getProvidedDataFlows() {
-        return providedDataFlows;
-    }
-
-    public List<DataFlow> getConsumedDataFlows() {
-        return consumedDataFlows;
-    }
-
-    public CustomerAccount getAccount() {
-        return account;
-    }
-
-
     public void setAccount(CustomerAccount account) {
         this.account = account;
+        if (this.account != null) {
+            this.selfAsProcessor = DataProcessor.builder()
+                    .name(this.account.getName())
+                    .website(this.account.getUrl())
+                    .description(this.description)
+                    .build();
+
+            // Set DSP as controller (to participate in normal controller-DP logic)
+            this.selfAsProcessor.setController(this);
+        }
     }
 
     @Override
@@ -222,6 +192,7 @@ public class DataSharingParty {
                 ", account=" + (null != account ? account.getId() : "null") +
                 ", processors=" + (null != processors ?
                 JpaLogUtils.getObjectIds(processors, DataProcessor::getId) : "null") +
+                ", selfAsProcessor=" + (null != selfAsProcessor ? selfAsProcessor.getId() : "null") +
                 '}';
     }
 
