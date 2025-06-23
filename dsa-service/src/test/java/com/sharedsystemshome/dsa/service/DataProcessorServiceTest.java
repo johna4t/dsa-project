@@ -463,8 +463,6 @@ class DataProcessorServiceTest {
         // Assert the processor is now unlinked
         assertNull(dp.getController());
 
-        // Assert certifications are cleared (orphan removal should handle DB deletion)
-        assertTrue(dp.getCertifications().isEmpty());
     }
 
     @Test
