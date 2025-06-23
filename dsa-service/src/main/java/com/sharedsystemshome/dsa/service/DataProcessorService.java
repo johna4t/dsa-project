@@ -177,16 +177,13 @@ public class DataProcessorService {
                 .findFirst()
                 .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_PROCESSOR, id));
 
-        dp.setCertifications(null);
-
+        // Orphan
         con.deleteDataProcessor(dpToRemove);
 
-        // Remove from controller's list and break link
-        // con.deleteDataProcessor(dp);
-
         try {
+            // Cascade
             this.dspRepo.save(con); // cascade + orphanRemoval handles actual delete
-            logger.info("Deleted DataProcessor with id: {}", id);
+            logger.info("Deleted Data Processor with id: {}", id);
         } catch (Exception e) {
             throw new AddOrUpdateTransactionException(BusinessValidationException.DATA_SHARING_PARTY, e);
         }
