@@ -28,6 +28,9 @@ public class DataProcessorRepositoryTest {
     @Autowired
     CustomerAccountRepository customerRepo;
 
+    @Autowired
+    DataProcessorCertificationRepository dpCertRepo;
+
     @BeforeEach
     void setUp() {
         //
@@ -266,6 +269,56 @@ public class DataProcessorRepositoryTest {
         assertTrue(acc2Exists, ProcessingCertificationStandard.COBIT + " should still be present.");
 
     }
+
+    @Test
+    void testDeleteDataProcessor_WithDependents() {
+        // Setup: create a controller and save with CustomerAccount
+        DataSharingParty controller = DataSharingParty.builder()
+                .description("Delete Test Controller")
+                .build();
+
+        this.customerRepo.save(CustomerAccount.builder()
+                .name("Delete Test Org")
+                .departmentName("Tech Services")
+                .url("https://delete.org")
+                .branchName("HQ")
+                .dataSharingParty(controller)
+                .build());
+
+        // Create a DataProcessor with two certifications
+        DataProcessor dp = DataProcessor.builder()
+                .name("Delete Me")
+                .website("deleteme.org")
+                .email("delete@dp.org")
+                .description("A processor that will be deleted")
+                .controller(controller)
+                .certifications(List.of(
+                        ProcessingCertificationStandard.CYBER_ESSENTIALS,
+                        ProcessingCertificationStandard.COBIT
+                ))
+                .build();
+
+        dp = this.testSubject.saveAndFlush(dp);
+        Long dpId = dp.getId();
+
+        // Sanity check: processor and certifications were saved
+        assertTrue(this.testSubject.existsById(dpId));
+        DataProcessor fetched = this.testSubject.findById(dpId).orElseThrow();
+        assertEquals(2, this.dpCertRepo.count());
+
+        // Remove from controller (orphan the entity)
+        controller.deleteDataProcessor(fetched);
+        this.dspRepo.saveAndFlush(controller); // should cascade delete orphaned processor
+
+        // Verify deletion
+        assertFalse(this.testSubject.existsById(dpId), "DataProcessor should have been deleted");
+
+        // Assert that dependent certifications are also removed
+        assertEquals(0, this.dpCertRepo.count());
+    }
+
+
+
 
 }
 
