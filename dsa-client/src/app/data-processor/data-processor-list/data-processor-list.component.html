@@ -1,1 +1,77 @@
-<p>data-processor-list works!</p>
+<div class="container" mt-5>
+  <div class="table-header">
+    <h2>Data processors</h2>
+    <!-- <button mat-flat-button color="primary" routerLink="/create-data-content-definition">
+      Add
+    </button> -->
+        <button (click)="createDataProcessor()" mat-flat-button color="primary">
+          Add
+        </button>
+      </div>
+
+  <table mat-table [dataSource]="dataProcessors" class="mat-elevation-z8">
+    <!-- Name column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+    </ng-container>
+
+    <!-- Website column -->
+    <ng-container matColumnDef="website">
+      <th mat-header-cell *matHeaderCellDef>Website</th>
+      <td mat-cell *matCellDef="let element">{{ element.website }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="btnView">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element">
+        <button (click)="viewDataProcessor(element.id)" mat-flat-button color="primary">
+          View
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="btnEdit">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element">
+        <button (click)="updateDataProcessor(element.id)" mat-flat-button color="primary">
+          Edit
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="btnDelete">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element">
+        <button
+          (click)="deleteDataProcessor(element.id)"
+          mat-flat-button
+          color="warn"
+          [disabled]="element.isReferenced"
+        >
+          Delete
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+  <!-- Display if list empty -->
+  <div
+    *ngIf="dataProcessors.length === 0"
+    style="margin-top: 2rem; display: flex; justify-content: center"
+  >
+    <mat-card style="max-width: 600px; text-align: center; padding: 2rem">
+      <mat-card-title>No processors to display</mat-card-title>
+      <mat-card-content>
+        <p>Would you like to add one?</p>
+      </mat-card-content>
+      <mat-card-actions style="justify-content: center">
+        <button (click)="createDataProcessor()" mat-flat-button color="primary">
+          Add Data Processor
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>
