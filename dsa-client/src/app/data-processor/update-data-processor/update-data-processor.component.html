@@ -1,1 +1,91 @@
-<p>update-data-processor works!</p>
+<div class="container mt-5" *ngIf="dpForm && dp">
+  <form [formGroup]="dpForm" (ngSubmit)="onSubmit()">
+    <h2>Update Processor Details: {{ dp.name }}</h2>
+
+    <!-- Main Card -->
+    <div class="card p-2">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Website</mat-label>
+        <input matInput formControlName="website" />
+      </mat-form-field>
+    </div>
+
+    <!-- Certifications Accordion -->
+    <mat-accordion class="mt-3">
+      <mat-expansion-panel class="mat-elevation-z0 custom-expansion-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Certifications</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="p-2">
+          <h4>Information & Cyber Security standards</h4>
+          <mat-checkbox
+            *ngFor="let cert of infoSecStandards"
+            [checked]="isCertificationChecked(cert)"
+            (change)="onCertChange(cert)"
+          >
+            {{ processingCertificationStandardLabels[cert] }}
+          </mat-checkbox>
+
+          <h4 class="mt-3">Privacy standards</h4>
+          <mat-checkbox
+            *ngFor="let cert of privacyStandards"
+            [checked]="isCertificationChecked(cert)"
+            (change)="onCertChange(cert)"
+          >
+            {{ processingCertificationStandardLabels[cert] }}
+          </mat-checkbox>
+
+          <h4 class="mt-3">BCDR standards</h4>
+          <mat-checkbox
+            *ngFor="let cert of bcdrStandards"
+            [checked]="isCertificationChecked(cert)"
+            (change)="onCertChange(cert)"
+          >
+            {{ processingCertificationStandardLabels[cert] }}
+          </mat-checkbox>
+
+          <h4 class="mt-3">Governance & Service Management standards</h4>
+          <mat-checkbox
+            *ngFor="let cert of governanceStandards"
+            [checked]="isCertificationChecked(cert)"
+            (change)="onCertChange(cert)"
+          >
+            {{ processingCertificationStandardLabels[cert] }}
+          </mat-checkbox>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <!-- Buttons -->
+    <div class="mt-3" align="right">
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        style="margin: 5px"
+        [disabled]="shouldDisableSubmit()"
+      >
+        Submit
+      </button>
+      <button
+        mat-flat-button
+        color="accent"
+        style="margin: 5px"
+        routerLink="/data-processors"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
