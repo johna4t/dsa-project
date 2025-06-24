@@ -20,3 +20,7 @@ h2 {
   padding-top: 20px;
   padding-bottom: 0px;
 }
+.custom-expansion-panel {
+  border: 1px solid rgba(0, 0, 0, 0.12); /* same as mat-card */
+  border-radius: 4px;
+}

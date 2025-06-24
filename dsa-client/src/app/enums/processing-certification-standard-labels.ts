@@ -1,7 +1,6 @@
 import { ProcessingCertificationStandard } from './processing-certification-standard.enum';
 
 export const ProcessingCertificationStandardLabels: Record<ProcessingCertificationStandard, string> = {
-  [ProcessingCertificationStandard.NONE]: 'No Certifications',
 
   // Infosec & Cyber standards
   [ProcessingCertificationStandard.ISO_IEC_27001]: 'Information Security Management System (ISMS)',

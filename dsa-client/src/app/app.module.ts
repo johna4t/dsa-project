@@ -7,6 +7,8 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { ExtractDomainPipe } from './extractDomain.pipe';
 import { DataSharingPartyListComponent } from './data-sharing-party/data-sharing-party-list/data-sharing-party-list.component';
 import { CreateDataSharingPartyComponent } from './data-sharing-party/create-data-sharing-party/create-data-sharing-party.component';
@@ -92,26 +94,27 @@ import { DataProcessorListComponent } from './data-processor/data-processor-list
     CreateDataProcessorComponent,
     UpdateDataProcessorComponent,
     DataProcessorDetailsComponent,
-    DataProcessorListComponent
+    DataProcessorListComponent,
   ],
   imports: [
-    BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
     BrowserAnimationsModule,
+    BrowserModule,
     FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
-    MatToolbarModule,
+    HttpClientModule,
     MatButtonModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatExpansionModule,
     MatFormFieldModule,
     MatInputModule,
-    MatTableModule,
-    MatDialogModule,
-    MatSelectModule,
     MatOptionModule,
-    MatCardModule
+    MatSelectModule,
+    MatTableModule,
+    MatToolbarModule,
+    ReactiveFormsModule,
+    RouterModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
@@ -119,8 +122,8 @@ import { DataProcessorListComponent } from './data-processor/data-processor-list
     { provide: HTTP_INTERCEPTORS, useClass: ApiInterceptor, multi: true },
     AccessService,
     AlertifyService,
-    BnNgIdleService
+    BnNgIdleService,
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

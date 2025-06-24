@@ -1,1 +1,91 @@
-<p>data-processor-details works!</p>
+<div class="container mt-5" *ngIf="processor">
+  <form>
+    <h2>Data Processor Details: {{ processor.name }}</h2>
+
+    <!-- Main Details Card -->
+    <div class="card p-2">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Name</mat-label>
+        <input matInput [value]="processor.name" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description</mat-label>
+        <input matInput [value]="processor.description" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Website</mat-label>
+        <input matInput [value]="processor.website" readonly />
+      </mat-form-field>
+    </div>
+    <br/>
+    <!-- Certifications Accordion -->
+    <mat-accordion class="mt-3">
+      <mat-expansion-panel class="mat-elevation-z0 custom-expansion-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Certifications
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="p-2">
+          <!-- Information & Cyber Security standards -->
+          <h4>Information & Cyber Security standards</h4>
+          <mat-checkbox
+            *ngFor="let cert of infoSecStandards"
+            [checked]="processor.certifications.includes(cert)"
+            disabled
+          >
+            {{ processingCertificationStandardLabels[cert] }}
+          </mat-checkbox>
+
+          <!-- Privacy standards -->
+          <h4 class="mt-3">Privacy standards</h4>
+          <mat-checkbox
+            *ngFor="let cert of privacyStandards"
+            [checked]="processor.certifications.includes(cert)"
+            disabled
+          >
+            {{ processingCertificationStandardLabels[cert] }}
+          </mat-checkbox>
+
+          <!-- BCDR standards -->
+          <h4 class="mt-3">BCDR standards</h4>
+          <mat-checkbox
+            *ngFor="let cert of bcdrStandards"
+            [checked]="processor.certifications.includes(cert)"
+            disabled
+          >
+            {{ processingCertificationStandardLabels[cert] }}
+          </mat-checkbox>
+
+          <!-- Governance & Service Management standards -->
+          <h4 class="mt-3">Governance & Service Management standards</h4>
+          <mat-checkbox
+            *ngFor="let cert of governanceStandards"
+            [checked]="processor.certifications.includes(cert)"
+            disabled
+          >
+            {{ processingCertificationStandardLabels[cert] }}
+          </mat-checkbox>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <!-- Buttons -->
+    <div class="mt-3" align="right">
+      <button mat-flat-button color="primary" (click)="updateDataProcessor(processor.id)">
+        Edit
+      </button>
+      <button
+        mat-flat-button
+        color="accent"
+        style="margin: 5px"
+        routerLink="/data-processors"
+      >
+        Back
+      </button>
+    </div>
+  </form>
+</div>

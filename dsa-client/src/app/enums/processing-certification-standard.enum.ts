@@ -1,5 +1,4 @@
 export enum ProcessingCertificationStandard {
-  NONE = 'NONE',
 
   // Infosec & Cyber standards
   ISO_IEC_27001 = 'ISO_IEC_27001',
