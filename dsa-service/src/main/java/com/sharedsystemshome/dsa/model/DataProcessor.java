@@ -75,7 +75,7 @@ public class DataProcessor implements Referenceable, Owned {
             mappedBy = "dataProcessor",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    private List<DataProcessorCertification> certifications = new ArrayList<>();;
+    private List<DataProcessorCertification> certifications = new ArrayList<>();
 
 
     @JsonIncludeProperties({"id"})
@@ -142,23 +142,28 @@ public class DataProcessor implements Referenceable, Owned {
     }
 
     public void setCertifications(List<ProcessingCertificationStandard> certifications) {
-        // Always reinitialize with a new mutable list
-        // Always start with a new mutable list
-        this.certifications = new ArrayList<>();
+        if (certifications == null) return;
 
-        if (certifications != null) {
-            // Use a Set to ensure uniqueness
-            Set<ProcessingCertificationStandard> uniqueCerts = new LinkedHashSet<>(certifications);
+        // Build a set of current and updated cert names
+        Set<ProcessingCertificationStandard> existingCerts = this.certifications.stream()
+                .map(DataProcessorCertification::getName)
+                .collect(Collectors.toSet());
 
-            for (ProcessingCertificationStandard cert : uniqueCerts) {
-                if (cert != null) {
-                    this.certifications.add(
-                            DataProcessorCertification.builder()
-                                    .name(cert)
-                                    .dataProcessor(this)
-                                    .build()
-                    );
-                }
+        Set<ProcessingCertificationStandard> updatedSet = new HashSet<>(certifications);
+
+        // Remove certifications that are no longer in the updated list
+        this.certifications.removeIf(cert ->
+                !updatedSet.contains(cert.getName()));
+
+        // Add certifications that are new
+        for (ProcessingCertificationStandard cert : updatedSet) {
+            if (!existingCerts.contains(cert)) {
+                this.certifications.add(
+                        DataProcessorCertification.builder()
+                                .name(cert)
+                                .dataProcessor(this) // important for orphanRemoval
+                                .build()
+                );
             }
         }
     }
