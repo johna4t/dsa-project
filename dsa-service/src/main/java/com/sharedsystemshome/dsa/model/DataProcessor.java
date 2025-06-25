@@ -141,31 +141,25 @@ public class DataProcessor implements Referenceable, Owned {
                 .toList();
     }
 
-    public void setCertifications(List<ProcessingCertificationStandard> certifications) {
-        if (certifications == null) return;
 
-        // Build a set of current and updated cert names
-        Set<ProcessingCertificationStandard> existingCerts = this.certifications.stream()
+    public void setCertifications(List<ProcessingCertificationStandard> newStandards) {
+        if (newStandards == null) newStandards = new ArrayList<>();
+
+        Set<ProcessingCertificationStandard> current = this.certifications.stream()
                 .map(DataProcessorCertification::getName)
                 .collect(Collectors.toSet());
 
-        Set<ProcessingCertificationStandard> updatedSet = new HashSet<>(certifications);
+        Set<ProcessingCertificationStandard> updated = new HashSet<>(newStandards);
 
-        // Remove certifications that are no longer in the updated list
-        this.certifications.removeIf(cert ->
-                !updatedSet.contains(cert.getName()));
+        // Remove those no longer present
+        current.stream()
+                .filter(existing -> !updated.contains(existing))
+                .forEach(this::removeCertification);
 
-        // Add certifications that are new
-        for (ProcessingCertificationStandard cert : updatedSet) {
-            if (!existingCerts.contains(cert)) {
-                this.certifications.add(
-                        DataProcessorCertification.builder()
-                                .name(cert)
-                                .dataProcessor(this) // important for orphanRemoval
-                                .build()
-                );
-            }
-        }
+        // Add new ones
+        updated.stream()
+                .filter(cert -> !current.contains(cert))
+                .forEach(this::addCertification);
     }
 
     public void addCertification(ProcessingCertificationStandard standard) {
@@ -194,6 +188,8 @@ public class DataProcessor implements Referenceable, Owned {
             });
         }
     }
+
+
 
     @Override
     public String toString() {
