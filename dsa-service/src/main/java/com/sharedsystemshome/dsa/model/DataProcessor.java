@@ -189,6 +189,14 @@ public class DataProcessor implements Referenceable, Owned {
         }
     }
 
+    @Transient
+    @JsonProperty("isSelfAsProcessor")
+    public Boolean isSelfAsProcessor() {
+
+        // if processor represents DSP
+        return this.controller.getSelfAsProcessor().getId().equals(id);
+
+    }
 
 
     @Override
@@ -212,9 +220,10 @@ public class DataProcessor implements Referenceable, Owned {
     @JsonProperty("isReferenced")
     public Boolean isReferenced() {
 
-        // if processor represents DSP
-        if (this.controller.getSelfAsProcessor().getId().equals(id)) return true;
+        // If this processor represents the DSP, it is always referenced
+        if (isSelfAsProcessor()) return true;
 
+        // Otherwise, check if it is referenced in any data processing activity
         return this.associatedDataProcessing != null && !this.associatedDataProcessing.isEmpty();
     }
 
