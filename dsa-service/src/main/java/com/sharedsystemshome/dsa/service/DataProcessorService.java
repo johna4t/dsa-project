@@ -32,7 +32,7 @@ public class DataProcessorService {
 
     // CREATE
     public Long createDataProcessor(DataProcessor processor) {
-        logger.debug("Entering createDataProcessor with processor: {}", processor);
+        logger.debug("Entering method DataProcessorService::createDataProcessor with processor: {}", processor);
 
         if (processor == null) {
             throw new NullOrEmptyValueException(BusinessValidationException.DATA_PROCESSOR);
@@ -63,7 +63,7 @@ public class DataProcessorService {
     //READ
     @GetMapping("/{id}")
     public DataProcessor getDataProcessorById(@PathVariable Long id) {
-        logger.debug("Entering DataProcessorController::getDataProcessorById with id: {}", id);
+        logger.debug("Entering method DataProcessorService::getDataProcessorById with id: {}", id);
 
         DataProcessor dp = this.dpRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_PROCESSOR, id));
@@ -74,7 +74,7 @@ public class DataProcessorService {
 
     @GetMapping
     public List<DataProcessor> getDataProcessors(@PathVariable Long custId) {
-        logger.debug("Entering DataProcessorController::getDataProcessors for custId: {}", custId);
+        logger.debug("Entering method DataProcessorService::getDataProcessors for custId: {}", custId);
 
         List<DataProcessor> dps = Optional.ofNullable(this.dpRepo.findByControllerId(custId))
                 .orElse(Collections.emptyList());
@@ -86,7 +86,7 @@ public class DataProcessorService {
 
     @Transactional
     public void updateDataProcessor(DataProcessor dp) {
-        logger.debug("Entering method DataProcessor::updateDataProcessor");
+        logger.debug("Entering method method DataProcessorService::updateDataProcessor");
 
         if (null == dp) {
             throw new NullOrEmptyValueException(BusinessValidationException.DATA_PROCESSOR);
@@ -112,35 +112,39 @@ public class DataProcessorService {
             String website,
             List<ProcessingCertificationStandard> certifications) {
 
-        logger.debug("Entering method DataProcessor::updateDataProcessor");
+        logger.debug("Entering method DataProcessorService::updateDataProcessor");
 
         DataProcessor dp = this.dpRepo.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_PROCESSOR, id));
 
-        if (null != name && !name.isEmpty()) {
-            String oldName = dp.getName();
-            if (!Objects.equals(oldName, name)) {
-                dp.setName(name);
-                logger.info("Updated value of property DataProcessor::name from {} to {}, " +
-                        "for DataProcessor with id: {}", oldName, name, id);
+        // Non-editable fields if Data Processor is DSP (i.e. self)
+        if(!dp.isSelfAsProcessor()){
+            if (null != name && !name.isEmpty()) {
+                String oldName = dp.getName();
+                if (!Objects.equals(oldName, name)) {
+                    dp.setName(name);
+                    logger.info("Updated value of property DataProcessor::name from {} to {}, " +
+                            "for DataProcessor with id: {}", oldName, name, id);
+                }
+            }
+            if (null != description) {
+                String oldDescription = dp.getDescription();
+                if (!Objects.equals(oldDescription, description)) {
+                    dp.setDescription(description);
+                    logger.info("Updated value of property DataProcessor::description from {} to {}, " +
+                            "for DataProcessor with id: {}", oldDescription, description, id);
+                }
+            }
+            if (null != website && !website.isEmpty()) {
+                String oldWebsite = dp.getWebsite();
+                if (!Objects.equals(oldWebsite, website)) {
+                    dp.setWebsite(website);
+                    logger.info("Updated value of property DataProcessor::website from {} to {}, " +
+                            "for DataProcessor with id: {}", oldWebsite, website, id);
+                }
             }
         }
-        if (null != description) {
-            String oldDescription = dp.getDescription();
-            if (!Objects.equals(oldDescription, description)) {
-                dp.setDescription(description);
-                logger.info("Updated value of property DataProcessor::description from {} to {}, " +
-                        "for DataProcessor with id: {}", oldDescription, description, id);
-            }
-        }
-        if (null != website && !website.isEmpty()) {
-            String oldWebsite = dp.getWebsite();
-            if (!Objects.equals(oldWebsite, website)) {
-                dp.setWebsite(website);
-                logger.info("Updated value of property DataProcessor::website from {} to {}, " +
-                        "for DataProcessor with id: {}", oldWebsite, website, id);
-            }
-        }
+
         if (null != email) {
             String oldEmail = dp.getEmail();
             if (!Objects.equals(oldEmail, email)) {
@@ -159,7 +163,7 @@ public class DataProcessorService {
     //DELETE
     @Transactional
     public void deleteDataProcessor(Long id) {
-        logger.debug("Entering deleteDataProcessor with id: {}", id);
+        logger.debug("Entering method DataProcessorService::deleteDataProcessor with id: {}", id);
 
         DataProcessor dp = this.dpRepo.findById(id).
                 orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_PROCESSOR, id));
