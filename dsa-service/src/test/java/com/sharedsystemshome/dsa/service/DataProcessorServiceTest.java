@@ -212,6 +212,12 @@ class DataProcessorServiceTest {
     @Test
     public void testUpdateDataProcessor_WithValidData() {
 
+        Long conId = 12L;
+        DataSharingParty con = DataSharingParty.builder()
+                .id(conId)
+                .description("Service Test DSP")
+                .build();
+
         Long dpId = 1L;
 
         String oldName = "Test DP";
@@ -219,8 +225,24 @@ class DataProcessorServiceTest {
         String oldEmail = "js@email.com";
         String oldWebsite = "www.old.com";
 
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
+
         DataProcessor dp = DataProcessor.builder()
                 .id(dpId)
+                .controller(con)
                 .name(oldName)
                 .description(oldDesc)
                 .website(oldWebsite)
@@ -267,6 +289,12 @@ class DataProcessorServiceTest {
 
     @Test
     public void testUpdateDataProcessor_WithNoChange() {
+        Long conId = 12L;
+        DataSharingParty con = DataSharingParty.builder()
+                .id(conId)
+                .description("Service Test DSP")
+                .build();
+
         Long dpId = 1L;
 
         String oldName = "Test DP";
@@ -274,14 +302,31 @@ class DataProcessorServiceTest {
         String oldEmail = "js@email.com";
         String oldWebsite = "www.old.com";
 
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
 
         DataProcessor dp = DataProcessor.builder()
                 .id(dpId)
+                .controller(con)
                 .name(oldName)
                 .description(oldDesc)
-                .email(oldEmail)
                 .website(oldWebsite)
-                .certifications(new ArrayList<>(List.of(ProcessingCertificationStandard.CYBER_ESSENTIALS)))
+                .email(oldEmail)
+                .certifications(List.of(
+                        ProcessingCertificationStandard.ISO_IEC_22301,
+                        ProcessingCertificationStandard.CYBER_ESSENTIALS))
                 .build();
 
         when(this.dpMockRepo.findById(dpId)).thenReturn(Optional.of(dp));
@@ -313,22 +358,46 @@ class DataProcessorServiceTest {
 
     @Test
     public void testUpdateDataProcessor_WithEmptyString() {
+        Long conId = 12L;
+        DataSharingParty con = DataSharingParty.builder()
+                .id(conId)
+                .description("Service Test DSP")
+                .build();
+
         Long dpId = 1L;
 
-        // Initial values
         String oldName = "Test DP";
         String oldDesc = "Old description";
         String oldEmail = "js@email.com";
         String oldWebsite = "www.old.com";
 
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
+
         DataProcessor dp = DataProcessor.builder()
                 .id(dpId)
+                .controller(con)
                 .name(oldName)
                 .description(oldDesc)
-                .email(oldEmail)
                 .website(oldWebsite)
-                .certifications(new ArrayList<>(List.of(ProcessingCertificationStandard.CYBER_ESSENTIALS)))
+                .email(oldEmail)
+                .certifications(List.of(
+                        ProcessingCertificationStandard.ISO_IEC_22301,
+                        ProcessingCertificationStandard.CYBER_ESSENTIALS))
                 .build();
+
 
         when(this.dpMockRepo.findById(dpId)).thenReturn(Optional.of(dp));
 
@@ -368,22 +437,44 @@ class DataProcessorServiceTest {
 
     @Test
     public void testUpdateDataProcessor_WithNullData() {
+        Long conId = 12L;
+        DataSharingParty con = DataSharingParty.builder()
+                .id(conId)
+                .description("Service Test DSP")
+                .build();
+
         Long dpId = 1L;
 
-        // Initial values
         String oldName = "Test DP";
         String oldDesc = "Old description";
         String oldEmail = "js@email.com";
         String oldWebsite = "www.old.com";
 
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
 
         DataProcessor dp = DataProcessor.builder()
                 .id(dpId)
+                .controller(con)
                 .name(oldName)
                 .description(oldDesc)
-                .email(oldEmail)
                 .website(oldWebsite)
-                .certifications(new ArrayList<>(List.of(ProcessingCertificationStandard.CYBER_ESSENTIALS)))
+                .email(oldEmail)
+                .certifications(List.of(
+                        ProcessingCertificationStandard.ISO_IEC_22301,
+                        ProcessingCertificationStandard.CYBER_ESSENTIALS))
                 .build();
 
         when(this.dpMockRepo.findById(dpId)).thenReturn(Optional.of(dp));
