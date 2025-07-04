@@ -76,12 +76,27 @@ public class DataProcessorService {
     public List<DataProcessor> getDataProcessors(@PathVariable Long custId) {
         logger.debug("Entering method DataProcessorService::getDataProcessors for custId: {}", custId);
 
-        List<DataProcessor> dps = Optional.ofNullable(this.dpRepo.findByControllerId(custId))
-                .orElse(Collections.emptyList());
+        List<DataProcessor> dps = this.dpRepo.findByControllerId(custId);
+
+        List<DataProcessor> result = new ArrayList<>();
+
+        for (DataProcessor dp : dps) {
+            DataProcessor copy = DataProcessor.builder()
+                    .id(dp.getId())
+                    .controller(dp.getController())
+                    .name(dp.getName())
+                    .email(dp.getEmail())
+                    .description(dp.getDescription())
+                    .website(dp.getWebsite())
+                    .certifications(dp.getCertifications())
+                    .build();
+
+            result.add(copy);
+        }
 
         logger.info("Found {} DataProcessors for custId: {}", dps.size(), custId);
 
-        return dps;
+        return result;
     }
 
     @Transactional
