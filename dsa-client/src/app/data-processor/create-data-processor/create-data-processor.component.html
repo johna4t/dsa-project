@@ -1,1 +1,91 @@
-<p>create-data-processor works!</p>
+<div class="container mt-5" *ngIf="dpForm">
+  <form [formGroup]="dpForm" (ngSubmit)="onSubmit()">
+    <h2>Create New Data Processor</h2>
+
+    <!-- Main Card -->
+    <div class="card p-2">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" placeholder="Enter processor name" required />
+        <mat-error *ngIf="dpForm.get('name')?.hasError('required')">Name is required</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Website</mat-label>
+        <input matInput formControlName="website" placeholder="Enter website url" required />
+        <mat-error *ngIf="dpForm.get('website')?.hasError('required')">Website url is required</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description" placeholder="Enter description" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Contact email</mat-label>
+        <input matInput formControlName="email" placeholder="Enter contact email address" />
+      </mat-form-field>
+    </div>
+    <br/>
+    <!-- Certifications Accordion -->
+    <mat-accordion class="mt-3">
+      <mat-expansion-panel class="mat-elevation-z0 custom-expansion-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Certifications</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="p-2">
+          <h4>Information & Cyber Security standards</h4>
+          <ng-container *ngFor="let cert of infoSecStandards; let i = index">
+            <mat-checkbox [formControl]="getCertControl(i)">
+              {{ processingCertificationStandardLabels[cert] }}
+            </mat-checkbox>
+          </ng-container>
+
+          <h4 class="mt-3">Privacy standards</h4>
+          <ng-container *ngFor="let cert of privacyStandards; let i = index">
+            <mat-checkbox [formControl]="getCertControl(i + infoSecStandards.length)">
+              {{ processingCertificationStandardLabels[cert] }}
+            </mat-checkbox>
+          </ng-container>
+
+          <h4 class="mt-3">BCDR standards</h4>
+          <ng-container *ngFor="let cert of bcdrStandards; let i = index">
+            <mat-checkbox
+              [formControl]="getCertControl(i + infoSecStandards.length + privacyStandards.length)">
+              {{ processingCertificationStandardLabels[cert] }}
+            </mat-checkbox>
+          </ng-container>
+
+          <h4 class="mt-3">Governance & Service Management standards</h4>
+          <ng-container *ngFor="let cert of governanceStandards; let i = index">
+            <mat-checkbox
+              [formControl]="
+                getCertControl(
+                  i + infoSecStandards.length + privacyStandards.length + bcdrStandards.length
+                )
+              ">
+              {{ processingCertificationStandardLabels[cert] }}
+            </mat-checkbox>
+          </ng-container>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+
+    <!-- Buttons -->
+    <div class="mt-3" align="right">
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        style="margin: 5px"
+        [disabled]="shouldDisableSubmit()">
+        Submit
+      </button>
+      <button mat-flat-button color="accent" style="margin: 5px" routerLink="/data-processors">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
+
