@@ -80,6 +80,8 @@ public class DataProcessorService {
 
         List<DataProcessor> result = new ArrayList<>();
 
+        if(null == dps) return result;
+
         for (DataProcessor dp : dps) {
             DataProcessor copy = DataProcessor.builder()
                     .id(dp.getId())
