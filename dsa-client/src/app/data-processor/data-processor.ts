@@ -5,9 +5,10 @@ export class DataProcessor {
   controller!: DataSharingParty;
   name = '';
   description?: string;
-  certifications: ProcessingCertificationStandard[] = [];;
-  email = '';
-  website?: string;
+  certifications: ProcessingCertificationStandard[] = [];
+  email?: string;
+  website = '';
+  isSelfAsProcessor = false;
   isReferenced = false;
 
 }

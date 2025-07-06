@@ -15,7 +15,7 @@ export class UpdateDataProcessorComponent implements OnInit {
   id = 0;
   dpForm!: FormGroup;
   dp!: DataProcessor;
-  originalFormValue: any;
+  originalFormValues: any;
 
   processingCertificationStandardLabels = ProcessingCertificationStandardLabels;
 
@@ -47,7 +47,7 @@ export class UpdateDataProcessorComponent implements OnInit {
     private route: ActivatedRoute,
     private dpService: DataProcessorService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -55,7 +55,7 @@ export class UpdateDataProcessorComponent implements OnInit {
     this.dpService.getDataProcessorById(this.id).subscribe((response) => {
       this.dp = response;
       this.initForm(response);
-      this.originalFormValue = this.dpForm.getRawValue();
+      this.originalFormValues = this.dpForm.getRawValue();
     });
   }
 
@@ -64,14 +64,15 @@ export class UpdateDataProcessorComponent implements OnInit {
 
     this.dpForm = this.fb.group({
       name: [dp.name, Validators.required],
+      website: [dp.website, Validators.required],
       description: [dp.description],
-      website: [dp.website],
+      email: [dp.email],
       certifications: this.fb.array(
-        allCerts.map(
-          (cert) => new FormControl(dp.certifications.includes(cert))
-        )
+        allCerts.map((cert) => new FormControl(dp.certifications.includes(cert))),
       ),
     });
+
+
   }
 
   get certificationsArray(): FormArray {
@@ -88,9 +89,9 @@ export class UpdateDataProcessorComponent implements OnInit {
   }
 
   onSubmit(): void {
-    const selectedCerts = this.getAllCerts().filter(
-      (_, i) => this.certificationsArray.at(i).value
-    );
+    if (this.shouldDisableSubmit()) return;
+
+    const selectedCerts = this.getAllCerts().filter((_, i) => this.certificationsArray.at(i).value);
 
     const updated: DataProcessor = {
       ...this.dp,
@@ -99,19 +100,24 @@ export class UpdateDataProcessorComponent implements OnInit {
     };
 
     this.dpService.putDataProcessor(this.id, updated).subscribe(() => {
-      this.router.navigate(['/data-processors']);
+      this.originalFormValues = this.dpForm.getRawValue();
+      this.router.navigate(['/view-data-processor', this.id]);
     });
   }
 
   shouldDisableSubmit(): boolean {
-    return !this.dpForm.dirty || this.dpForm.pristine;
+    return this.dpForm.invalid || this.isFormUnchanged();
+  }
+
+  isFormUnchanged(): boolean {
+    return JSON.stringify(this.dpForm.getRawValue()) === JSON.stringify(this.originalFormValues);
   }
 
   getCertIndex(cert: ProcessingCertificationStandard): number {
-  return this.getAllCerts().indexOf(cert);
-}
+    return this.getAllCerts().indexOf(cert);
+  }
 
-getCertControl(index: number): FormControl {
-  return this.certificationsArray.at(index) as FormControl;
-}
+  getCertControl(index: number): FormControl {
+    return this.certificationsArray.at(index) as FormControl;
+  }
 }

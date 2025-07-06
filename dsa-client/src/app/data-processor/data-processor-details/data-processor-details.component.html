@@ -10,13 +10,18 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Website</mat-label>
+        <input matInput [value]="processor.website" readonly />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
         <mat-label>Description</mat-label>
         <input matInput [value]="processor.description" readonly />
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-100">
-        <mat-label>Website</mat-label>
-        <input matInput [value]="processor.website" readonly />
+        <mat-label>Email</mat-label>
+        <input matInput [value]="processor.email" readonly />
       </mat-form-field>
     </div>
     <br/>
@@ -25,7 +30,7 @@
       <mat-expansion-panel class="mat-elevation-z0 custom-expansion-panel">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            Certifications
+            View certifications
           </mat-panel-title>
         </mat-expansion-panel-header>
 
