@@ -63,8 +63,8 @@ public class SharedDataContent {
     public String toString() {
         return "SharedDataContent{" +
                 "id=" + id +
-                ", dataFlow=" + dataFlow +
-                ", dataContentDefinition=" + dataContentDefinition +
+                ", dataFlow=" + (null != dataFlow ? dataFlow.getId() : "null") +
+                ", dataContentDefinition=" + (null != dataContentDefinition ? dataContentDefinition.getId() : "null") +
                 '}';
     }
 

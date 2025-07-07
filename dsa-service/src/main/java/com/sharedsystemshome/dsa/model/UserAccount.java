@@ -75,7 +75,6 @@ public class UserAccount implements UserDetails {
             columnDefinition = "TEXT")
     private String jobTitle;
 
-    @JsonIgnore
     @NotBlank(message = "User Account password null or empty.")
     @Column(name = "PASSWORD",
             nullable = false,

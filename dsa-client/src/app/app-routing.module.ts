@@ -26,6 +26,10 @@ import { DataContentDefinitionListComponent } from './data-content-definition/da
 import { CreateDataContentDefinitionComponent } from './data-content-definition/create-data-content-definition/create-data-content-definition.component';
 import { UpdateDataContentDefinitionComponent } from './data-content-definition/update-data-content-definition/update-data-content-definition.component';
 import { DataContentDefinitionDetailsComponent } from './data-content-definition/data-content-definition-details/data-content-definition-details.component';
+import { CreateDataProcessorComponent } from './data-processor/create-data-processor/create-data-processor.component';
+import { UpdateDataProcessorComponent } from './data-processor/update-data-processor/update-data-processor.component';
+import { DataProcessorDetailsComponent } from './data-processor/data-processor-details/data-processor-details.component';
+import { DataProcessorListComponent } from './data-processor/data-processor-list/data-processor-list.component';
 import { authGuard } from './access/auth/auth.guard';
 
 const routes: Routes = [
@@ -165,6 +169,34 @@ const routes: Routes = [
     path: 'create-data-content-definition',
     title: 'Add data content definition',
     component: CreateDataContentDefinitionComponent,
+    canActivate: [authGuard],
+    data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
+  },
+    {
+    path: 'data-processors',
+    title: 'View data processors',
+    component: DataProcessorListComponent,
+    canActivate: [authGuard],
+    data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
+  },
+  {
+    path: 'update-data-processor/:id',
+    title: 'Update data processor',
+    component: UpdateDataProcessorComponent,
+    canActivate: [authGuard],
+    data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
+  },
+{
+    path: 'view-data-processor/:id',
+    title: 'View data processor',
+    component: DataProcessorDetailsComponent,
+    canActivate: [authGuard],
+    data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
+  },
+  {
+    path: 'create-data-processor',
+    title: 'Add data processor',
+    component: CreateDataProcessorComponent,
     canActivate: [authGuard],
     data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
   },

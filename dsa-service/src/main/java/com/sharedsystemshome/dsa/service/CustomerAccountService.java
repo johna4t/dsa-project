@@ -43,7 +43,7 @@ public class CustomerAccountService {
 
         List<UserAccount> users = customer.getUsers();
 
-        if(null == users || 0 == users.size()){
+        if(null == users || users.isEmpty()){
             throw new NullOrEmptyCollectionException(BusinessValidationException.USER_ACCOUNT);
         } else if(1 < users.size()) {
             throw new BusinessValidationException(BusinessValidationException.USER_ACCOUNT + " member collection contains too many values.");

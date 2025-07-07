@@ -4,12 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sharedsystemshome.dsa.datatype.Address;
-import com.sharedsystemshome.dsa.enums.Article9Condition;
-import com.sharedsystemshome.dsa.enums.MetadataScheme;
-import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
+import com.sharedsystemshome.dsa.enums.*;
 import com.sharedsystemshome.dsa.model.*;
 import com.sharedsystemshome.dsa.repository.*;
-import com.sharedsystemshome.dsa.enums.LawfulBasis;
 import com.sharedsystemshome.dsa.security.model.Permission;
 import com.sharedsystemshome.dsa.security.enums.PermissionType;
 import com.sharedsystemshome.dsa.security.enums.RoleType;
@@ -34,6 +31,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Period;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +51,7 @@ public class ApplicationConfig {
     private Map<String, DataFlow> dfs = new HashMap<>();
     private Map<String, Role> roles = new HashMap<>();
     private Map<String, Permission> permissions = new HashMap<>();
+    private Map<String, DataProcessor> processors = new HashMap<>();
 
     private Map<String, UserAccount> users = new HashMap<>();
 
@@ -66,6 +65,7 @@ public class ApplicationConfig {
                                         RoleRepository roleRepo,
                                         PermissionRepository permissionRepo,
                                         CustomerAccountRepository customerRepo,
+                                        DataProcessorRepository processorRepo,
                                         PasswordEncoder encoder
     ){
         logger.info("Entering method ApplicationConfig::commandLineRunner");
@@ -82,6 +82,9 @@ public class ApplicationConfig {
 
             //DCD is instantiated with owning DCD
             this.createDataContentPerspectives(dcpRepo);
+
+            //DCD is instantiated with owning DCD
+            this.createDataProcessors(processorRepo);
 
             //DSA is instantiated with CustomerAccount
             this.createDataSharingAgreements(dsaRepo);
@@ -274,6 +277,66 @@ public class ApplicationConfig {
         this.dcps.put("dcpB", dcpB);
         this.dcps.put("dcpC", dcpC);
         this.dcps.put("dcp99", dcp99);
+
+    }
+
+    private void createDataProcessors(DataProcessorRepository dpRepo) {
+
+        //Create Data Processors with DataSharingParty controller
+
+        DataProcessor dpA = DataProcessor.builder()
+                .name("Test Processor A")
+                .description("Test Processor A description")
+                .controller(this.dsps.get("dspA"))
+                .email("a.someonea@email.com")
+                .certifications(List.of(
+                        ProcessingCertificationStandard.ISO_IEC_27001,
+                        ProcessingCertificationStandard.NIST_SP,
+                        ProcessingCertificationStandard.ISO_IEC_20000_1
+                ))
+                .website("pa.com")
+                .build();
+
+        DataProcessor dpB = DataProcessor.builder()
+                .name("Test Processor A")
+                .description("Test Processor B description")
+                .controller(this.dsps.get("dspB"))
+                .email("b.someonea@email.com")
+                .certifications(List.of(
+                        ProcessingCertificationStandard.ISO_IEC_27031,
+                        ProcessingCertificationStandard.ISO_IEC_27701,
+                        ProcessingCertificationStandard.NIST_SP,
+                        ProcessingCertificationStandard.COBIT,
+                        ProcessingCertificationStandard.ISO_IEC_27018
+                ))
+                .website("pb.com")
+                .build();
+
+        DataProcessor dpC = DataProcessor.builder()
+                .name("Test Processor C")
+                .description("Test Processor C description")
+                .controller(this.dsps.get("dspC"))
+                .email("c.someonea@email.com")
+                .certifications(List.of(
+                        ProcessingCertificationStandard.NIST_SP
+                ))
+                .website("pc.com")
+                .build();
+
+        DataProcessor dp99 = DataProcessor.builder()
+                .name("Test Processor 99")
+                .description("Test Processor 99 description")
+                .controller(this.dsps.get("dsp99"))
+                .email("someonea@email.com")
+                .website("p99.com")
+                .build();
+
+        dpRepo.saveAll(List.of(dpA, dpB, dpC, dp99));
+
+        this.processors.put("dpA", dpA);
+        this.processors.put("dpB", dpB);
+        this.processors.put("dpC", dpC);
+        this.processors.put("dp99", dp99);
 
     }
 

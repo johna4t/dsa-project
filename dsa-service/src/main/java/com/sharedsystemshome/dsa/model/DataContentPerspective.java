@@ -7,17 +7,15 @@ import com.sharedsystemshome.dsa.enums.SpecialCategoryData;
 import com.sharedsystemshome.dsa.util.conversion.HashMapConverter;
 import jakarta.persistence.*;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@Data
 @Entity
 @Table(name = "DATA_CONTENT_PERSPECTIVE")
-@Getter
-@Setter
 public class DataContentPerspective {
 
     // DCP id and primary key

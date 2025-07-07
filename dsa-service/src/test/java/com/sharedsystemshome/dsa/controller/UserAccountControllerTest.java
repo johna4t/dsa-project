@@ -283,7 +283,7 @@ class UserAccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(jsonPath("$.length()").value(12))
+                .andExpect(jsonPath("$.length()").value(13))
                 // Verify the response body using JSONPath
                 .andExpect(jsonPath("$.id").value(user1_Id))
                 .andExpect(jsonPath("$.firstName").value(firstName1))

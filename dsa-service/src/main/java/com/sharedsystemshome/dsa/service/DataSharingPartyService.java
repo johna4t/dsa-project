@@ -1,6 +1,7 @@
 package com.sharedsystemshome.dsa.service;
 
 import com.sharedsystemshome.dsa.model.DataContentDefinition;
+import com.sharedsystemshome.dsa.model.DataFlow;
 import com.sharedsystemshome.dsa.model.DataSharingParty;
 import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
 import com.sharedsystemshome.dsa.util.*;
@@ -126,7 +127,7 @@ public class DataSharingPartyService {
 
 
     //DELETE
-    public void deleteDataSharingParty(Long id){
+/*    public void deleteDataSharingParty(Long id){
         boolean exists = this.dspRepo.existsById(id);
 
         if(!exists){
@@ -136,6 +137,33 @@ public class DataSharingPartyService {
         this.dspRepo.deleteById(id);
         logger.info("Deleted DataSharingParty with id: {}", id);
 
+    }*/
+
+    @Transactional
+    public void deleteDataSharingParty(Long id){
+        logger.debug("Entering DataSharingParty::deleteDataSharingParty with id: {}", id);
+
+        DataSharingParty dsp = this.dspRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(BusinessValidationException.DATA_SHARING_PARTY, id));
+
+        // Break DataFlow links (non-cascaded)
+        for (DataFlow flow : dsp.getProvidedDataFlows()) {
+            flow.setProvider(null);
+        }
+        for (DataFlow flow : dsp.getConsumedDataFlows()) {
+            flow.setConsumer(null);
+        }
+        dsp.getProvidedDataFlows().clear();
+        dsp.getConsumedDataFlows().clear();
+
+        // Orphan selfAsProcessor explicitly
+        dsp.setSelfAsProcessor(null);
+
+        // Optional: also remove associated CustomerAccount if needed
+        // customerAccountRepo.delete(dsp.getAccount());
+
+        this.dspRepo.delete(dsp);
+        logger.info("Deleted DataSharingParty with id: {}", id);
     }
 
     // Private methods

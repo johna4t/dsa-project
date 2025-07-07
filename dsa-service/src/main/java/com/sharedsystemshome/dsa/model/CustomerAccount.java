@@ -94,7 +94,6 @@ public class CustomerAccount {
     @PrimaryKeyJoinColumn
     private DataSharingParty dataSharingParty;
 
-    @JsonIncludeProperties({"id"})
     @OneToMany(
             mappedBy = "parentAccount",
             cascade = CascadeType.ALL,

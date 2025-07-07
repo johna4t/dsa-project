@@ -106,6 +106,14 @@ public class DataContentDefinition implements Referenceable, Owned {
     )
     private List<SharedDataContent> associatedDataFlows = new ArrayList<>();
 
+    @JsonIncludeProperties({"id"})
+    @OneToMany(
+            mappedBy = "dataContentDefinition",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<DataProcessingActivity> associatedDataProcessing = new ArrayList<>();
+
     @Builder
     public DataContentDefinition(
             Long id,
@@ -195,7 +203,9 @@ public class DataContentDefinition implements Referenceable, Owned {
     @Override
     @JsonProperty("isReferenced")
     public Boolean isReferenced() {
-        return this.associatedDataFlows != null && !this.associatedDataFlows.isEmpty();
+
+        return (this.associatedDataFlows != null && !this.associatedDataFlows.isEmpty())
+                || (this.associatedDataProcessing != null && !this.associatedDataProcessing.isEmpty());
     }
 
     @Override

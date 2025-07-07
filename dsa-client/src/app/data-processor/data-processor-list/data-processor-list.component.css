@@ -1,0 +1,15 @@
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+  .table-header h2 {
+    margin: 0;
+  }
+
+  .table-header button {
+    margin-top: 8px;
+  }

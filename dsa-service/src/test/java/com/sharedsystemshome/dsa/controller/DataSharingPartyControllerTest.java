@@ -62,6 +62,12 @@ class DataSharingPartyControllerTest {
                 .dataSharingParty(dsp)
                 .build();
 
+        // Simulate saving customer
+        dsp.setAccount(cust);
+
+        // Simulate db generating id
+        dsp.getSelfAsProcessor().setId(999L);
+
         when(this.dspMockService.createDataSharingParty(any())).thenReturn(dspId);
 
         String payload = new ObjectMapper()
@@ -101,6 +107,12 @@ class DataSharingPartyControllerTest {
                 .dataSharingParty(dsp1)
                 .build();
 
+        // Simulate saving customer
+        dsp1.setAccount(cust1);
+
+        // Simulate db generating id
+        dsp1.getSelfAsProcessor().setId(999L);
+
         Long dsp2_Id = 2L;
         String dsp2_name = "DSP 2";
         DataSharingParty dsp2 = DataSharingParty.builder()
@@ -117,6 +129,12 @@ class DataSharingPartyControllerTest {
                 .branchName("Test BU")
                 .dataSharingParty(dsp2)
                 .build();
+
+        // Simulate saving customer
+        dsp2.setAccount(cust2);
+
+        // Simulate db generating id
+        dsp2.getSelfAsProcessor().setId(888L);
 
         List<DataSharingParty> dsps = new ArrayList<>();
         dsps.add(dsp1);
@@ -161,6 +179,12 @@ class DataSharingPartyControllerTest {
                 .dataSharingParty(dsp)
                 .build();
 
+        // Simulate saving customer
+        dsp.setAccount(cust);
+
+        // Simulate db generating id
+        dsp.getSelfAsProcessor().setId(999L);
+
         when(this.dspMockService.getDataSharingPartyById(dspId)).thenReturn(dsp);
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
@@ -199,6 +223,14 @@ class DataSharingPartyControllerTest {
                 .branchName("Test BU")
                 .dataSharingParty(updatedDsp)
                 .build();
+
+        // Simulate saving customer
+        updatedDsp.setAccount(cust);
+
+        // Simulate db generating id
+        updatedDsp.getSelfAsProcessor().setId(999L);
+
+
 
 
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders
