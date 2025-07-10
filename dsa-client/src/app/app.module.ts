@@ -57,6 +57,10 @@ import { CreateDataProcessorComponent } from './data-processor/create-data-proce
 import { UpdateDataProcessorComponent } from './data-processor/update-data-processor/update-data-processor.component';
 import { DataProcessorDetailsComponent } from './data-processor/data-processor-details/data-processor-details.component';
 import { DataProcessorListComponent } from './data-processor/data-processor-list/data-processor-list.component';
+import { CreateDataProcessingActivityComponent } from './data-processing-activity/create-data-processing-activity/create-data-processing-activity.component';
+import { UpdateDataProcessingActivityComponent } from './data-processing-activity/update-data-processing-activity/update-data-processing-activity.component';
+import { DataProcessingActivityDetailsComponent } from './data-processing-activity/data-processing-activity-details/data-processing-activity-details.component';
+import { DataProcessingActivityListComponent } from './data-processing-activity/data-processing-activity-list/data-processing-activity-list.component';
 
 @NgModule({
   declarations: [
@@ -95,6 +99,10 @@ import { DataProcessorListComponent } from './data-processor/data-processor-list
     UpdateDataProcessorComponent,
     DataProcessorDetailsComponent,
     DataProcessorListComponent,
+    CreateDataProcessingActivityComponent,
+    UpdateDataProcessingActivityComponent,
+    DataProcessingActivityDetailsComponent,
+    DataProcessingActivityListComponent,
   ],
   imports: [
     AppRoutingModule,

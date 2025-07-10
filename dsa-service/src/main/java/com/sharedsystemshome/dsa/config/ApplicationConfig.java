@@ -52,6 +52,7 @@ public class ApplicationConfig {
     private Map<String, Role> roles = new HashMap<>();
     private Map<String, Permission> permissions = new HashMap<>();
     private Map<String, DataProcessor> processors = new HashMap<>();
+    private Map<String, DataProcessingActivity> activities = new HashMap<>();
 
     private Map<String, UserAccount> users = new HashMap<>();
 
@@ -66,6 +67,7 @@ public class ApplicationConfig {
                                         PermissionRepository permissionRepo,
                                         CustomerAccountRepository customerRepo,
                                         DataProcessorRepository processorRepo,
+                                        DataProcessingActivityRepository activityRepo,
                                         PasswordEncoder encoder
     ){
         logger.info("Entering method ApplicationConfig::commandLineRunner");
@@ -85,6 +87,9 @@ public class ApplicationConfig {
 
             //DCD is instantiated with owning DCD
             this.createDataProcessors(processorRepo);
+
+            // DPA is instantiated with DCD and DataProcessor
+            this.createDataProcessingActivities(activityRepo);
 
             //DSA is instantiated with CustomerAccount
             this.createDataSharingAgreements(dsaRepo);
@@ -352,6 +357,24 @@ public class ApplicationConfig {
                 .retentionPeriod(Period.ofYears(5))
                 .build();
 
+        DataContentDefinition dcdA2 = DataContentDefinition.builder()
+                .name("Test DCD A2")
+                .description("Test DCD A2 description")
+                .provider(this.dsps.get("dspA"))
+                .ownerEmail("a2.someonea@email.com")
+                .sourceSystem("System A2")
+                .retentionPeriod(Period.ofYears(1))
+                .build();
+
+        DataContentDefinition dcdA3 = DataContentDefinition.builder()
+                .name("Test DCD A3")
+                .description("Test DCD A3 description")
+                .provider(this.dsps.get("dspA"))
+                .ownerEmail("a3.someonea@email.com")
+                .sourceSystem("System A3")
+                .retentionPeriod(Period.ofMonths(18))
+                .build();
+
         DataContentDefinition dcdB = DataContentDefinition.builder()
                 .name("Test DCD B")
                 .description("Test DCD B description")
@@ -379,12 +402,70 @@ public class ApplicationConfig {
                 .retentionPeriod(Period.ofWeeks(27))
                 .build();
 
-        dcdRepo.saveAll(List.of(dcdA, dcdB, dcdC, dcd99));
+        dcdRepo.saveAll(List.of(dcdA, dcdA2, dcdA3, dcdB, dcdC, dcd99));
 
         this.dcds.put("dcdA", dcdA);
+        this.dcds.put("dcdA2", dcdA2);
+        this.dcds.put("dcdA3", dcdA3);
         this.dcds.put("dcdB", dcdB);
         this.dcds.put("dcdC", dcdC);
         this.dcds.put("dcd99", dcd99);
+
+    }
+
+    private void createDataProcessingActivities(DataProcessingActivityRepository dpaRepo){
+
+        DataProcessingActivity dpaA = DataProcessingActivity.builder()
+                .dataProcessor(this.processors.get("dpA"))
+                .dataContentDefinition(this.dcds.get("dcdA"))
+                .name("Test DP Activity A")
+                .description("Test DP Activity A description.")
+                .build();
+
+        DataProcessingActivity dpaA2 = DataProcessingActivity.builder()
+                .dataProcessor(this.processors.get("dpA"))
+                .dataContentDefinition(this.dcds.get("dcdA2"))
+                .name("Test DP Activity A2")
+                .description("Test DP Activity A2 description.")
+                .build();
+
+        DataProcessingActivity dpaA3 = DataProcessingActivity.builder()
+                .dataProcessor(this.processors.get("dpA"))
+                .dataContentDefinition(this.dcds.get("dcdA3"))
+                .name("Test DP Activity A3")
+                .description("Test DP Activity A3 description.")
+                .build();
+
+        DataProcessingActivity dpaB = DataProcessingActivity.builder()
+                .dataProcessor(this.processors.get("dpB"))
+                .dataContentDefinition(this.dcds.get("dcdB"))
+                .name("Test DP Activity B")
+                .description("Test DP Activity B description.")
+                .build();
+
+        DataProcessingActivity dpaC = DataProcessingActivity.builder()
+                .dataProcessor(this.processors.get("dpC"))
+                .dataContentDefinition(this.dcds.get("dcdC"))
+                .name("Test DP Activity C")
+                .description("Test DP Activity C description.")
+                .build();
+
+        DataProcessingActivity dpa99 = DataProcessingActivity.builder()
+                .dataProcessor(this.processors.get("dp99"))
+                .dataContentDefinition(this.dcds.get("dcd99"))
+                .name("Test DP Activity 99")
+                .description("Test DP Activity 9 description.")
+                .build();
+
+
+        dpaRepo.saveAll(List.of(dpaA, dpaA2, dpaA3,dpaB, dpaC, dpa99));
+
+        this.activities.put("dpaA", dpaA);
+        this.activities.put("dpaA2", dpaA2);
+        this.activities.put("dpaA3", dpaA3);
+        this.activities.put("dpaB", dpaB);
+        this.activities.put("dpaC", dpaC);
+        this.activities.put("dpa99", dpa99);
 
     }
 

@@ -1,3 +1,4 @@
+import { DataProcessingActivity } from '../data-processing-activity/data-processing-activity';
 import { DataSharingParty } from '../data-sharing-party/data-sharing-party';
 import { ProcessingCertificationStandard } from '../enums/processing-certification-standard.enum';
 export class DataProcessor {
@@ -8,6 +9,7 @@ export class DataProcessor {
   certifications: ProcessingCertificationStandard[] = [];
   email?: string;
   website = '';
+  associatedDataProcessing: DataProcessingActivity[] = [];
   isSelfAsProcessor = false;
   isReferenced = false;
 

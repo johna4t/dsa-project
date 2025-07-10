@@ -77,8 +77,6 @@ public class DataProcessor implements Referenceable, Owned {
             orphanRemoval = true)
     private List<DataProcessorCertification> certifications = new ArrayList<>();
 
-
-    @JsonIncludeProperties({"id"})
     @OneToMany(
             mappedBy = "dataProcessor",
             cascade = CascadeType.ALL,

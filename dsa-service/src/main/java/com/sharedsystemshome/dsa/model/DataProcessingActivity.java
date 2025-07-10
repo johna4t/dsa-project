@@ -2,14 +2,18 @@ package com.sharedsystemshome.dsa.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
+import com.sharedsystemshome.dsa.enums.DataContentType;
 import com.sharedsystemshome.dsa.enums.MetadataScheme;
 import com.sharedsystemshome.dsa.util.BusinessValidationException;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.sharedsystemshome.dsa.util.BusinessValidationException.DATA_CONTENT_PERSPECTIVE;
@@ -40,7 +44,7 @@ public class DataProcessingActivity {
     private Long id;
 
     // Many-to-One with DataProcessor (cascade delete allowed)
-    @JsonIncludeProperties({"id"})
+    @JsonIncludeProperties({"id", "name"})
     @ManyToOne(optional = false)
     @JoinColumn(
             name = "processorId",
@@ -49,7 +53,7 @@ public class DataProcessingActivity {
     private DataProcessor dataProcessor;
 
     // Many-to-One with DataContentDefinition (deletion blocked if referenced)
-    @JsonIncludeProperties({"id"})
+    @JsonIncludeProperties({"id", "name"})
     @ManyToOne(optional = false)
     @JoinColumn(
             name = "dcdId",
@@ -57,13 +61,34 @@ public class DataProcessingActivity {
             nullable = false)
     private DataContentDefinition dataContentDefinition;
 
+    @NotNull(message = "Data Processing Activity name is null.")
+    @Column(name = "DPA_NAME",
+            nullable = false)
+    private String name;
+
+    @Column(name = "DPA_DESC",
+            nullable = true)
+    private String description;
+
+
+    @OneToMany(mappedBy = "processingActivity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DataProcessingAction> actionsPerformed;
+
     @Builder
-    public DataProcessingActivity(
-            DataProcessor dataProcessor,
-            DataContentDefinition dataContentDefinition) {
+    public DataProcessingActivity(Long id,
+                                  DataProcessor dataProcessor,
+                                  DataContentDefinition dataContentDefinition,
+                                  String name,
+                                  String description) {
+        this.id = id;
         this.dataProcessor = dataProcessor;
         this.dataContentDefinition = dataContentDefinition;
+        this.name = name;
+        this.description = description;
     }
+
+
+
 
     @Override
     public String toString() {
