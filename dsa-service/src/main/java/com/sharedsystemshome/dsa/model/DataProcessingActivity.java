@@ -1,22 +1,14 @@
 package com.sharedsystemshome.dsa.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
-import com.sharedsystemshome.dsa.enums.DataContentType;
-import com.sharedsystemshome.dsa.enums.MetadataScheme;
-import com.sharedsystemshome.dsa.util.BusinessValidationException;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Objects;
-
-import static com.sharedsystemshome.dsa.util.BusinessValidationException.DATA_CONTENT_PERSPECTIVE;
 
 
 @Data
@@ -27,7 +19,7 @@ import static com.sharedsystemshome.dsa.util.BusinessValidationException.DATA_CO
                 )
         })
 @NoArgsConstructor
-public class DataProcessingActivity {
+public class DataProcessingActivity implements Owned  {
 
     @Id
     @SequenceGenerator(
@@ -88,8 +80,6 @@ public class DataProcessingActivity {
     }
 
 
-
-
     @Override
     public String toString() {
         return "DataProcessingActivity{" +
@@ -97,6 +87,22 @@ public class DataProcessingActivity {
                 ", dataProcessor=" + (null != dataProcessor ? dataProcessor.getId() : "null") +
                 ", dataContentDefinition=" + (null != dataContentDefinition ? dataContentDefinition.getId() : "null") +
                 '}';
+    }
+
+    @Override
+    public Long ownerId() {
+        return this.dataProcessor.getController().getId();
+    }
+
+    @Override
+    public Long objectId() {
+        return this.getId();
+    }
+
+    @Override
+    public String entityName() {
+
+        return DataProcessingActivity.class.getSimpleName().replaceAll("([a-z])([A-Z])", "$1 $2");
     }
 
     @Override
@@ -110,4 +116,7 @@ public class DataProcessingActivity {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+
+
 }
