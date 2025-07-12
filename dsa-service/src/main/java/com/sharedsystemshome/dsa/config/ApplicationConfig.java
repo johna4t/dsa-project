@@ -43,18 +43,18 @@ import java.util.Map;
 public class ApplicationConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
-    private Map<String, DataContentDefinition> dcds = new HashMap<>();
-    private Map<String, DataContentPerspective> dcps = new HashMap<>();
-    private Map<String, CustomerAccount> customers = new HashMap<>();
-    private Map<String, DataSharingParty> dsps = new HashMap<>();
-    private Map<String, DataSharingAgreement> dsas = new HashMap<>();
-    private Map<String, DataFlow> dfs = new HashMap<>();
-    private Map<String, Role> roles = new HashMap<>();
-    private Map<String, Permission> permissions = new HashMap<>();
-    private Map<String, DataProcessor> processors = new HashMap<>();
-    private Map<String, DataProcessingActivity> activities = new HashMap<>();
-
-    private Map<String, UserAccount> users = new HashMap<>();
+    private final Map<String, DataContentDefinition> dcds = new HashMap<>();
+    private final Map<String, DataContentPerspective> dcps = new HashMap<>();
+    private final Map<String, CustomerAccount> customers = new HashMap<>();
+    private final Map<String, DataSharingParty> dsps = new HashMap<>();
+    private final Map<String, DataSharingAgreement> dsas = new HashMap<>();
+    private final Map<String, DataFlow> dfs = new HashMap<>();
+    private final Map<String, Role> roles = new HashMap<>();
+    private final Map<String, Permission> permissions = new HashMap<>();
+    private final Map<String, DataProcessor> processors = new HashMap<>();
+    private final Map<String, DataProcessingActivity> activities = new HashMap<>();
+    private final Map<String, DataProcessingAction> actions = new HashMap<>();
+    private final Map<String, UserAccount> users = new HashMap<>();
 
 
     @Bean
@@ -68,6 +68,7 @@ public class ApplicationConfig {
                                         CustomerAccountRepository customerRepo,
                                         DataProcessorRepository processorRepo,
                                         DataProcessingActivityRepository activityRepo,
+                                        DataProcessingActionRepository actionRepo,
                                         PasswordEncoder encoder
     ){
         logger.info("Entering method ApplicationConfig::commandLineRunner");
@@ -90,6 +91,9 @@ public class ApplicationConfig {
 
             // DPA is instantiated with DCD and DataProcessor
             this.createDataProcessingActivities(activityRepo);
+
+            // DPA is instantiated with DCD and DataProcessor
+            this.createDataProcessingActions(actionRepo);
 
             //DSA is instantiated with CustomerAccount
             this.createDataSharingAgreements(dsaRepo);
@@ -243,6 +247,28 @@ public class ApplicationConfig {
                 .dataContentDefinition(this.dcds.get("dcdA"))
                 .build();
 
+        DataContentPerspective dcpA2 = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                                "lawfulBasis", LawfulBasis.NOT_PERSONAL_DATA.name(),
+                                "specialCategory", SpecialCategoryData.NOT_SPECIAL_CATEGORY_DATA.name(),
+                                "article9Condition", Article9Condition.NOT_APPLICABLE.name()
+                        )
+                )
+                .dataContentDefinition(this.dcds.get("dcdA2"))
+                .build();
+
+        DataContentPerspective dcpA3 = DataContentPerspective.builder()
+                .metadataScheme(MetadataScheme.GDPR)
+                .metadata(Map.of(
+                                "lawfulBasis", LawfulBasis.LEGITIMATE_INTERESTS.name(),
+                                "specialCategory", SpecialCategoryData.POLITICAL.name(),
+                                "article9Condition", Article9Condition.REASONS_OF_PUBLIC_INTEREST.name()
+                        )
+                )
+                .dataContentDefinition(this.dcds.get("dcdA3"))
+                .build();
+
         DataContentPerspective dcpB = DataContentPerspective.builder()
                 .metadataScheme(MetadataScheme.GDPR)
                 .metadata(Map.of(
@@ -276,9 +302,11 @@ public class ApplicationConfig {
                 .dataContentDefinition(this.dcds.get("dcd99"))
                 .build();
 
-        dcpRepo.saveAll(List.of(dcpA, dcpB, dcpC, dcp99));
+        dcpRepo.saveAll(List.of(dcpA, dcpA2, dcpA3, dcpB, dcpC, dcp99));
 
         this.dcps.put("dcpA", dcpA);
+        this.dcps.put("dcpA2", dcpA2);
+        this.dcps.put("dcpA3", dcpA3);
         this.dcps.put("dcpB", dcpB);
         this.dcps.put("dcpC", dcpC);
         this.dcps.put("dcp99", dcp99);
@@ -413,44 +441,44 @@ public class ApplicationConfig {
 
     }
 
-    private void createDataProcessingActivities(DataProcessingActivityRepository dpaRepo){
+    private void createDataProcessingActivities(DataProcessingActivityRepository dpvRepo){
 
-        DataProcessingActivity dpaA = DataProcessingActivity.builder()
+        DataProcessingActivity dpvA = DataProcessingActivity.builder()
                 .dataProcessor(this.processors.get("dpA"))
                 .dataContentDefinition(this.dcds.get("dcdA"))
                 .name("Test DP Activity A")
                 .description("Test DP Activity A description.")
                 .build();
 
-        DataProcessingActivity dpaA2 = DataProcessingActivity.builder()
+        DataProcessingActivity dpvA2 = DataProcessingActivity.builder()
                 .dataProcessor(this.processors.get("dpA"))
                 .dataContentDefinition(this.dcds.get("dcdA2"))
                 .name("Test DP Activity A2")
                 .description("Test DP Activity A2 description.")
                 .build();
 
-        DataProcessingActivity dpaA3 = DataProcessingActivity.builder()
+        DataProcessingActivity dpvA3 = DataProcessingActivity.builder()
                 .dataProcessor(this.processors.get("dpA"))
                 .dataContentDefinition(this.dcds.get("dcdA3"))
                 .name("Test DP Activity A3")
                 .description("Test DP Activity A3 description.")
                 .build();
 
-        DataProcessingActivity dpaB = DataProcessingActivity.builder()
+        DataProcessingActivity dpvB = DataProcessingActivity.builder()
                 .dataProcessor(this.processors.get("dpB"))
                 .dataContentDefinition(this.dcds.get("dcdB"))
                 .name("Test DP Activity B")
                 .description("Test DP Activity B description.")
                 .build();
 
-        DataProcessingActivity dpaC = DataProcessingActivity.builder()
+        DataProcessingActivity dpvC = DataProcessingActivity.builder()
                 .dataProcessor(this.processors.get("dpC"))
                 .dataContentDefinition(this.dcds.get("dcdC"))
                 .name("Test DP Activity C")
                 .description("Test DP Activity C description.")
                 .build();
 
-        DataProcessingActivity dpa99 = DataProcessingActivity.builder()
+        DataProcessingActivity dpv99 = DataProcessingActivity.builder()
                 .dataProcessor(this.processors.get("dp99"))
                 .dataContentDefinition(this.dcds.get("dcd99"))
                 .name("Test DP Activity 99")
@@ -458,14 +486,84 @@ public class ApplicationConfig {
                 .build();
 
 
-        dpaRepo.saveAll(List.of(dpaA, dpaA2, dpaA3,dpaB, dpaC, dpa99));
+        dpvRepo.saveAll(List.of(dpvA, dpvA2, dpvA3,dpvB, dpvC, dpv99));
 
-        this.activities.put("dpaA", dpaA);
-        this.activities.put("dpaA2", dpaA2);
-        this.activities.put("dpaA3", dpaA3);
-        this.activities.put("dpaB", dpaB);
-        this.activities.put("dpaC", dpaC);
-        this.activities.put("dpa99", dpa99);
+        this.activities.put("dpvA", dpvA);
+        this.activities.put("dpvA2", dpvA2);
+        this.activities.put("dpvA3", dpvA3);
+        this.activities.put("dpvB", dpvB);
+        this.activities.put("dpvC", dpvC);
+        this.activities.put("dpv99", dpv99);
+
+    }
+
+    private void createDataProcessingActions(DataProcessingActionRepository dpaRepo){
+
+        DataProcessingAction dpaA_1 = DataProcessingAction.builder()
+                .processingActivity(this.activities.get("dpvA"))
+                .actionType(DataProcessingActionType.ACCESS)
+                .description("Test DP Action A.1 description.")
+                .build();
+
+        DataProcessingAction dpaA_2 = DataProcessingAction.builder()
+                .processingActivity(this.activities.get("dpvA"))
+                .actionType(DataProcessingActionType.ANALYSE)
+                .description("Test DP Action A.2 description.")
+                .build();
+
+        DataProcessingAction dpaA_3 = DataProcessingAction.builder()
+                .processingActivity(this.activities.get("dpvA"))
+                .actionType(DataProcessingActionType.PSEUDONYMISE)
+                .description("Test DP Action A.3 description.")
+                .build();
+
+        DataProcessingAction dpaA2_1 = DataProcessingAction.builder()
+                .processingActivity(this.activities.get("dpvA2"))
+                .actionType(DataProcessingActionType.RESTRICT)
+                .description("Test DP Action A2.1 description.")
+                .build();
+
+        DataProcessingAction dpaA2_2 = DataProcessingAction.builder()
+                .processingActivity(this.activities.get("dpvA2"))
+                .actionType(DataProcessingActionType.USE)
+                .description("Test DP Action A2.2 description.")
+                .build();
+
+        DataProcessingAction dpaA2_3 = DataProcessingAction.builder()
+                .processingActivity(this.activities.get("dpvA2"))
+                .actionType(DataProcessingActionType.AGGREGATE)
+                .description("Test DP Action A2.3 description.")
+                .build();
+
+        DataProcessingAction dpaA3_1 = DataProcessingAction.builder()
+                .processingActivity(this.activities.get("dpvA3"))
+                .actionType(DataProcessingActionType.TRANSFORM)
+                .description("Test DP Action A3.1 description.")
+                .build();
+
+        DataProcessingAction dpaA3_2 = DataProcessingAction.builder()
+                .processingActivity(this.activities.get("dpvA3"))
+                .actionType(DataProcessingActionType.PROFILE)
+                .description("Test DP Action A3.2 description.")
+                .build();
+
+        DataProcessingAction dpaA3_3 = DataProcessingAction.builder()
+                .processingActivity(this.activities.get("dpvA3"))
+                .actionType(DataProcessingActionType.ORGANISE)
+                .description("Test DP Action A3.3 description.")
+                .build();
+
+        dpaRepo.saveAll(List.of(dpaA_1, dpaA_2, dpaA_2, dpaA2_1, dpaA2_2, dpaA2_3, dpaA3_1, dpaA3_2, dpaA3_3));
+
+        this.actions.put("dpaA_1", dpaA_1);
+        this.actions.put("dpaA_2", dpaA_2);
+        this.actions.put("dpaA_3", dpaA_3);
+        this.actions.put("dpaA2_1", dpaA2_1);
+        this.actions.put("dpaA2_2", dpaA2_2);
+        this.actions.put("dpaA2_3", dpaA2_3);
+        this.actions.put("dpaA3_1", dpaA3_1);
+        this.actions.put("dpaA3_2", dpaA3_2);
+        this.actions.put("dpaA3_3", dpaA3_3);
 
     }
 
