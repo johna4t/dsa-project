@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 @Data
 @Entity(name = "DataProcessingAction")
@@ -64,5 +65,24 @@ public class DataProcessingAction {
         this.actionType = actionType;
         this.description = description;
         this.processingActivity = processingActivity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DataProcessingAction other)) return false;
+
+        // Normalise descriptions: null, "", and blank are considered equal
+        String desc1 = (this.description == null || this.description.trim().isEmpty()) ? "" : this.description.trim();
+        String desc2 = (other.description == null || other.description.trim().isEmpty()) ? "" : other.description.trim();
+
+        return this.actionType == other.actionType && desc1.equals(desc2);
+    }
+
+    @Override
+    public int hashCode() {
+        // Use normalized description for consistent hashing
+        String normalizedDescription = (description == null || description.trim().isEmpty()) ? "" : description.trim();
+        return Objects.hash(actionType, normalizedDescription);
     }
 }

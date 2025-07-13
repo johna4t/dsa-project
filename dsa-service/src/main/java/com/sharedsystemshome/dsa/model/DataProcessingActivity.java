@@ -2,11 +2,13 @@ package com.sharedsystemshome.dsa.model;
 
 import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,12 +55,13 @@ public class DataProcessingActivity implements Owned  {
             nullable = false)
     private DataContentDefinition dataContentDefinition;
 
-    @NotNull(message = "Data Processing Activity name is null.")
-    @Column(name = "DPA_NAME",
-            nullable = false)
+    @NotBlank(message = "Data Processing Activity name is null or empty.")
+    @Column(name = "NAME",
+            nullable = false,
+            columnDefinition = "TEXT")
     private String name;
 
-    @Column(name = "DPA_DESC",
+    @Column(name = "DESCRIPTION",
             nullable = true)
     private String description;
 
@@ -77,6 +80,31 @@ public class DataProcessingActivity implements Owned  {
         this.dataContentDefinition = dataContentDefinition;
         this.name = name;
         this.description = description;
+    }
+
+    public void addActionPerformed(DataProcessingAction action) {
+        if (action == null) return;
+
+        if (this.actionsPerformed == null) {
+            this.actionsPerformed = new ArrayList<>();
+        }
+
+        // Reject duplicates based on actionType + description
+        boolean alreadyExists = this.actionsPerformed.stream()
+                .anyMatch(existing -> existing.equals(action));
+
+        if (!alreadyExists) {
+            action.setProcessingActivity(this); // set back-reference
+            this.actionsPerformed.add(action);
+        }
+    }
+
+    public void removeActionPerformed(DataProcessingAction action) {
+        if (action == null || this.actionsPerformed == null) return;
+
+        if (this.actionsPerformed.remove(action)) {
+            action.setProcessingActivity(null);
+        }
     }
 
 
