@@ -80,6 +80,17 @@ public class DataProcessingActivity implements Owned  {
         this.dataContentDefinition = dataContentDefinition;
         this.name = name;
         this.description = description;
+
+        this.initialiseDefaultValues();
+    }
+
+    private void initialiseDefaultValues(){
+        if(null != this.dataProcessor){
+            this.dataProcessor.addAssociatedDataProcessing(this);
+        }
+        if(null != this.dataContentDefinition){
+            this.dataContentDefinition.addAssociatedDataProcessing(this);
+        }
     }
 
     public void addActionPerformed(DataProcessingAction action) {

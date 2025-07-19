@@ -169,6 +169,13 @@ public class DataContentDefinition implements Referenceable, Owned {
                 .findFirst();
     }
 
+    public void addAssociatedDataProcessing(DataProcessingActivity dpv){
+        if(null == this.associatedDataProcessing){
+            this.associatedDataProcessing = new ArrayList<>();
+        }
+        this.associatedDataProcessing.add(dpv);
+    }
+
     public void addPerspective(DataContentPerspective perspective) {
         perspective.setDataContentDefinition(this);
         this.perspectives.add(perspective);
@@ -233,5 +240,14 @@ public class DataContentDefinition implements Referenceable, Owned {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public void deleteDataProcessingActivity(DataProcessingActivity dpv) {
+
+        if (dpv == null || this.associatedDataProcessing == null) return;
+
+        if (this.associatedDataProcessing.remove(dpv)) {
+            dpv.setDataContentDefinition(null);
+        }
     }
 }

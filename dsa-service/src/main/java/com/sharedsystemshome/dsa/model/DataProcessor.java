@@ -160,6 +160,13 @@ public class DataProcessor implements Referenceable, Owned {
                 .forEach(this::addCertification);
     }
 
+    public void addAssociatedDataProcessing(DataProcessingActivity dpv){
+        if(null == this.associatedDataProcessing){
+            this.associatedDataProcessing = new ArrayList<>();
+        }
+        this.associatedDataProcessing.add(dpv);
+    }
+
     public void addCertification(ProcessingCertificationStandard standard) {
         if (standard != null) {
             boolean exists = this.certifications.stream()
@@ -254,4 +261,12 @@ public class DataProcessor implements Referenceable, Owned {
     }
 
 
+    public void deleteDataProcessingActivity(DataProcessingActivity dpv) {
+
+        if (dpv == null || this.associatedDataProcessing == null) return;
+
+        if (this.associatedDataProcessing.remove(dpv)) {
+            dpv.setDataContentDefinition(null);
+        }
+    }
 }
