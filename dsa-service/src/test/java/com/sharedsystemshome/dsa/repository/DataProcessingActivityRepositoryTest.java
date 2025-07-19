@@ -9,26 +9,15 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class DataProcessingActivityRepositoryTest {
-
-    final static String CUST_NAME = "Test Customer A";
-    final static String CUST_DEPT = "Test Customer A - Dept A-1";
-    final static String CUST_URL = "www.custA.com";
-    final static String DP_WEBSITE = "www.dpA.com";
-    final static String DP_NAME = "Test DP A";
-    final static String DCD_NAME = "Test DCD A";
-    final static String DCD_OWNER_EMAIL = "ownerDcdA@email.com";
-    final static String DCD_SOURCE_SYST = "Test DCD A System";
-
-    private CustomerAccount customer;
-    private DataProcessor dataProcessor;
-    private DataContentDefinition dcd;
 
     @Autowired
     DataProcessingActivityRepository testSubject;
@@ -54,15 +43,19 @@ public class DataProcessingActivityRepositoryTest {
     }
 
     private CustomerAccount createCustomerAccount() {
+
+        String randomHash =
+                UUID.randomUUID().toString().replace("-", "").substring(0, 8); // 8-char hash
+
         // Create a Customer Account
         return CustomerAccount.builder()
-                .name(CUST_NAME)
-                .departmentName(CUST_DEPT)
-                .url(CUST_URL)
+                .name("Test Customer " + randomHash)
+                .departmentName("Test Customer " + randomHash + " Dept")
+                .url("www.testcust" + randomHash + ".com")
                 .address(new Address())
                 .dataSharingParty(
                         DataSharingParty.builder()
-                                .description("Mid and South Essex NHS Foundation Trust")
+                                .description("Test Customer " + randomHash + " description")
                                 .build()
                 )
                 .build();
@@ -70,22 +63,29 @@ public class DataProcessingActivityRepositoryTest {
 
     private DataProcessor createDataProcessor(DataSharingParty dsp) {
 
+        String randomHash =
+                UUID.randomUUID().toString().replace("-", "").substring(0, 8); // 8-char hash
+
         // Create Data Processor
         return DataProcessor.builder()
-                .name(DP_NAME)
-                .website(DP_WEBSITE)
+                .name("Test DP " + randomHash)
+                .website("www.dp" + randomHash + ".com")
                 .controller(dsp)
                 .build();
     }
 
     private DataContentDefinition createDataContentDefinition(DataSharingParty dsp) {
+
+        String randomHash =
+                UUID.randomUUID().toString().replace("-", "").substring(0, 8); // 8-char hash
+
         // Create DCD
         return DataContentDefinition.builder()
-                .name(DCD_NAME)
+                .name("Test DCD " + randomHash)
                 .dataContentType(DataContentType.NOT_SPECIFIED)
                 .provider(dsp)
-                .ownerEmail(DCD_OWNER_EMAIL)
-                .sourceSystem(DCD_SOURCE_SYST)
+                .ownerEmail(randomHash + "@email.com")
+                .sourceSystem("Test DCD "+ randomHash + " System")
                 .build();
     }
 
@@ -415,6 +415,72 @@ public class DataProcessingActivityRepositoryTest {
 
         assertEquals(2, saved.getActionsPerformed().size());
         assertFalse(saved.getActionsPerformed().contains(dpaRemove));
+
+    }
+
+    @Test
+    void testFindByDataProcessor_Controller_Id() {
+
+        DataSharingParty dspA = this.customerRepo.save(
+                this.createCustomerAccount()).getDataSharingParty();
+
+        DataProcessor dpA1 = this.dpRepo.save(this.createDataProcessor(dspA));
+        DataProcessor dpA2 = this.dpRepo.save(this.createDataProcessor(dspA));
+
+        DataContentDefinition dcdA1 = this.dcdRepo.save(this.createDataContentDefinition(dspA));
+        DataContentDefinition dcdA2 = this.dcdRepo.save(this.createDataContentDefinition(dspA));
+
+
+        DataSharingParty dspB = this.customerRepo.save(
+                this.createCustomerAccount()).getDataSharingParty();
+
+        DataProcessor dpB1 = this.dpRepo.save(this.createDataProcessor(dspB));
+
+        DataContentDefinition dcdB1 = this.dcdRepo.save(this.createDataContentDefinition(dspB));
+
+
+        // Given
+        String nameA1 = "DPV A1";
+
+        DataProcessingActivity dpvA1 = DataProcessingActivity.builder()
+                .dataProcessor(dpA1)
+                .dataContentDefinition(dcdA1)
+                .name(nameA1)
+                .build();
+
+        String nameA2 = "DPV A2";
+
+        DataProcessingActivity dpvA2 = DataProcessingActivity.builder()
+                .dataProcessor(dpA2)
+                .dataContentDefinition(dcdA2)
+                .name(nameA2)
+                .build();
+
+        String nameB1 = "DPV B1";
+
+        DataProcessingActivity dpvB1 = DataProcessingActivity.builder()
+                .dataProcessor(dpB1)
+                .dataContentDefinition(dcdB1)
+                .name(nameB1)
+                .build();
+
+        // When
+        List<DataProcessingActivity> dpvs = new ArrayList<>();
+        dpvs.add(dpvA1);
+        dpvs.add(dpvA2);
+        dpvs.add(dpvB1);
+
+        this.testSubject.saveAll(dpvs);
+
+        List<DataProcessingActivity> foundAOnly =
+                this.testSubject.findByDataProcessor_Controller_Id(dspA.getAccount().getId());
+
+        // Then
+        assertEquals(2, foundAOnly.size());
+        assertTrue(foundAOnly.contains(dpvA1));
+        assertTrue(foundAOnly.contains(dpvA2));
+        assertFalse(foundAOnly.contains(dpvB1));
+
 
     }
 }
