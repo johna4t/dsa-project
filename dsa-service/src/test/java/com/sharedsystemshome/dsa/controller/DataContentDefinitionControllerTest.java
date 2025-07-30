@@ -157,31 +157,46 @@ public class DataContentDefinitionControllerTest {
         verify(userContextMockService, times(1)).validateAccess(dcd);
     }
 
+    @Test
+    void testPutDataContentDefinition() throws Exception {
 
-    @Ignore
-    void testPatchDataContentDefinition() throws Exception {
+        Long dcdId = 3L;
+        DataContentDefinition dcd = DataContentDefinition.builder()
+                .id(dcdId)
+                .name("DCD Name")
+                .dataContentType(DataContentType.PAPER_DOCUMENT)
+                .build();
 
-        String updatedDescription = "Updated description";
+        when(dcdMockService.getDataContentDefinitionById(dcdId)).thenReturn(dcd);
+        when(userContextMockService.validateAccess(dcd)).thenReturn(dcd);
 
-        Long dcdId = 1L;
+        DataContentDefinition dcd2 = DataContentDefinition.builder()
+                .id(dcdId)
+                .name("Updated DCD Name")
+                .dataContentType(DataContentType.UNSTRUCTURED_ELECTRONIC_DATA)
+                .build();
 
-        MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders
-                        .patch("/api/v1/data-content-definitions/" + dcdId)
-                        .param("description", updatedDescription)
+        // Mock the update method
+        doNothing().when(dcdMockService).updateDataContentDefinition(dcd2);
+
+        // Convert payload to JSON
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        String payload = mapper.writeValueAsString(dcd2);
+
+       this.mockMvc.perform(MockMvcRequestBuilders
+                        .put("/api/v1/data-content-definitions/" + dcdId)
+                        .content(payload)
                         .characterEncoding("UTF-8")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().is(204))
-                .andReturn();
+                .andExpect(status().isNoContent());
 
-//        verify(this.dcdMockService, times(1))
-//                .updateDataContentDefinition(
-//                        dcdId,
-//                        null,
-//                        updatedDescription,
-//                        null
-//                );
+        // Verify call chain
+        verify(dcdMockService, times(1)).getDataContentDefinitionById(dcdId);
+        verify(userContextMockService, times(1)).validateAccess(dcd);
+        verify(dcdMockService, times(1)).updateDataContentDefinition(dcd2);
     }
 
 
