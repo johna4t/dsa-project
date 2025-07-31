@@ -1,11 +1,9 @@
 package com.sharedsystemshome.dsa.service;
 
-import com.sharedsystemshome.dsa.enums.DataContentType;
 import com.sharedsystemshome.dsa.model.*;
 import com.sharedsystemshome.dsa.repository.DataContentDefinitionRepository;
 import com.sharedsystemshome.dsa.repository.DataProcessingActivityRepository;
 import com.sharedsystemshome.dsa.repository.DataProcessorRepository;
-import com.sharedsystemshome.dsa.repository.DataSharingPartyRepository;
 import com.sharedsystemshome.dsa.util.AddOrUpdateTransactionException;
 import com.sharedsystemshome.dsa.util.BusinessValidationException;
 import com.sharedsystemshome.dsa.util.EntityNotFoundException;
@@ -16,9 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.*;
 
@@ -85,7 +81,6 @@ public class DataProcessingActivityService {
         }
 
     }
-
 
     //READ
     public DataProcessingActivity getDataProcessingActivityById(@PathVariable Long id) {
