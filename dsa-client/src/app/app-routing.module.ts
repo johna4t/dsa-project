@@ -30,6 +30,10 @@ import { CreateDataProcessorComponent } from './data-processor/create-data-proce
 import { UpdateDataProcessorComponent } from './data-processor/update-data-processor/update-data-processor.component';
 import { DataProcessorDetailsComponent } from './data-processor/data-processor-details/data-processor-details.component';
 import { DataProcessorListComponent } from './data-processor/data-processor-list/data-processor-list.component';
+import { CreateDataProcessingActivityComponent } from './data-processing-activity/create-data-processing-activity/create-data-processing-activity.component';
+import { UpdateDataProcessingActivityComponent } from './data-processing-activity/update-data-processing-activity/update-data-processing-activity.component';
+import { DataProcessingActivityDetailsComponent } from './data-processing-activity/data-processing-activity-details/data-processing-activity-details.component';
+import { DataProcessingActivityListComponent } from './data-processing-activity/data-processing-activity-list/data-processing-activity-list.component';
 import { authGuard } from './access/auth/auth.guard';
 
 const routes: Routes = [
@@ -200,6 +204,35 @@ const routes: Routes = [
     canActivate: [authGuard],
     data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
   },
+  {
+  path: 'data-processing-activities',
+  title: 'View data processing activities',
+  component: DataProcessingActivityListComponent,
+  canActivate: [authGuard],
+  data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
+},
+{
+  path: 'create-data-processing-activity',
+  title: 'Add data processing activity',
+  component: CreateDataProcessingActivityComponent,
+  canActivate: [authGuard],
+  data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
+},
+{
+  path: 'view-data-processing-activity/:id',
+  title: 'View data processing activity',
+  component: DataProcessingActivityDetailsComponent,
+  canActivate: [authGuard],
+  data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
+},
+{
+  path: 'update-data-processing-activity/:id',
+  title: 'Update data processing activity',
+  component: UpdateDataProcessingActivityComponent,
+  canActivate: [authGuard],
+  data: { roles: ['MEMBER', 'ACCOUNT_ADMIN', 'SUPER_ADMIN'] }
+},
+
   // Unguarded routes
   { path: 'create-customer-account', title: 'Create new account', component: CreateCustomerAccountComponent },
   { path: 'enter-customer-details', title: 'Enter customer details', component: EnterCustomerDetailsComponent },

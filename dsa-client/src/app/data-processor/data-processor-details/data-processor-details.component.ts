@@ -78,4 +78,12 @@ governanceStandards = [
   certificationKeys(): ProcessingCertificationStandard[] {
     return Object.values(this.processingCertificationStandard) as ProcessingCertificationStandard[];
   }
+
+  viewDataContentDefinition(id: number) {
+    this.router.navigate(['view-data-content-definition', id]);
+  }
+
+  viewDataProcessingActivity(id: number) {
+    this.router.navigate(['view-data-processing-activity', id]);
+  }
 }

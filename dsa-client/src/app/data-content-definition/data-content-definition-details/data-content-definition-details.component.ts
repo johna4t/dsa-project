@@ -107,4 +107,8 @@ export class DataContentDefinitionDetailsComponent implements OnInit {
     const key = (this.dcd.dataContentType as DataContentType) || 'NOT_SPECIFIED';
     return this.dataContentTypeLabels[key];
   }
+
+  viewDataProcessorDetails(id: number): void {
+  this.router.navigate(['view-data-processor', id]);
+}
 }

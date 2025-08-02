@@ -68,6 +68,53 @@
           <input matInput [value]="getArticle9ConditionLabel()" readonly />
         </mat-form-field>
       </div>
+      <br/>
+      <!-- Data Processing Activities Accordion -->
+      <mat-accordion class="mt-3">
+        <mat-expansion-panel class="mat-elevation-z0 custom-expansion-panel">
+          <mat-expansion-panel-header>
+            <mat-panel-title> View data processors </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <div class="p-2">
+            <table
+              mat-table
+              [dataSource]="dcd.associatedDataProcessing"
+              class="mat-elevation-z1 w-100"
+            >
+              <!-- Data Processor Column -->
+              <ng-container matColumnDef="dataProcessor">
+                <th mat-header-cell *matHeaderCellDef>Data processor name</th>
+                <td mat-cell *matCellDef="let activity">
+                  <a
+                    role="button"
+                    tabindex="0"
+                    class="link"
+                    (click)="viewDataProcessorDetails(activity.dataProcessor.id)"
+                    (keydown.enter)="viewDataProcessorDetails(activity.dataProcessor.id)"
+                    (keydown.space)="viewDataProcessorDetails(activity.dataProcessor.id)"
+                  >
+                    {{ activity.dataProcessor?.name }}
+                  </a>
+                </td>
+              </ng-container>
+
+              <!-- Activity Name Column -->
+              <ng-container matColumnDef="activityName">
+                <th mat-header-cell *matHeaderCellDef>Data processing activity</th>
+                <td mat-cell *matCellDef="let activity">{{ activity.name }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="['dataProcessor', 'activityName']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['dataProcessor', 'activityName']"></tr>
+            </table>
+
+            <div *ngIf="!dcd.associatedDataProcessing?.length" class="mt-3">
+              No associated data processing activities.
+            </div>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
 
       <!-- Buttons section -->
       <div class="mt-3" align="right">
