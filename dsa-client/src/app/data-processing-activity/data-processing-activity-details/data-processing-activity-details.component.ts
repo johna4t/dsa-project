@@ -12,6 +12,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class DataProcessingActivityDetailsComponent implements OnInit {
   id = 0;
   activity: DataProcessingActivity = new DataProcessingActivity();
+  from: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -19,41 +20,61 @@ export class DataProcessingActivityDetailsComponent implements OnInit {
     private router: Router,
   ) {}
 
-  ngOnInit(): void {
-    this.id = this.route.snapshot.params['id'];
-    this.activityService.getDataProcessingActivityById(this.id).subscribe({
-      next: (response) => {
-        this.activity = response;
-      },
-      error: (error: HttpErrorResponse) => {
-        console.error('Failed to fetch data processing activity:', error);
-      },
-    });
-  }
+ngOnInit(): void {
+  // Get the 'id' route param
+  this.id = this.route.snapshot.params['id'];
+
+  // Get the 'from' query param (e.g., 'processor' or 'dcd')
+  this.route.queryParamMap.subscribe(params => {
+    this.from = params.get('from');
+  });
+
+  // Fetch the data processing activity
+  this.activityService.getDataProcessingActivityById(this.id).subscribe({
+    next: (response) => {
+      this.activity = response;
+    },
+    error: (error: HttpErrorResponse) => {
+      console.error('Failed to fetch data processing activity:', error);
+    },
+  });
+}
 
   viewDataContentDefinition(id: number): void {
     this.router.navigate(['view-data-content-definition', id]);
   }
 
-  goBack(): void {
-    this.router.navigate(['/data-processing-activities']);
+  viewDataProcessor(id: number): void {
+    this.router.navigate(['view-data-processor', id]);
   }
 
-  viewDataProcessingActivity(id: number) {
-    this.router.navigate(['view-data-processing-activity', id]);
-  }
-
-  editActivity(): void {
-    this.router.navigate(['update-data-processing-activity', this.id]);
-  }
-
-  goBackToProcessor(): void {
+goBack(): void {
+  if (this.from === 'processor') {
     const processorId = this.activity.dataProcessor?.id;
     if (processorId != null) {
       this.router.navigate(['view-data-processor', processorId]);
     } else {
       this.router.navigate(['/data-processors']);
     }
+  } else if (this.from === 'dcd') {
+    const dcdId = this.activity.dataContentDefinition?.id;
+    if (dcdId != null) {
+      this.router.navigate(['view-data-content-definition', dcdId]);
+    } else {
+      this.router.navigate(['/data-content-definitions']);
+    }
+  } else {
+    this.router.navigate(['/']); // fallback
+  }
+}
+
+
+  viewDataProcessingActivity(id: number) {
+    this.router.navigate(['view-data-processing-activity', id]);
+  }
+
+  editDataProcessingActivity(): void {
+    this.router.navigate(['update-data-processing-activity', this.id]);
   }
 
   toTitleCase(str: string): string {

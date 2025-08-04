@@ -9,10 +9,9 @@ import { ProcessingCertificationStandard } from '../../enums/processing-certific
 @Component({
   selector: 'app-data-processor-details',
   templateUrl: './data-processor-details.component.html',
-  styleUrls: ['./data-processor-details.component.css']
+  styleUrls: ['./data-processor-details.component.css'],
 })
 export class DataProcessorDetailsComponent implements OnInit {
-
   id = 0;
   processor: DataProcessor = new DataProcessor();
 
@@ -20,32 +19,32 @@ export class DataProcessorDetailsComponent implements OnInit {
   processingCertificationStandard = ProcessingCertificationStandard;
 
   infoSecStandards = [
-  ProcessingCertificationStandard.ISO_IEC_27001,
-  ProcessingCertificationStandard.ISO_IEC_27002,
-  ProcessingCertificationStandard.CYBER_ESSENTIALS,
-  ProcessingCertificationStandard.NIST_SP
-];
+    ProcessingCertificationStandard.ISO_IEC_27001,
+    ProcessingCertificationStandard.ISO_IEC_27002,
+    ProcessingCertificationStandard.CYBER_ESSENTIALS,
+    ProcessingCertificationStandard.NIST_SP,
+  ];
 
-privacyStandards = [
-  ProcessingCertificationStandard.ISO_IEC_27701,
-  ProcessingCertificationStandard.ISO_IEC_27018,
-  ProcessingCertificationStandard.NIST_PRIVACY_FRAMEWORK
-];
+  privacyStandards = [
+    ProcessingCertificationStandard.ISO_IEC_27701,
+    ProcessingCertificationStandard.ISO_IEC_27018,
+    ProcessingCertificationStandard.NIST_PRIVACY_FRAMEWORK,
+  ];
 
-bcdrStandards = [
-  ProcessingCertificationStandard.ISO_IEC_22301,
-  ProcessingCertificationStandard.ISO_IEC_27031
-];
+  bcdrStandards = [
+    ProcessingCertificationStandard.ISO_IEC_22301,
+    ProcessingCertificationStandard.ISO_IEC_27031,
+  ];
 
-governanceStandards = [
-  ProcessingCertificationStandard.ISO_IEC_20000_1,
-  ProcessingCertificationStandard.COBIT
-];
+  governanceStandards = [
+    ProcessingCertificationStandard.ISO_IEC_20000_1,
+    ProcessingCertificationStandard.COBIT,
+  ];
 
   constructor(
     private route: ActivatedRoute,
     private dpService: DataProcessorService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -57,7 +56,7 @@ governanceStandards = [
       },
       error: (error: HttpErrorResponse) => {
         console.error('Failed to fetch data processor:', error);
-      }
+      },
     });
   }
 
@@ -71,7 +70,7 @@ governanceStandards = [
     }
 
     return this.processor.certifications
-      .map(cert => this.processingCertificationStandardLabels[cert] || cert)
+      .map((cert) => this.processingCertificationStandardLabels[cert] || cert)
       .join('\n');
   }
 
@@ -84,6 +83,8 @@ governanceStandards = [
   }
 
   viewDataProcessingActivity(id: number) {
-    this.router.navigate(['view-data-processing-activity', id]);
+    this.router.navigate(['view-data-processing-activity', id], {
+      queryParams: { from: 'processor' },
+    });
   }
 }

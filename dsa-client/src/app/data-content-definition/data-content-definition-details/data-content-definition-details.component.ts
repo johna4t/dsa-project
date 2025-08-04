@@ -108,7 +108,13 @@ export class DataContentDefinitionDetailsComponent implements OnInit {
     return this.dataContentTypeLabels[key];
   }
 
-  viewDataProcessorDetails(id: number): void {
-  this.router.navigate(['view-data-processor', id]);
-}
+  viewDataProcessor(id: number): void {
+    this.router.navigate(['view-data-processor', id]);
+  }
+
+  viewDataProcessingActivity(id: number) {
+    this.router.navigate(['view-data-processing-activity', id], {
+      queryParams: { from: 'dcd' },
+    });
+  }
 }

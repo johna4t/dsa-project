@@ -266,7 +266,7 @@ public class DataProcessor implements Referenceable, Owned {
         if (dpv == null || this.associatedDataProcessing == null) return;
 
         if (this.associatedDataProcessing.remove(dpv)) {
-            dpv.setDataContentDefinition(null);
+            dpv.setDataProcessor(null);
         }
     }
 }

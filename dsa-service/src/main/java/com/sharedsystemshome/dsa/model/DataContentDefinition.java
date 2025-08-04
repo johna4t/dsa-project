@@ -153,6 +153,10 @@ public class DataContentDefinition implements Referenceable, Owned {
             this.dataContentType = DataContentType.NOT_SPECIFIED;
         }
 
+        if(null == this.associatedDataProcessing) {
+            this.associatedDataProcessing = new ArrayList<>();
+        }
+
         if(null != this.provider){
             this.provider.addDataContentDefinition(this);
         }
