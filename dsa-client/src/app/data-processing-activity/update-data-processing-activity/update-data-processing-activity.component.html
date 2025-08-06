@@ -1,1 +1,40 @@
-<p>update-data-processing-activity works!</p>
+<div class="container mt-5" *ngIf="form && activity">
+  <form [formGroup]="form">
+    <h2>Update Data Processing Activity</h2>
+
+    <div class="card p-2">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" required />
+        <mat-error *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched">
+          Name is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="5"></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="mt-3" align="right">
+      <button
+        mat-flat-button
+        color="primary"
+        style="margin: 5px"
+        (click)="onSubmit()"
+        [disabled]="!isFormChanged()"
+      >
+        Submit
+      </button>
+      <button
+        mat-flat-button
+        color="accent"
+        style="margin: 5px"
+        (click)="goBack()"
+      >
+        Back
+      </button>
+    </div>
+  </form>
+</div>
