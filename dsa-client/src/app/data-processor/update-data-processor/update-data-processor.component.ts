@@ -5,7 +5,10 @@ import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@ang
 import { DataProcessor } from '../data-processor';
 import { ProcessingCertificationStandard } from '../../enums/processing-certification-standard.enum';
 import { ProcessingCertificationStandardLabels } from '../../enums/processing-certification-standard-labels';
-
+import { ConfirmationDialogComponent } from '../../dialog/material/confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { DataProcessingActivityService } from '../../data-processing-activity/data-processing-activity.service';
+import { DataProcessingActivity } from '../../data-processing-activity/data-processing-activity';
 @Component({
   selector: 'app-update-data-processor',
   templateUrl: './update-data-processor.component.html',
@@ -16,6 +19,7 @@ export class UpdateDataProcessorComponent implements OnInit {
   dpForm!: FormGroup;
   dp!: DataProcessor;
   originalFormValues: any;
+  dataProcessingActivities: DataProcessingActivity[] = [];
 
   processingCertificationStandardLabels = ProcessingCertificationStandardLabels;
 
@@ -48,12 +52,15 @@ export class UpdateDataProcessorComponent implements OnInit {
     private dpService: DataProcessorService,
     private fb: FormBuilder,
     private router: Router,
+    private dataProcessingActivityService: DataProcessingActivityService,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
     this.id = this.route.snapshot.params['id'];
     this.dpService.getDataProcessorById(this.id).subscribe((response) => {
       this.dp = response;
+      this.dataProcessingActivities = response.associatedDataProcessing || [];
       this.initForm(response);
       this.originalFormValues = this.dpForm.getRawValue();
     });
@@ -71,8 +78,6 @@ export class UpdateDataProcessorComponent implements OnInit {
         allCerts.map((cert) => new FormControl(dp.certifications.includes(cert))),
       ),
     });
-
-
   }
 
   get certificationsArray(): FormArray {
@@ -119,5 +124,22 @@ export class UpdateDataProcessorComponent implements OnInit {
 
   getCertControl(index: number): FormControl {
     return this.certificationsArray.at(index) as FormControl;
+  }
+
+  updateDataProcessingActivity(id: number): void {
+    this.router.navigate(['update-data-processing-activity', id], {
+      queryParams: { from: 'data-processor' },
+    });
+  }
+
+  deleteDataProcessingActivity(id: number) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '250px',
+      data: { title: 'Confirm delete', message: 'Delete data asset?' },
+    });
+  }
+
+  viewDataContentDefinition(id: number) {
+    this.router.navigate(['view-data-content-definition', id]);
   }
 }
