@@ -1,8 +1,10 @@
+<!-- update-data-processing-activity.component.html -->
 <div class="container mt-5" *ngIf="form && activity">
   <form [formGroup]="form">
     <h2>Update Data Processing Activity</h2>
 
     <div class="card p-2">
+      <!-- Name -->
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Name</mat-label>
         <input matInput formControlName="name" required />
@@ -11,12 +13,34 @@
         </mat-error>
       </mat-form-field>
 
+      <!-- Data Processor Dropdown -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Data Processor</mat-label>
+        <mat-select formControlName="dataProcessorId" required>
+          <mat-option *ngFor="let dp of dataProcessors" [value]="dp.id">
+            {{ dp.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Data Content Definition Dropdown -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Data Asset (DCD)</mat-label>
+        <mat-select formControlName="dataContentDefinitionId" required>
+          <mat-option *ngFor="let dcd of dataContentDefinitions" [value]="dcd.id">
+            {{ dcd.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Description -->
       <mat-form-field appearance="outline" class="w-100">
         <mat-label>Description</mat-label>
         <textarea matInput formControlName="description" rows="5"></textarea>
       </mat-form-field>
     </div>
 
+    <!-- Buttons -->
     <div class="mt-3" align="right">
       <button
         mat-flat-button
@@ -38,3 +62,4 @@
     </div>
   </form>
 </div>
+
