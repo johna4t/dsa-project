@@ -172,4 +172,10 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
       specialCategory !== 'NOT_SPECIAL_CATEGORY_DATA' && article9Condition === 'NOT_APPLICABLE'
     );
   }
+
+  updateDataProcessingActivity(id: number): void {
+  this.router.navigate(['update-data-processing-activity', id], {
+    queryParams: { from: 'data-content-definition' }
+  });
+}
 }

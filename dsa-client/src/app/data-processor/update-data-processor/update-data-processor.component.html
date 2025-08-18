@@ -1,6 +1,6 @@
 <div class="container mt-5" *ngIf="dpForm && dp">
   <form [formGroup]="dpForm" (ngSubmit)="onSubmit()">
-    <h2>Update Processor Details: {{ dp.name }}</h2>
+    <h2>Update processor details: {{ dp.name }}</h2>
 
     <!-- Main Card -->
     <div class="card p-2">
@@ -24,7 +24,9 @@
         <input matInput formControlName="email" />
       </mat-form-field>
     </div>
+
     <br />
+
     <!-- Certifications Accordion -->
     <mat-accordion class="mt-3">
       <mat-expansion-panel class="mat-elevation-z0 custom-expansion-panel">
@@ -77,18 +79,31 @@
         </div>
       </mat-expansion-panel>
     </mat-accordion>
+
     <br />
 
     <!-- Data Processing Activities Accordion -->
     <mat-expansion-panel class="mat-elevation-z0 custom-expansion-panel mt-3">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          <h3 class="m-0">Edit data processing activities</h3>
+          <div class="d-flex align-items-center justify-content-between w-100">
+            <h3 class="m-0">Edit data processing activities</h3>
+            <button
+              mat-flat-button
+              color="primary"
+              type="button"
+              style="margin-right: 8px"
+              (click)="createDataProcessingActivity()"
+            >
+              Add
+            </button>
+          </div>
         </mat-panel-title>
       </mat-expansion-panel-header>
 
       <div class="p-2">
-        <table mat-table [dataSource]="dp.associatedDataProcessing" class="mat-elevation-z0 w-100">
+        <!-- Table -->
+        <table mat-table [dataSource]="dataProcessingActivities" class="mat-elevation-z0 w-100">
           <!-- Name Column -->
           <ng-container matColumnDef="activityName">
             <th mat-header-cell *matHeaderCellDef>Data processing activity</th>
@@ -120,6 +135,14 @@
                 mat-flat-button
                 color="primary"
                 style="margin: 10px"
+                (click)="viewDataProcessingActivity(activity.id)"
+              >
+                View
+              </button>
+              <button
+                mat-flat-button
+                color="primary"
+                style="margin: 10px"
                 (click)="updateDataProcessingActivity(activity.id)"
               >
                 Edit
@@ -135,12 +158,20 @@
             </td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="['activityName', 'dataAssetName', 'updateAction']"></tr>
+          <tr
+            mat-header-row
+            *matHeaderRowDef="['activityName', 'dataAssetName', 'updateAction']"
+          ></tr>
           <tr
             mat-row
             *matRowDef="let row; columns: ['activityName', 'dataAssetName', 'updateAction']"
           ></tr>
         </table>
+
+        <!-- Optional: empty state -->
+        <div *ngIf="dataProcessingActivities?.length === 0" class="mt-3 text-muted">
+          No data processing activities yet.
+        </div>
       </div>
     </mat-expansion-panel>
 
@@ -155,9 +186,7 @@
       >
         Submit
       </button>
-      <button mat-flat-button color="accent" style="margin: 5px" routerLink="/data-processors">
-        Cancel
-      </button>
+      <button mat-flat-button color="accent" style="margin: 5px" (click)="goBack()">Cancel</button>
     </div>
   </form>
 </div>

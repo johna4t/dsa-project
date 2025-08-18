@@ -5,6 +5,7 @@ import { DataProcessor } from '../data-processor';
 import { DataProcessorService } from '../data-processor.service';
 import { ProcessingCertificationStandardLabels } from '../../enums/processing-certification-standard-labels';
 import { ProcessingCertificationStandard } from '../../enums/processing-certification-standard.enum';
+import { NavigationService } from '../../access/navigation.service';
 
 @Component({
   selector: 'app-data-processor-details',
@@ -44,6 +45,7 @@ export class DataProcessorDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private dpService: DataProcessorService,
+    private navigation: NavigationService,
     private router: Router,
   ) {}
 
@@ -60,10 +62,6 @@ export class DataProcessorDetailsComponent implements OnInit {
     });
   }
 
-  updateDataProcessor(id: number): void {
-    this.router.navigate(['update-data-processor', id]);
-  }
-
   getCertificationsLabel(): string {
     if (!this.processor.certifications || this.processor.certifications.length === 0) {
       return 'No Certifications';
@@ -78,13 +76,15 @@ export class DataProcessorDetailsComponent implements OnInit {
     return Object.values(this.processingCertificationStandard) as ProcessingCertificationStandard[];
   }
 
+  updateDataProcessor(id: number): void {
+    this.navigation.navigateWithReturnTo(['update-data-processor', id]);
+  }
+
   viewDataContentDefinition(id: number) {
-    this.router.navigate(['view-data-content-definition', id]);
+    this.navigation.navigateWithReturnTo(['view-data-content-definition', id]);
   }
 
   viewDataProcessingActivity(id: number) {
-    this.router.navigate(['view-data-processing-activity', id], {
-      queryParams: { from: 'processor' },
-    });
+    this.navigation.navigateWithReturnTo(['view-data-processing-activity', id]);
   }
 }

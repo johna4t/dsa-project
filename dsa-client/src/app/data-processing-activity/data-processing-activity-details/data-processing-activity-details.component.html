@@ -1,6 +1,6 @@
 <div class="container mt-5" *ngIf="activity">
   <form>
-    <h2>Data Processing Activity: {{ activity.name }}</h2>
+    <h2>View Processing Activity Details: {{ activity.name }}</h2>
 
     <!-- Main Details Card -->
     <div class="card p-2">
@@ -80,8 +80,14 @@
       </mat-expansion-panel>
     </mat-accordion>
 
-    <!-- Back Button Only -->
     <div class="mt-3" align="right">
+      <!-- Edit Button Only -->
+      <button mat-flat-button color="primary" style="margin: 5px" (click)="updateDataProcessingActivity(activity.id)">
+        Edit
+      </button>
+
+
+    <!-- Back Button Only -->
       <button mat-flat-button color="accent" style="margin: 5px" (click)="goBack()">
         Back
       </button>
