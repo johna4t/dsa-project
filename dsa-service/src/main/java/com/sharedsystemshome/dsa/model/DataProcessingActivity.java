@@ -15,11 +15,7 @@ import java.util.Objects;
 
 @Data
 @Entity(name = "DataProcessingActivity")
-@Table( name = "DATA_PROCESSING_ACTIVITY",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"processorId", "dcdId"}
-                )
-        })
+@Table(name = "DATA_PROCESSING_ACTIVITY")
 @NoArgsConstructor
 public class DataProcessingActivity implements Owned  {
 
@@ -38,7 +34,7 @@ public class DataProcessingActivity implements Owned  {
     private Long id;
 
     // Many-to-One with DataProcessor (cascade delete allowed)
-    @JsonIncludeProperties({"id", "name"})
+    @JsonIncludeProperties({"id", "name", "controller"})
     @ManyToOne(optional = false)
     @JoinColumn(
             name = "processorId",
