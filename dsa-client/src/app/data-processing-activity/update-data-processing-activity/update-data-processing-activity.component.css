@@ -1,0 +1,34 @@
+/* 3-column grid: 20% | 70% | auto */
+.action-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 20%) minmax(260px, 70%) auto;
+  gap: 0.5rem;
+  align-items: start;
+  width: 100%;
+}
+
+/* Keep inputs from overflowing their grid cells */
+.action-row .w-100 { width: 100%; }
+.action-delete { display: flex; justify-content: flex-end; align-items: center; }
+
+/* Footer aligns Add button with the end of column 2 */
+.footer-row .add-btn-wrap {
+  display: flex;
+  justify-content: flex-end; /* aligns to the end of column 2 */
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 768px) {
+  .action-row {
+    grid-template-columns: 1fr;
+  }
+  .action-delete {
+    justify-content: flex-end; /* button stays on the right when stacked */
+  }
+  .footer-row {
+    grid-template-columns: 1fr;
+  }
+  .footer-row .add-btn-wrap {
+    justify-content: flex-end;
+  }
+}

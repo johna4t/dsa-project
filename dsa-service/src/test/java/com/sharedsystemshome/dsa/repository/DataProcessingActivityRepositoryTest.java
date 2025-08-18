@@ -204,7 +204,7 @@ public class DataProcessingActivityRepositoryTest {
                 .build();
 
         DataProcessingAction dpa2 = DataProcessingAction.builder()
-                .actionType(DataProcessingActionType.TRANSFORM)
+                .actionType(DataProcessingActionType.TRANSFORMATION)
                 .description("Action 2 Description")
                 .build();
 
@@ -343,7 +343,7 @@ public class DataProcessingActivityRepositoryTest {
         DataProcessingActivity saved = this.testSubject.save(dpv);
 
         DataProcessingAction dpa = DataProcessingAction.builder()
-                .actionType(DataProcessingActionType.PROFILE)
+                .actionType(DataProcessingActionType.PROFILING)
                 .description("Action 1 Description")
                 .build();
 
@@ -385,17 +385,17 @@ public class DataProcessingActivityRepositoryTest {
         DataProcessingActivity saved = this.testSubject.save(dpv);
 
         DataProcessingAction dpa1 = DataProcessingAction.builder()
-                .actionType(DataProcessingActionType.PROFILE)
+                .actionType(DataProcessingActionType.PROFILING)
                 .description("Action 1 Description")
                 .build();
 
         DataProcessingAction dpa2 = DataProcessingAction.builder()
-                .actionType(DataProcessingActionType.RESTRICT)
+                .actionType(DataProcessingActionType.RESTRICTION)
                 .description("Action 2 Description")
                 .build();
 
         DataProcessingAction dpa3 = DataProcessingAction.builder()
-                .actionType(DataProcessingActionType.SHARE)
+                .actionType(DataProcessingActionType.SHARING)
                 .description("Action 3 Description")
                 .build();
 

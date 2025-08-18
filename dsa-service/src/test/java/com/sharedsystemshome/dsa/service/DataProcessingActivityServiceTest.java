@@ -273,7 +273,7 @@ class DataProcessingActivityServiceTest {
         dpv.addActionPerformed(dpa1);
 
         DataProcessingAction dpa2 = DataProcessingAction.builder()
-                .actionType(DataProcessingActionType.TRANSFORM)
+                .actionType(DataProcessingActionType.TRANSFORMATION)
                 .description("Action 2 Description")
                 .build();
         dpv.addActionPerformed(dpa2);
@@ -283,7 +283,7 @@ class DataProcessingActivityServiceTest {
         String newName = "New DPV";
         String newDescription = "New Description";
         DataProcessingAction dpa3 = DataProcessingAction.builder()
-                .actionType(DataProcessingActionType.AGGREGATE)
+                .actionType(DataProcessingActionType.AGGREGATION)
                 .description("Action 3 Description")
                 .build();
 
@@ -306,7 +306,7 @@ class DataProcessingActivityServiceTest {
 
         Boolean dpa2Exists = false;
         for (DataProcessingAction dpa : dpv.getActionsPerformed()) {
-            if (dpa.getActionType() == DataProcessingActionType.TRANSFORM) {
+            if (dpa.getActionType() == DataProcessingActionType.TRANSFORMATION) {
                 dpa2Exists = true;
                 break;
             }
@@ -314,7 +314,7 @@ class DataProcessingActivityServiceTest {
 
         Boolean dpa3Exists = false;
         for (DataProcessingAction dpa : dpv.getActionsPerformed()) {
-            if (dpa.getActionType() == DataProcessingActionType.AGGREGATE) {
+            if (dpa.getActionType() == DataProcessingActionType.AGGREGATION) {
                 dpa3Exists = true;
                 break;
             }
@@ -351,7 +351,7 @@ class DataProcessingActivityServiceTest {
         dpv.addActionPerformed(dpa1);
 
         DataProcessingAction dpa2 = DataProcessingAction.builder()
-                .actionType(DataProcessingActionType.TRANSFORM)
+                .actionType(DataProcessingActionType.TRANSFORMATION)
                 .description("Action 2 Description")
                 .build();
         dpv.addActionPerformed(dpa2);
@@ -397,7 +397,7 @@ class DataProcessingActivityServiceTest {
         dpv.addActionPerformed(dpa1);
 
         DataProcessingAction dpa2 = DataProcessingAction.builder()
-                .actionType(DataProcessingActionType.TRANSFORM)
+                .actionType(DataProcessingActionType.TRANSFORMATION)
                 .description("Action 2 Description")
                 .build();
         dpv.addActionPerformed(dpa2);

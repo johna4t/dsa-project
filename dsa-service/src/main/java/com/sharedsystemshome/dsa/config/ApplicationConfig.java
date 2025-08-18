@@ -507,19 +507,19 @@ public class ApplicationConfig {
 
         DataProcessingAction dpaA_2 = DataProcessingAction.builder()
                 .processingActivity(this.activities.get("dpvA"))
-                .actionType(DataProcessingActionType.ANALYSE)
+                .actionType(DataProcessingActionType.ANALYSIS)
                 .description("Test DP Action A.2 description.")
                 .build();
 
         DataProcessingAction dpaA_3 = DataProcessingAction.builder()
                 .processingActivity(this.activities.get("dpvA"))
-                .actionType(DataProcessingActionType.PSEUDONYMISE)
+                .actionType(DataProcessingActionType.PSEUDONYMISATION)
                 .description("Test DP Action A.3 description.")
                 .build();
 
         DataProcessingAction dpaA2_1 = DataProcessingAction.builder()
                 .processingActivity(this.activities.get("dpvA2"))
-                .actionType(DataProcessingActionType.RESTRICT)
+                .actionType(DataProcessingActionType.PROTECTION)
                 .description("Test DP Action A2.1 description.")
                 .build();
 
@@ -531,25 +531,25 @@ public class ApplicationConfig {
 
         DataProcessingAction dpaA2_3 = DataProcessingAction.builder()
                 .processingActivity(this.activities.get("dpvA2"))
-                .actionType(DataProcessingActionType.AGGREGATE)
+                .actionType(DataProcessingActionType.AGGREGATION)
                 .description("Test DP Action A2.3 description.")
                 .build();
 
         DataProcessingAction dpaA3_1 = DataProcessingAction.builder()
                 .processingActivity(this.activities.get("dpvA3"))
-                .actionType(DataProcessingActionType.TRANSFORM)
+                .actionType(DataProcessingActionType.TRANSFORMATION)
                 .description("Test DP Action A3.1 description.")
                 .build();
 
         DataProcessingAction dpaA3_2 = DataProcessingAction.builder()
                 .processingActivity(this.activities.get("dpvA3"))
-                .actionType(DataProcessingActionType.PROFILE)
+                .actionType(DataProcessingActionType.PROFILING)
                 .description("Test DP Action A3.2 description.")
                 .build();
 
         DataProcessingAction dpaA3_3 = DataProcessingAction.builder()
                 .processingActivity(this.activities.get("dpvA3"))
-                .actionType(DataProcessingActionType.ORGANISE)
+                .actionType(DataProcessingActionType.ORGANISATION)
                 .description("Test DP Action A3.3 description.")
                 .build();
 
