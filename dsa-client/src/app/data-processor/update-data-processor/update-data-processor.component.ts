@@ -183,9 +183,14 @@ export class UpdateDataProcessorComponent implements OnInit {
     this.navigation.navigateWithReturnTo(['view-data-processing-activity', id]);
   }
 
-  createDataProcessingActivity(): void {
-    this.navigation.navigateWithReturnTo(['create-data-processing-activity']);
-  }
+createDataProcessingActivity(): void {
+  this.navigation.navigateWithReturnTo(['create-data-processing-activity'], {
+    queryParams: {
+      from: 'data-processor',
+      dataProcessorId: this.id,
+    },
+  });
+}
 
 goBack(): void {
   // Was this Update page reached via Create DPA Submit/Cancel?

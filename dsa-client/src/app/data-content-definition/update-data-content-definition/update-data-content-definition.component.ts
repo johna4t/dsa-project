@@ -1,8 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+
 import { DataContentDefinitionService } from '../data-content-definition.service';
 import { DataContentDefinition } from '../data-content-definition';
+
+import { DataProcessingActivity } from '../../data-processing-activity/data-processing-activity';
+import { DataProcessingActivityService } from '../../data-processing-activity/data-processing-activity.service';
+import { ConfirmationDialogComponent } from '../../dialog/material/confirmation-dialog/confirmation-dialog.component';
+import { NavigationService } from '../../access/navigation.service';
+
 import { DataContentTypeLabels } from '../../enums/data-content-type-labels';
 import { LawfulBasisLabels } from '../../enums/lawful-basis-labels';
 import { SpecialCategoryDataLabels } from '../../enums/special-category-data-labels';
@@ -16,6 +24,10 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
   dcdForm!: FormGroup;
   dcdId!: number;
   dcd!: DataContentDefinition;
+
+  // Single render source for the DPA table (mirrors UpdateDataProcessor)
+  dataProcessingActivities: DataProcessingActivity[] = [];
+
   dataContentTypeLabels = DataContentTypeLabels;
   dataContentTypeKeys = Object.keys(
     DataContentTypeLabels,
@@ -41,12 +53,18 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private dcdService: DataContentDefinitionService,
+    private dataProcessingActivityService: DataProcessingActivityService,
+    private dialog: MatDialog,
+    private navigation: NavigationService,
   ) {}
 
   ngOnInit(): void {
     this.dcdId = Number(this.route.snapshot.paramMap.get('id'));
     this.dcdService.getDataContentDefinitionById(this.dcdId).subscribe((dcd) => {
       this.dcd = dcd;
+
+      // Pull associated DPAs into a standalone array (same pattern as UpdateDataProcessor)
+      this.dataProcessingActivities = [...(dcd.associatedDataProcessing ?? [])];
 
       const match = dcd.retentionPeriod?.match(/^P(\d+)([DWMY])$/);
       const value = match ? Number(match[1]) : null;
@@ -71,7 +89,7 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
         article9Condition: [article9Condition],
       });
 
-      // Disable fields if the initial value is NOT_PERSONAL_DATA
+      // Disable fields if initial value is NOT_PERSONAL_DATA
       if (lawfulBasis === 'NOT_PERSONAL_DATA') {
         this.dcdForm.get('specialCategory')?.disable();
         this.dcdForm.get('article9Condition')?.disable();
@@ -88,8 +106,6 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
           this.dcdForm.get('article9Condition')?.disable();
         } else {
           this.dcdForm.get('specialCategory')?.enable();
-
-          // Whether article9 should be enabled depends on specialCategory
           const specialCat = this.dcdForm.get('specialCategory')?.value;
           if (specialCat === 'NOT_SPECIAL_CATEGORY_DATA') {
             this.dcdForm.get('article9Condition')?.disable();
@@ -113,8 +129,19 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
     });
   }
 
+  // ===== Form behaviour (unchanged) =====
+
   isFormUnchanged(): boolean {
     return JSON.stringify(this.dcdForm.value) === JSON.stringify(this.originalFormValues);
+  }
+
+  shouldDisableSubmit(): boolean {
+    if (this.dcdForm.invalid || this.isFormUnchanged()) {
+      return true;
+    }
+    const specialCategory = this.dcdForm.get('specialCategory')?.value;
+    const article9Condition = this.dcdForm.get('article9Condition')?.value;
+    return specialCategory !== 'NOT_SPECIAL_CATEGORY_DATA' && article9Condition === 'NOT_APPLICABLE';
   }
 
   onSubmit(): void {
@@ -160,22 +187,73 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
     });
   }
 
-  shouldDisableSubmit(): boolean {
-    if (this.dcdForm.invalid || this.isFormUnchanged()) {
-      return true;
-    }
+  // ===== DPA actions (mirrors UpdateDataProcessor) =====
 
-    const specialCategory = this.dcdForm.get('specialCategory')?.value;
-    const article9Condition = this.dcdForm.get('article9Condition')?.value;
+  trackById = (_: number, item: DataProcessingActivity) => item.id;
 
-    return (
-      specialCategory !== 'NOT_SPECIAL_CATEGORY_DATA' && article9Condition === 'NOT_APPLICABLE'
-    );
+  viewDataProcessingActivity(id: number): void {
+    this.navigation.navigateWithReturnTo(['view-data-processing-activity', id]);
   }
 
   updateDataProcessingActivity(id: number): void {
-  this.router.navigate(['update-data-processing-activity', id], {
-    queryParams: { from: 'data-content-definition' }
+    this.navigation.navigateWithReturnTo(['update-data-processing-activity', id]);
+  }
+
+createDataProcessingActivity(): void {
+  this.navigation.navigateWithReturnTo(['create-data-processing-activity'], {
+    queryParams: {
+      from: 'data-content-definition',
+      dataContentDefinitionId: this.dcdId,
+    },
   });
 }
+
+  deleteDataProcessingActivity(id: number): void {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '250px',
+      data: {
+        title: 'Confirm delete',
+        message: 'Delete data processing activity?',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        this.dataProcessingActivityService.deleteDataProcessingActivity(id).subscribe({
+          next: () => {
+            const idNum = Number(id);
+            // Update the local render array
+            this.dataProcessingActivities = this.dataProcessingActivities.filter(
+              (dpa) => Number(dpa.id) !== idNum,
+            );
+
+            // Keep the dcd.associatedDataProcessing in sync if referenced elsewhere
+            this.dcd = {
+              ...this.dcd,
+              associatedDataProcessing: (this.dcd.associatedDataProcessing ?? []).filter(
+                (dpa: DataProcessingActivity) => Number(dpa.id) !== idNum,
+              ),
+            };
+          },
+          error: (error) => {
+            console.error('Error deleting data processing activity:', error);
+          },
+        });
+      }
+    });
+  }
+
+  viewDataProcessor(id: number): void {
+    this.navigation.navigateWithReturnTo(['view-data-processor', id]);
+  }
+
+  goBack(): void {
+    // If we arrived here after creating a DPA (Submit/Cancel), prefer the View page
+    const cameFromCreate = (window.history.state as any)?.cameFromCreateDpa === true;
+    if (cameFromCreate) {
+      this.router.navigate(['/view-data-content-definition', this.dcdId]);
+    } else {
+      this.navigation.goBackOr(['/data-content-definitions']);
+    }
+  }
 }

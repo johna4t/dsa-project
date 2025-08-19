@@ -177,7 +177,7 @@ onSubmit(): void {
   this.activityService.postDataProcessingActivity(payload).subscribe({
     next: () => {
       this.submitting = false;
-      this.returnToUpdateDataProcessorWithFlagOrFallback(); // <— changed
+      this.returnToUpdatePageWithFlagOrFallback(); // << generalized
     },
     error: (err) => {
       this.submitting = false;
@@ -195,24 +195,35 @@ private getReturnToUrl(): string | null {
 }
 
 /** If returnTo is /update-data-processor/:id, go there and tag the navigation. Else fallback. */
-private returnToUpdateDataProcessorWithFlagOrFallback(): void {
+// Replace the old "returnToUpdateDataProcessorWithFlagOrFallback" with:
+private returnToUpdatePageWithFlagOrFallback(): void {
   const returnTo = this.getReturnToUrl();
-  const match = returnTo?.match(/\/update-data-processor\/(\d+)$/i);
+  const matchDp  = returnTo?.match(/\/update-data-processor\/(\d+)$/i);
+  const matchDcd = returnTo?.match(/\/update-data-content-definition\/(\d+)$/i);
 
-  if (match?.[1]) {
-    this.router.navigateByUrl(`/update-data-processor/${match[1]}`, {
-      state: { cameFromCreateDpa: true },  // <-- flag the Update page
+  if (matchDp?.[1]) {
+    this.router.navigateByUrl(`/update-data-processor/${matchDp[1]}`, {
+      state: { cameFromCreateDpa: true },
     });
-  } else {
-    this.navigation.goBackOr(['/']);
+    return;
   }
+
+  if (matchDcd?.[1]) {
+    this.router.navigateByUrl(`/update-data-content-definition/${matchDcd[1]}`, {
+      state: { cameFromCreateDpa: true },
+    });
+    return;
+  }
+
+  // Fallback if nothing matched
+  this.navigation.goBackOr(['/']);
 }
+
 
 /** Use this for the Cancel button */
 cancel(): void {
-  this.returnToUpdateDataProcessorWithFlagOrFallback();
+  this.returnToUpdatePageWithFlagOrFallback(); // << generalized
 }
-
   goBack(): void {
     this.navigation.goBackOr(['/']); // uses returnTo or history stack, else '/'
   }
