@@ -30,6 +30,7 @@ import { ApiInterceptor } from './api/api.interceptor';
 import { AccessService } from './access/access.service';
 import { PageNotFoundComponent } from './access/page-not-found/page-not-found.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -118,6 +119,7 @@ import { DataProcessingActivityListComponent } from './data-processing-activity/
     MatExpansionModule,
     MatFormFieldModule,
     MatIconModule,
+    MatTooltipModule,
     MatInputModule,
     MatOptionModule,
     MatSelectModule,

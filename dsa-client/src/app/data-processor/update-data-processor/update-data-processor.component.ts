@@ -192,16 +192,7 @@ createDataProcessingActivity(): void {
   });
 }
 
-goBack(): void {
-  // Was this Update page reached via Create DPA Submit/Cancel?
-  const cameFromCreate = (window.history.state as any)?.cameFromCreateDpa === true;
-
-  if (cameFromCreate) {
-    // Always go to the View page for this processor (not back to Create)
-    this.router.navigate(['/view-data-processor', this.id]);
-  } else {
-    // Default behaviour: use your recorded history/returnTo, else fallback
-    this.navigation.goBackOr(['/data-processors']);
+  goBack(): void {
+    this.router.navigate(['/data-processors']);
   }
-}
 }

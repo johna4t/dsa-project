@@ -87,4 +87,8 @@ export class DataProcessorDetailsComponent implements OnInit {
   viewDataProcessingActivity(id: number) {
     this.navigation.navigateWithReturnTo(['view-data-processing-activity', id]);
   }
+
+  goBack(): void {
+    this.router.navigate(['/data-processors']);
+  }
 }

@@ -248,12 +248,6 @@ createDataProcessingActivity(): void {
   }
 
   goBack(): void {
-    // If we arrived here after creating a DPA (Submit/Cancel), prefer the View page
-    const cameFromCreate = (window.history.state as any)?.cameFromCreateDpa === true;
-    if (cameFromCreate) {
-      this.router.navigate(['/view-data-content-definition', this.dcdId]);
-    } else {
-      this.navigation.goBackOr(['/data-content-definitions']);
-    }
+    this.router.navigate(['/data-content-definitions']);
   }
 }
