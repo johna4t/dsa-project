@@ -1,6 +1,6 @@
 <div class="container mt-5" *ngIf="form && activity">
   <form [formGroup]="form">
-    <h2>Update processing activity Details: {{ activity.name }}</h2>
+    <h2>Update data processing details: {{ activity.name }}</h2>
 
     <div class="card p-2">
       <!-- Name -->
@@ -107,7 +107,7 @@
         Submit
       </button>
       <button mat-flat-button color="accent" style="margin: 5px" type="button" (click)="goBack()">
-        Back
+        Cancel
       </button>
     </div>
   </form>
