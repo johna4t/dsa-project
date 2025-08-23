@@ -1,1 +1,138 @@
-<p>data-processing-activity-list works!</p>
+<div class="container" mt-5>
+  <div class="table-header">
+    <h2 class="title">Register of Processing Activities (ROPA)</h2>
+
+    <div class="actions">
+      <button
+        mat-icon-button
+        color="primary"
+        (click)="createDataProcessingActivity()"
+        aria-label="Add processing activity"
+        matTooltip="Add"
+      >
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <table mat-table [dataSource]="dataProcessingActivities" class="mat-elevation-z8">
+    <!-- Name -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+    </ng-container>
+
+    <!-- Processor name (link to view-data-processor) -->
+    <ng-container matColumnDef="processorName">
+      <th mat-header-cell *matHeaderCellDef>Processor name</th>
+      <td mat-cell *matCellDef="let element">
+        <a
+          role="button"
+          tabindex="0"
+          class="link"
+          *ngIf="element?.dataProcessor?.id; else noProcessor"
+          (click)="viewDataProcessor(element.dataProcessor.id)"
+          (keydown.enter)="viewDataProcessor(element.dataProcessor.id)"
+          (keydown.space)="viewDataProcessor(element.dataProcessor.id)"
+        >
+          {{ element?.dataProcessor?.name }}
+        </a>
+        <ng-template #noProcessor>—</ng-template>
+      </td>
+    </ng-container>
+
+    <!-- Data asset name (link to view-data-content-definition) -->
+    <ng-container matColumnDef="dataAssetName">
+      <th mat-header-cell *matHeaderCellDef>Data asset name</th>
+      <td mat-cell *matCellDef="let element">
+        <a
+          role="button"
+          tabindex="0"
+          class="link"
+          *ngIf="element?.dataContentDefinition?.id; else noAsset"
+          (click)="viewDataContentDefinition(element.dataContentDefinition.id)"
+          (keydown.enter)="viewDataContentDefinition(element.dataContentDefinition.id)"
+          (keydown.space)="viewDataContentDefinition(element.dataContentDefinition.id)"
+        >
+          {{ element?.dataContentDefinition?.name }}
+        </a>
+        <ng-template #noAsset>—</ng-template>
+      </td>
+    </ng-container>
+
+    <!-- View -->
+    <ng-container matColumnDef="btnView">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element" class="row-actions">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="viewDataProcessingActivity(element.id)"
+          aria-label="View"
+          matTooltip="View"
+        >
+          <mat-icon>visibility</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Edit -->
+    <ng-container matColumnDef="btnEdit">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element" class="row-actions">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="updateDataProcessingActivity(element.id)"
+          aria-label="Edit"
+          matTooltip="Edit"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Delete -->
+    <ng-container matColumnDef="btnDelete">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element" class="row-actions">
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="deleteDataProcessingActivity(element.id)"
+          aria-label="Delete"
+          matTooltip="Delete"
+        >
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <!-- Empty state -->
+  <div
+    *ngIf="dataProcessingActivities.length === 0"
+    style="margin-top: 2rem; display: flex; justify-content: center"
+  >
+    <mat-card style="max-width: 600px; text-align: center; padding: 2rem">
+      <mat-card-title>No processing activities to display</mat-card-title>
+      <mat-card-content>
+        <p>Would you like to add one?</p>
+      </mat-card-content>
+      <mat-card-actions style="justify-content: center">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="createDataProcessingActivity()"
+          aria-label="Add Data Processing Activity"
+          matTooltip="Add"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

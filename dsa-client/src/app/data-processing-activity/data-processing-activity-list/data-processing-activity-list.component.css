@@ -1,0 +1,33 @@
+/* Header layout */
+.table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.table-header .title {
+  margin: 0;            /* removes default h2 spacing so it aligns nicely */
+  line-height: 1.2;
+}
+
+.table-header .actions {
+  margin-left: auto;    /* ensures the button hugs the right edge */
+}
+
+.row-actions button {
+  margin: 0 2px;
+}
+
+/* Small screens: allow wrapping, keep button right-aligned */
+@media (max-width: 600px) {
+  .table-header {
+    flex-wrap: wrap;
+  }
+  .table-header .actions {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
