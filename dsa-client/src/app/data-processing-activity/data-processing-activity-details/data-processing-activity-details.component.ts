@@ -45,7 +45,8 @@ export class DataProcessingActivityDetailsComponent implements OnInit {
   }
 
   goBack(): void {
-    this.navigation.goBackOr(['/']);
+    // Resolve the central return token if present; else fall back to the DPA list
+    this.navigation.backFromRoute(this.route, ['/data-processing-activities']);
   }
 
   viewDataProcessingActivity(id: number) {
@@ -53,6 +54,7 @@ export class DataProcessingActivityDetailsComponent implements OnInit {
   }
 
   updateDataProcessingActivity(id: number): void {
+    // Open UPDATE carrying a return anchor back to THIS page (or whatever page called THIS page)
     this.navigation.navigateWithReturnTo(['update-data-processing-activity', id]);
   }
 

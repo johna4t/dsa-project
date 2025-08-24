@@ -117,7 +117,11 @@ export class UpdateDataProcessingActivityComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (!this.isFormChanged()) return;
+    if (!this.isFormChanged()) {
+      // No changes – still return to the page that opened UPDATE
+      this.navigation.backFromRoute(this.route, ['/data-processing-activities']);
+      return;
+    }
 
     const updated: DataProcessingActivity = {
       ...this.activity,
@@ -134,15 +138,20 @@ export class UpdateDataProcessingActivityComponent implements OnInit {
       .putDataProcessingActivity(this.activityId, updated)
       .subscribe(() => {
         this.initialFormValue = this.form.getRawValue();
-        this.router.navigate([
-          '/view-data-processing-activity',
-          this.activityId,
-        ]);
+        // Return to the page that opened UPDATE (Details OR Update-Data-Processor, etc.)
+        this.navigation.backFromRoute(this.route, ['/data-processing-activities']);
       });
   }
 
+  /** Template should call this for the Cancel button */
+  cancel(): void {
+    // Return to the page that opened UPDATE
+    this.navigation.backFromRoute(this.route, ['/data-processing-activities']);
+  }
+
+  /** Optional: keep a local Back that behaves like Cancel */
   goBack(): void {
-    this.navigation.goBackOr(['/']);
+    this.navigation.backFromRoute(this.route, ['/data-processing-activities']);
   }
 
   private loadDropdownOptions(): void {
