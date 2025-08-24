@@ -183,14 +183,14 @@ export class UpdateDataProcessorComponent implements OnInit {
     this.navigation.navigateWithReturnTo(['view-data-processing-activity', id]);
   }
 
-createDataProcessingActivity(): void {
-  this.navigation.navigateWithReturnTo(['create-data-processing-activity'], {
-    queryParams: {
-      from: 'data-processor',
-      dataProcessorId: this.id,
-    },
-  });
-}
+  createDataProcessingActivity(): void {
+    this.navigation.navigateWithReturnTo(['create-data-processing-activity'], {
+      queryParams: {
+        from: 'data-processor',
+        dataProcessorId: this.id,
+      },
+    });
+  }
 
   goBack(): void {
     this.router.navigate(['/data-processors']);

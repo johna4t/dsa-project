@@ -141,7 +141,9 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
     }
     const specialCategory = this.dcdForm.get('specialCategory')?.value;
     const article9Condition = this.dcdForm.get('article9Condition')?.value;
-    return specialCategory !== 'NOT_SPECIAL_CATEGORY_DATA' && article9Condition === 'NOT_APPLICABLE';
+    return (
+      specialCategory !== 'NOT_SPECIAL_CATEGORY_DATA' && article9Condition === 'NOT_APPLICABLE'
+    );
   }
 
   onSubmit(): void {
@@ -199,14 +201,14 @@ export class UpdateDataContentDefinitionComponent implements OnInit {
     this.navigation.navigateWithReturnTo(['update-data-processing-activity', id]);
   }
 
-createDataProcessingActivity(): void {
-  this.navigation.navigateWithReturnTo(['create-data-processing-activity'], {
-    queryParams: {
-      from: 'data-content-definition',
-      dataContentDefinitionId: this.dcdId,
-    },
-  });
-}
+  createDataProcessingActivity(): void {
+    this.navigation.navigateWithReturnTo(['create-data-processing-activity'], {
+      queryParams: {
+        from: 'data-content-definition',
+        dataContentDefinitionId: this.dcdId,
+      },
+    });
+  }
 
   deleteDataProcessingActivity(id: number): void {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
