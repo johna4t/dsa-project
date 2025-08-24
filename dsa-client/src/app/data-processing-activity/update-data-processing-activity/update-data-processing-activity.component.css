@@ -32,3 +32,10 @@
     justify-content: flex-end;
   }
 }
+
+.add-btn-wrap {
+  display: flex;
+  justify-content: flex-end; /* right-align within column 2 */
+  align-items: center;
+  min-height: 40px; /* keeps row height tidy */
+}

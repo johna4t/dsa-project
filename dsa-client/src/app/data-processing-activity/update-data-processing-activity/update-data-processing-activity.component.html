@@ -82,12 +82,20 @@
         </div>
       </div>
 
-      <!-- Add button aligned with end of column 2 -->
       <div class="action-row footer-row">
         <div></div>
         <!-- column 1 spacer -->
         <div class="add-btn-wrap">
-          <button mat-flat-button color="primary" type="button" (click)="addAction()">Add</button>
+          <button
+            mat-icon-button
+            color="primary"
+            type="button"
+            (click)="addAction()"
+            aria-label="Add action"
+            matTooltip="Add action"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
         </div>
         <div></div>
         <!-- column 3 spacer -->
