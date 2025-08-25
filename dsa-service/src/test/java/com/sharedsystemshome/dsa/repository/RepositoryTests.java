@@ -15,6 +15,7 @@ import org.junit.platform.suite.api.SuiteDisplayName;
         DataContentDefinitionRepositoryTest.class,
         DataContentPerspectiveRepositoryTest.class,
         DataFlowRepositoryTest.class,
+        DataProcessingActivityRepositoryTest.class,
         DataProcessorRepositoryTest.class,
         DataSharingAgreementRepositoryTest.class,
         DataSharingPartyRepositoryTest.class,

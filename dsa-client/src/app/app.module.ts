@@ -5,6 +5,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -29,6 +30,7 @@ import { ApiInterceptor } from './api/api.interceptor';
 import { AccessService } from './access/access.service';
 import { PageNotFoundComponent } from './access/page-not-found/page-not-found.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -57,6 +59,10 @@ import { CreateDataProcessorComponent } from './data-processor/create-data-proce
 import { UpdateDataProcessorComponent } from './data-processor/update-data-processor/update-data-processor.component';
 import { DataProcessorDetailsComponent } from './data-processor/data-processor-details/data-processor-details.component';
 import { DataProcessorListComponent } from './data-processor/data-processor-list/data-processor-list.component';
+import { CreateDataProcessingActivityComponent } from './data-processing-activity/create-data-processing-activity/create-data-processing-activity.component';
+import { UpdateDataProcessingActivityComponent } from './data-processing-activity/update-data-processing-activity/update-data-processing-activity.component';
+import { DataProcessingActivityDetailsComponent } from './data-processing-activity/data-processing-activity-details/data-processing-activity-details.component';
+import { DataProcessingActivityListComponent } from './data-processing-activity/data-processing-activity-list/data-processing-activity-list.component';
 
 @NgModule({
   declarations: [
@@ -95,6 +101,10 @@ import { DataProcessorListComponent } from './data-processor/data-processor-list
     UpdateDataProcessorComponent,
     DataProcessorDetailsComponent,
     DataProcessorListComponent,
+    CreateDataProcessingActivityComponent,
+    UpdateDataProcessingActivityComponent,
+    DataProcessingActivityDetailsComponent,
+    DataProcessingActivityListComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -108,6 +118,8 @@ import { DataProcessorListComponent } from './data-processor/data-processor-list
     MatDialogModule,
     MatExpansionModule,
     MatFormFieldModule,
+    MatIconModule,
+    MatTooltipModule,
     MatInputModule,
     MatOptionModule,
     MatSelectModule,

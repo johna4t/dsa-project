@@ -284,6 +284,76 @@ public class DataProcessorControllerTest {
     }
 
 
+    @Test
+    void testPutDataProcessor() throws Exception {
+
+        Long conId = 1L;
+        DataSharingParty con = DataSharingParty.builder()
+                .id(conId)
+                .build();
+
+        // Create and link CustomerAccount
+        CustomerAccount cust = CustomerAccount.builder()
+                .name("Test DSP A")
+                .departmentName("Test DSP A Dept")
+                .url("www.cust.com")
+                .dataSharingParty(con)  // sets up link to DSP
+                .branchName("Test BU")
+                .build();
+
+        // Simulate saving customer
+        con.setAccount(cust);
+
+        // Simulate db generating id
+        con.getSelfAsProcessor().setId(999L);
+
+        Long dpId = 3L;
+        DataProcessor dp = DataProcessor.builder()
+                .id(dpId)
+                .name("DP")
+                .controller(con)
+                .build();
+
+        when(dpMockService.getDataProcessorById(dpId)).thenReturn(dp);
+        when(userContextMockService.validateAccess(dp)).thenReturn(dp);
+
+        DataProcessor dp2 = DataProcessor.builder()
+                .id(dpId)
+                .name("Updated DP")
+                .build();
+
+        // Mock the update method
+        doNothing().when(dpMockService).updateDataProcessor(dp2);
+
+        // Convert payload to JSON
+        //        ObjectMapper mapper = new ObjectMapper();
+        //        mapper.registerModule(new JavaTimeModule());
+        // Method errors without controller - therefore created payload string directly
+        //        String payload = mapper.writeValueAsString(dp2);
+
+        String payload = """
+        {
+            "id": 3,
+            "name": "Updated DP"
+        }
+        """;
+
+        this.mockMvc.perform(MockMvcRequestBuilders
+                        .put("/api/v1/data-processors/" + dpId)
+                        .content(payload)
+                        .characterEncoding("UTF-8")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        // Verify call chain
+        verify(dpMockService, times(1)).getDataProcessorById(dpId);
+        verify(userContextMockService, times(1)).validateAccess(dp);
+        verify(dpMockService, times(1)).updateDataProcessor(dp2);
+    }
+
+
 
     @Test
     @WithMockUser(username = "admin", roles = "SUPER_ADMIN")

@@ -106,7 +106,6 @@ public class DataContentDefinition implements Referenceable, Owned {
     )
     private List<SharedDataContent> associatedDataFlows = new ArrayList<>();
 
-    @JsonIncludeProperties({"id"})
     @OneToMany(
             mappedBy = "dataContentDefinition",
             cascade = CascadeType.ALL,
@@ -154,6 +153,10 @@ public class DataContentDefinition implements Referenceable, Owned {
             this.dataContentType = DataContentType.NOT_SPECIFIED;
         }
 
+        if(null == this.associatedDataProcessing) {
+            this.associatedDataProcessing = new ArrayList<>();
+        }
+
         if(null != this.provider){
             this.provider.addDataContentDefinition(this);
         }
@@ -168,6 +171,13 @@ public class DataContentDefinition implements Referenceable, Owned {
         return perspectives.stream()
                 .filter(p -> p.getMetadataScheme() == scheme)
                 .findFirst();
+    }
+
+    public void addAssociatedDataProcessing(DataProcessingActivity dpv){
+        if(null == this.associatedDataProcessing){
+            this.associatedDataProcessing = new ArrayList<>();
+        }
+        this.associatedDataProcessing.add(dpv);
     }
 
     public void addPerspective(DataContentPerspective perspective) {
@@ -234,5 +244,14 @@ public class DataContentDefinition implements Referenceable, Owned {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    public void deleteDataProcessingActivity(DataProcessingActivity dpv) {
+
+        if (dpv == null || this.associatedDataProcessing == null) return;
+
+        if (this.associatedDataProcessing.remove(dpv)) {
+            dpv.setDataContentDefinition(null);
+        }
     }
 }

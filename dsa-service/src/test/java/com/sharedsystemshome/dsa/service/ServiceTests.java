@@ -16,6 +16,7 @@ import org.junit.platform.suite.api.SuiteDisplayName;
         CustomerAccountServiceTest.class,
         DataContentDefinitionServiceTest.class,
         DataFlowServiceTest.class,
+        DataProcessingActivityServiceTest.class,
         DataProcessorServiceTest.class,
         DataSharingAgreementServiceTest.class,
         DataSharingPartyServiceTest.class,

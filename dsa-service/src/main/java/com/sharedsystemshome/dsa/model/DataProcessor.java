@@ -77,8 +77,6 @@ public class DataProcessor implements Referenceable, Owned {
             orphanRemoval = true)
     private List<DataProcessorCertification> certifications = new ArrayList<>();
 
-
-    @JsonIncludeProperties({"id"})
     @OneToMany(
             mappedBy = "dataProcessor",
             cascade = CascadeType.ALL,
@@ -160,6 +158,13 @@ public class DataProcessor implements Referenceable, Owned {
         updated.stream()
                 .filter(cert -> !current.contains(cert))
                 .forEach(this::addCertification);
+    }
+
+    public void addAssociatedDataProcessing(DataProcessingActivity dpv){
+        if(null == this.associatedDataProcessing){
+            this.associatedDataProcessing = new ArrayList<>();
+        }
+        this.associatedDataProcessing.add(dpv);
     }
 
     public void addCertification(ProcessingCertificationStandard standard) {
@@ -256,4 +261,12 @@ public class DataProcessor implements Referenceable, Owned {
     }
 
 
+    public void deleteDataProcessingActivity(DataProcessingActivity dpv) {
+
+        if (dpv == null || this.associatedDataProcessing == null) return;
+
+        if (this.associatedDataProcessing.remove(dpv)) {
+            dpv.setDataProcessor(null);
+        }
+    }
 }

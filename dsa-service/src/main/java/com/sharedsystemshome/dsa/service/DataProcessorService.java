@@ -93,6 +93,8 @@ public class DataProcessorService {
                     .certifications(dp.getCertifications())
                     .build();
 
+            copy.setAssociatedDataProcessing(dp.getAssociatedDataProcessing());
+
             result.add(copy);
         }
 

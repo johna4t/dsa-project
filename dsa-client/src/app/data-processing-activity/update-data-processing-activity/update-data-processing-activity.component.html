@@ -1,0 +1,122 @@
+<div class="container mt-5" *ngIf="form && activity">
+  <form [formGroup]="form">
+    <h2>Update data processing details: {{ activity.name }}</h2>
+
+    <div class="card p-2">
+      <!-- Name -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" required />
+        <mat-error
+          *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched"
+        >
+          Name is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Data Processor Dropdown -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Data Processor</mat-label>
+        <mat-select formControlName="dataProcessorId" required>
+          <mat-option *ngFor="let dp of dataProcessors" [value]="dp.id">
+            {{ dp.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Data Content Definition Dropdown -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Data Asset (DCD)</mat-label>
+        <mat-select formControlName="dataContentDefinitionId" required>
+          <mat-option *ngFor="let dcd of dataContentDefinitions" [value]="dcd.id">
+            {{ dcd.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Description -->
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="5"></textarea>
+      </mat-form-field>
+    </div>
+
+    <!-- Actions Performed Section -->
+    <div class="card p-2 mt-3">
+      <h3>Update actions performed</h3>
+
+      <div formArrayName="actionsPerformed">
+        <div
+          *ngFor="let action of actionsPerformed.controls; let i = index; trackBy: trackByControl"
+          [formGroupName]="i"
+          class="action-row"
+        >
+          <!-- Col 1: 20% -->
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Action Type</mat-label>
+            <mat-select formControlName="actionType" required>
+              <mat-option *ngFor="let type of actionTypes" [value]="type.value">
+                {{ type.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Col 2: 70% -->
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Description</mat-label>
+            <input matInput formControlName="description" />
+          </mat-form-field>
+
+          <!-- Col 3: auto (right aligned) -->
+          <div class="action-delete">
+            <button
+              mat-icon-button
+              color="accent"
+              type="button"
+              (click)="removeAction(i)"
+              aria-label="Delete action"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-row footer-row">
+        <div></div>
+        <!-- column 1 spacer -->
+        <div class="add-btn-wrap">
+          <button
+            mat-icon-button
+            color="primary"
+            type="button"
+            (click)="addAction()"
+            aria-label="Add action"
+            matTooltip="Add action"
+          >
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+        <div></div>
+        <!-- column 3 spacer -->
+      </div>
+    </div>
+
+    <!-- Form Buttons -->
+    <div class="mt-3" align="right">
+      <button
+        mat-flat-button
+        color="primary"
+        style="margin: 5px"
+        type="button"
+        (click)="onSubmit()"
+        [disabled]="!isFormChanged()"
+      >
+        Submit
+      </button>
+      <button mat-flat-button color="accent" style="margin: 5px" type="button" (click)="cancel()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

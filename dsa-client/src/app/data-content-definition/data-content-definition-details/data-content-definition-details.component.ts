@@ -12,6 +12,7 @@ import { LawfulBasis } from '../../enums/lawful-basis.enum';
 import { SpecialCategoryData } from '../../enums/special-category-data.enum';
 import { Article9Condition } from '../../enums/article-9-condition.enum';
 import { DataContentType } from '../../enums/data-content-type.enum';
+import { NavigationService } from '../../access/navigation.service';
 
 @Component({
   selector: 'app-data-content-definition-details',
@@ -35,6 +36,7 @@ export class DataContentDefinitionDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private dcdService: DataContentDefinitionService,
+    private navigation: NavigationService,
     private router: Router,
   ) {}
 
@@ -106,5 +108,17 @@ export class DataContentDefinitionDetailsComponent implements OnInit {
   getDataContentTypeLabel(): string {
     const key = (this.dcd.dataContentType as DataContentType) || 'NOT_SPECIFIED';
     return this.dataContentTypeLabels[key];
+  }
+
+  viewDataProcessor(id: number): void {
+    this.router.navigate(['view-data-processor', id]);
+  }
+
+  viewDataProcessingActivity(id: number) {
+    this.navigation.navigateWithReturnTo(['view-data-processing-activity', id]);
+  }
+
+  goBack(): void {
+    this.router.navigate(['/data-content-definitions']);
   }
 }

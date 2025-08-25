@@ -5,7 +5,11 @@ import { FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@ang
 import { DataProcessor } from '../data-processor';
 import { ProcessingCertificationStandard } from '../../enums/processing-certification-standard.enum';
 import { ProcessingCertificationStandardLabels } from '../../enums/processing-certification-standard-labels';
-
+import { ConfirmationDialogComponent } from '../../dialog/material/confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { DataProcessingActivityService } from '../../data-processing-activity/data-processing-activity.service';
+import { DataProcessingActivity } from '../../data-processing-activity/data-processing-activity';
+import { NavigationService } from '../../access/navigation.service';
 @Component({
   selector: 'app-update-data-processor',
   templateUrl: './update-data-processor.component.html',
@@ -16,6 +20,9 @@ export class UpdateDataProcessorComponent implements OnInit {
   dpForm!: FormGroup;
   dp!: DataProcessor;
   originalFormValues: any;
+
+  // Single render source for the table
+  dataProcessingActivities: DataProcessingActivity[] = [];
 
   processingCertificationStandardLabels = ProcessingCertificationStandardLabels;
 
@@ -46,14 +53,21 @@ export class UpdateDataProcessorComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private dpService: DataProcessorService,
+    private navigation: NavigationService,
     private fb: FormBuilder,
     private router: Router,
+    private dataProcessingActivityService: DataProcessingActivityService,
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit(): void {
-    this.id = this.route.snapshot.params['id'];
+    this.id = Number(this.route.snapshot.params['id']);
     this.dpService.getDataProcessorById(this.id).subscribe((response) => {
       this.dp = response;
+
+      // Use a fresh array copy for change detection
+      this.dataProcessingActivities = [...(response.associatedDataProcessing ?? [])];
+
       this.initForm(response);
       this.originalFormValues = this.dpForm.getRawValue();
     });
@@ -71,8 +85,6 @@ export class UpdateDataProcessorComponent implements OnInit {
         allCerts.map((cert) => new FormControl(dp.certifications.includes(cert))),
       ),
     });
-
-
   }
 
   get certificationsArray(): FormArray {
@@ -119,5 +131,68 @@ export class UpdateDataProcessorComponent implements OnInit {
 
   getCertControl(index: number): FormControl {
     return this.certificationsArray.at(index) as FormControl;
+  }
+
+  // For *ngFor trackBy if you need it elsewhere
+  trackById = (_: number, item: DataProcessingActivity) => item.id;
+
+  updateDataProcessingActivity(id: number): void {
+    this.navigation.navigateWithReturnTo(['update-data-processing-activity', id]);
+  }
+
+  deleteDataProcessingActivity(id: number) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '250px',
+      data: {
+        title: 'Confirm delete',
+        message: 'Delete data processing activity?',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        this.dataProcessingActivityService.deleteDataProcessingActivity(id).subscribe({
+          next: () => {
+            // Replace the in-memory array (works with default & OnPush)
+            const idNum = Number(id);
+            this.dataProcessingActivities = this.dataProcessingActivities.filter(
+              (dpa) => Number(dpa.id) !== idNum,
+            );
+
+            // Keep the dp.associatedDataProcessing in sync if used elsewhere
+            this.dp = {
+              ...this.dp,
+              associatedDataProcessing: (this.dp.associatedDataProcessing ?? []).filter(
+                (dpa) => Number(dpa.id) !== idNum,
+              ),
+            };
+          },
+          error: (error) => {
+            console.error('Error deleting data processing activity:', error);
+          },
+        });
+      }
+    });
+  }
+
+  viewDataContentDefinition(id: number) {
+    this.navigation.navigateWithReturnTo(['view-data-content-definition', id]);
+  }
+
+  viewDataProcessingActivity(id: number) {
+    this.navigation.navigateWithReturnTo(['view-data-processing-activity', id]);
+  }
+
+  createDataProcessingActivity(): void {
+    this.navigation.navigateWithReturnTo(['create-data-processing-activity'], {
+      queryParams: {
+        from: 'data-processor',
+        dataProcessorId: this.id,
+      },
+    });
+  }
+
+  goBack(): void {
+    this.router.navigate(['/data-processors']);
   }
 }
