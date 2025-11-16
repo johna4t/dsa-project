@@ -24,6 +24,7 @@ dsa-service/.settings/
 .idea/
 .vscode/
 *.iml
+.nx/
 
 # ========================
 # OS/System Files
