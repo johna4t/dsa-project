@@ -1,0 +1,21 @@
+spring:
+  profiles:
+    active: dev
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+sharedsystemshome:
+  dsa:
+    secret-key: 5f1bc86eee84322cd47a4ef9208f4c8bfca690b358ba0e980a135f9cef72fe7a
+    jwt:
+      expiration: 60000
+    refresh:
+      expiration: 604800000
+    timeout: 1440000
+    request:
+      authentication: /api/v1/auth
+      authentication.authenticate: /authenticate
+      authentication.register: /register

@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://<your-production-db-host>:5432/dsa
+    username: <your-prod-username>
+    password: <your-prod-password>
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
