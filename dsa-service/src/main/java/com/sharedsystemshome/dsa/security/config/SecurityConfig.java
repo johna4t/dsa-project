@@ -39,7 +39,9 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/webjars/**",
             "/swagger-ui.html",
-            "/error"
+            "/error",
+            "/actuator/health",
+            "/actuator/health/**"
     };
 
     private static final String[] MEMBER_SECURED_ENDPOINTS = {
