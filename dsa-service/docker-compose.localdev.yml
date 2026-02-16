@@ -32,6 +32,8 @@ services:
     ports:
       - "8080:8080"
       - "5005:5005"
+    build:
+      context: .
 
 # Allow Postgres DB to refresh each time
 # volumes:
