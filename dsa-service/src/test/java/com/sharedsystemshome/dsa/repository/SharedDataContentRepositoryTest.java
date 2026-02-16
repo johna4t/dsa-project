@@ -14,9 +14,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@PostgresDataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public class SharedDataContentRepositoryTest {
+public class SharedDataContentRepositoryTest extends AnyRepositoryTest {
 
     @Autowired
     SharedDataContentRepository testSubject;

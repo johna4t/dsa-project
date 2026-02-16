@@ -1,5 +1,7 @@
 package com.sharedsystemshome.dsa.security.repository;
 
+import com.sharedsystemshome.dsa.repository.AnyRepositoryTest;
+import com.sharedsystemshome.dsa.repository.PostgresDataJpaTest;
 import com.sharedsystemshome.dsa.security.enums.PermissionType;
 import com.sharedsystemshome.dsa.security.enums.RoleType;
 import com.sharedsystemshome.dsa.security.model.Permission;
@@ -16,10 +18,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@PostgresDataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public
-class RoleRepositoryTest {
+public class RoleRepositoryTest extends AnyRepositoryTest {
 
     @Autowired
     RoleRepository testSubject;

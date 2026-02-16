@@ -2,7 +2,9 @@ package com.sharedsystemshome.dsa.security.repository;
 
 import com.sharedsystemshome.dsa.model.CustomerAccount;
 import com.sharedsystemshome.dsa.model.UserAccount;
+import com.sharedsystemshome.dsa.repository.AnyRepositoryTest;
 import com.sharedsystemshome.dsa.repository.CustomerAccountRepository;
+import com.sharedsystemshome.dsa.repository.PostgresDataJpaTest;
 import com.sharedsystemshome.dsa.repository.UserAccountRepository;
 import com.sharedsystemshome.dsa.security.enums.TokenType;
 import com.sharedsystemshome.dsa.security.model.Permission;
@@ -21,9 +23,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@PostgresDataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public class TokenRepositoryTest {
+public class TokenRepositoryTest extends AnyRepositoryTest {
 
     @BeforeEach
     void setUp() {

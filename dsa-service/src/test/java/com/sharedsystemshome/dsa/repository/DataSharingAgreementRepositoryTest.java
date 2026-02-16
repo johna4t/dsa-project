@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@DataJpaTest
+@PostgresDataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public class DataSharingAgreementRepositoryTest {
+public class DataSharingAgreementRepositoryTest extends AnyRepositoryTest {
 
     @Autowired
     DataSharingAgreementRepository testSubject;

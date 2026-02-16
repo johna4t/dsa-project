@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-@DataJpaTest
+@PostgresDataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public class DataContentDefinitionRepositoryTest {
+public class DataContentDefinitionRepositoryTest extends AnyRepositoryTest {
 
     @Autowired
     DataContentDefinitionRepository testSubject;

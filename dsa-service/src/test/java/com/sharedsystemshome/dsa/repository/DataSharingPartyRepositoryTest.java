@@ -16,9 +16,9 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@PostgresDataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public class DataSharingPartyRepositoryTest {
+public class DataSharingPartyRepositoryTest extends AnyRepositoryTest {
 
     @Autowired
     private DataSharingPartyRepository testSubject;

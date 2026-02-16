@@ -19,9 +19,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@PostgresDataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public class DataFlowRepositoryTest {
+public class DataFlowRepositoryTest extends AnyRepositoryTest {
 
     @Autowired
     DataFlowRepository testSubject;

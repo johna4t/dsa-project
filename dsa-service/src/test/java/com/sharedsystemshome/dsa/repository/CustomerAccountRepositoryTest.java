@@ -24,9 +24,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@PostgresDataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-class CustomerAccountRepositoryTest {
+class CustomerAccountRepositoryTest extends AnyRepositoryTest {
 
     private final String buName = "Information Management";
     private final String addressLine1 = "10 Main Street";

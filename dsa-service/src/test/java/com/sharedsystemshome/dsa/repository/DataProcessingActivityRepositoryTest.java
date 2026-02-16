@@ -15,9 +15,9 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+@PostgresDataJpaTest
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-public class DataProcessingActivityRepositoryTest {
+public class DataProcessingActivityRepositoryTest extends AnyRepositoryTest {
 
     @Autowired
     DataProcessingActivityRepository testSubject;

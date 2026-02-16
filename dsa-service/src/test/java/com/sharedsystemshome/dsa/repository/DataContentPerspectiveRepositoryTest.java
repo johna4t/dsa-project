@@ -6,6 +6,7 @@ import com.sharedsystemshome.dsa.model.DataContentDefinition;
 import com.sharedsystemshome.dsa.model.DataContentPerspective;
 import com.sharedsystemshome.dsa.model.DataSharingParty;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -13,8 +14,9 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
-public class DataContentPerspectiveRepositoryTest {
+@PostgresDataJpaTest
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+public class DataContentPerspectiveRepositoryTest extends AnyRepositoryTest {
 
     @Autowired
     private CustomerAccountRepository customerRepo;
