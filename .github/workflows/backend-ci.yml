@@ -1,0 +1,41 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ "feature/*", "development" ]
+    paths:
+      - "dsa-service/**"
+      - "pom.xml"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    branches: [ "development" ]
+    paths:
+      - "dsa-service/**"
+      - "pom.xml"
+      - ".github/workflows/backend-ci.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dsa-service
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+<<<<<<< Updated upstream
+      - name: Make mvnw executable
+        run: chmod +x ./mvnw
+
+=======
+>>>>>>> Stashed changes
+      - name: Run tests
+        run: ./mvnw -B test
