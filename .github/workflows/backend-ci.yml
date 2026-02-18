@@ -20,12 +20,19 @@ jobs:
     defaults:
       run:
         working-directory: dsa-service
+        shell: bash
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"   # change if you’re on 17 etc.
+          java-version: "21"
           cache: maven
+
+      - name: Make mvnw executable
+        run: chmod +x ./mvnw
+
       - name: Run tests
-        run: mvnw -B test
+        run: ./mvnw -B test
