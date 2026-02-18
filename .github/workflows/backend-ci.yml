@@ -28,4 +28,4 @@ jobs:
           java-version: "21"   # change if you’re on 17 etc.
           cache: maven
       - name: Run tests
-        run: ./mvnw -B test
+        run: mvnw -B test
