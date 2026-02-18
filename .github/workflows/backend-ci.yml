@@ -2,13 +2,13 @@ name: Backend CI
 
 on:
   push:
-    branches: [ "development", "main" ]
+    branches: [ "feature/*", "development" ]
     paths:
       - "dsa-service/**"
       - "pom.xml"
       - ".github/workflows/backend-ci.yml"
   pull_request:
-    branches: [ "development", "main" ]
+    branches: [ "development" ]
     paths:
       - "dsa-service/**"
       - "pom.xml"
@@ -31,8 +31,11 @@ jobs:
           java-version: "21"
           cache: maven
 
+<<<<<<< Updated upstream
       - name: Make mvnw executable
         run: chmod +x ./mvnw
 
+=======
+>>>>>>> Stashed changes
       - name: Run tests
         run: ./mvnw -B test
