@@ -5,13 +5,11 @@ on:
     branches: [ "feature/*", "development" ]
     paths:
       - "dsa-service/**"
-      - "pom.xml"
       - ".github/workflows/backend-ci.yml"
   pull_request:
     branches: [ "development" ]
     paths:
       - "dsa-service/**"
-      - "pom.xml"
       - ".github/workflows/backend-ci.yml"
 
 jobs:
@@ -35,4 +33,11 @@ jobs:
         run: chmod +x ./mvnw
 
       - name: Run tests
-        run: ./mvnw -B test
+        run: ./mvnw -B -ntp test
+
+      - name: Upload surefire reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: dsa-service/target/surefire-reports
