@@ -31,11 +31,8 @@ jobs:
           java-version: "21"
           cache: maven
 
-<<<<<<< Updated upstream
       - name: Make mvnw executable
         run: chmod +x ./mvnw
 
-=======
->>>>>>> Stashed changes
       - name: Run tests
         run: ./mvnw -B test
