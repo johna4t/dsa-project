@@ -15,6 +15,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    env:
+      DOCKER_HOST: unix:///var/run/docker.sock
+      TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
+      TESTCONTAINERS_RYUK_DISABLED: "true"
+
     defaults:
       run:
         working-directory: dsa-service
@@ -28,6 +34,11 @@ jobs:
           distribution: temurin
           java-version: "21"
           cache: maven
+
+      - name: Docker info
+        run: |
+          docker version
+          docker info
 
       - name: Make mvnw executable
         run: chmod +x ./mvnw
