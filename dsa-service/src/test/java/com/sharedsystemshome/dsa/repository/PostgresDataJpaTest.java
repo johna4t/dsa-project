@@ -13,7 +13,6 @@ import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTest
 @Documented
 @Inherited
 @DataJpaTest
-@Testcontainers
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 public @interface PostgresDataJpaTest {
 }

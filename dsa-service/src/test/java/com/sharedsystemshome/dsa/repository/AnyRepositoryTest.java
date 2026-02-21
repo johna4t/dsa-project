@@ -6,7 +6,6 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-@Testcontainers
 @ActiveProfiles("test")
 public abstract class AnyRepositoryTest {
 
