@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class DataProcessingActivityService {
 
-    private baseUrl = 'http://localhost:8080/api/v1/data-processing-activities';
+    private baseUrl = 'data-processing-activities';
 
     constructor(private httpClient: HttpClient) { }
 
