@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class DataSharingPartyService {
 
-  private baseUrl = 'http://localhost:8080/api/v1/data-sharing-parties';
+  private baseUrl = 'data-sharing-parties';
 
   constructor(private httpClient: HttpClient) { }
 

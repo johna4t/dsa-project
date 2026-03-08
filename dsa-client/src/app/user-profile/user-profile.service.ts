@@ -9,7 +9,7 @@ import { UserLocalStorageService } from '../access/user-local-storage.service';
   providedIn: 'root'
 })
 export class UserProfileService {
-  private baseUrl = 'http://localhost:8080/api/v1/personal-profiles';
+  private baseUrl = 'personal-profiles';
 
   constructor(private httpClient: HttpClient,
     private userLocalStorage: UserLocalStorageService) { }

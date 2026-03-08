@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class DataContentDefinitionService {
 
-  private baseUrl = 'http://localhost:8080/api/v1/data-content-definitions';
+  private baseUrl = 'data-content-definitions';
   constructor(private httpClient: HttpClient) { }
 
   getDataContentDefinitionList(): Observable<DataContentDefinition[]> {
