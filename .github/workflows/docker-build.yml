@@ -1,23 +1,25 @@
 name: Docker Build (backend)
 
 on:
+  push:
+    branches: [ "development", "main", "feature/**" ]
+    paths:
+      - "dsa-service/**"
+      - ".github/workflows/docker-build.yml"
   pull_request:
     branches: [ "development", "main" ]
     paths:
       - "dsa-service/**"
-      - ".github/workflows/**"
-  push:
-    branches: [ "development" ]
-    paths:
-      - "dsa-service/**"
-      - ".github/workflows/**"
+      - ".github/workflows/docker-build.yml"
 
 jobs:
   docker-build:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: dsa-service
+
     steps:
       - uses: actions/checkout@v4
 
