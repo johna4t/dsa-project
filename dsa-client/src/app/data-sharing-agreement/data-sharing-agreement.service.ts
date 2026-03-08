@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 export class DataSharingAgreementService {
 
 
-  private baseUrl = 'http://localhost:8080/api/v1/data-sharing-agreements';
+  private baseUrl = 'data-sharing-agreements';
 
   constructor(private httpClient: HttpClient) { }
 

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class CustomerAccountService {
 
-  private baseUrl = 'http://localhost:8080/api/v1/customer-accounts';
+  private baseUrl = 'customer-accounts';
 
   requestHeader = new HttpHeaders(
     { "No-Auth": "True" }

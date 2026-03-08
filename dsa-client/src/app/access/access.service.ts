@@ -9,7 +9,7 @@ import { tap } from 'rxjs/operators';
 })
 export class AccessService {
 
-  private baseUrl = 'http://localhost:8080/api/v1/auth';
+  private baseUrl = 'auth';
 
   requestHeader = new HttpHeaders(
     { "No-Auth": "True" }

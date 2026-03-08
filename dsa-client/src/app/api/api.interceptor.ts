@@ -13,10 +13,13 @@ export class ApiInterceptor implements HttpInterceptor {
   private versions = environment.apiVersions;
   private defaultVersion = environment.defaultApiVersion;
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> { // eslint-disable-line @typescript-eslint/no-explicit-any
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!request.url.startsWith('http')) {
-      const version = (request as any).version || this.defaultVersion; // eslint-disable-line @typescript-eslint/no-explicit-any
-      const apiReq: HttpRequest<any> = request.clone({ url: `${this.versions[version]}/${request.url}` }); // eslint-disable-line @typescript-eslint/no-explicit-any
+      const version = (request as any).version || this.defaultVersion;
+      const normalisedPath = request.url.startsWith('/') ? request.url.substring(1) : request.url;
+      const apiReq = request.clone({
+        url: `${this.versions[version]}/${normalisedPath}`
+      });
       return next.handle(apiReq);
     }
     return next.handle(request);
