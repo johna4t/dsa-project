@@ -2,12 +2,12 @@ name: Frontend CI
 
 on:
   push:
-    branches: [ "feature/*", "development" ]
+    branches: [ "development", "main", "feature/**" ]
     paths:
       - "dsa-client/**"
       - ".github/workflows/frontend-ci.yml"
   pull_request:
-    branches: [ "development" ]
+    branches: [ "development", "main" ]
     paths:
       - "dsa-client/**"
       - ".github/workflows/frontend-ci.yml"
@@ -15,9 +15,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: dsa-client
+
     steps:
       - uses: actions/checkout@v4
 
@@ -34,7 +36,7 @@ jobs:
         run: npm run lint --if-present
 
       - name: Test
-        run: npm test --if-present -- --watch=false
+        run: npm test --if-present -- --watch=false --browsers=ChromeHeadless
 
       - name: Build
         run: npm run build
