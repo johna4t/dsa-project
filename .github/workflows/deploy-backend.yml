@@ -1,11 +1,16 @@
 name: Deploy Backend
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
     paths:
       - "dsa-service/**"
       - ".github/workflows/deploy-backend.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -34,8 +39,10 @@ jobs:
 
       - name: Build and push Docker image
         working-directory: dsa-service
+        shell: bash
         run: |
           IMAGE_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}"
+          echo "Deploying image: ${IMAGE_URI}:${GITHUB_SHA}"
           docker build -t "${IMAGE_URI}:${GITHUB_SHA}" -t "${IMAGE_URI}:latest" .
           docker push "${IMAGE_URI}:${GITHUB_SHA}"
           docker push "${IMAGE_URI}:latest"

@@ -2,7 +2,7 @@ name: Docker Build (backend)
 
 on:
   push:
-    branches: [ "development", "main", "feature/**" ]
+    branches: [ "development", "feature/**" ]
     paths:
       - "dsa-service/**"
       - ".github/workflows/docker-build.yml"
@@ -11,6 +11,10 @@ on:
     paths:
       - "dsa-service/**"
       - ".github/workflows/docker-build.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   docker-build:
