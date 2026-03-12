@@ -29,7 +29,7 @@ public class UserAccountController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @PostMapping
     public ResponseEntity<Long> postUserAccount(RequestEntity<UserAccount> request){
 
@@ -41,7 +41,7 @@ public class UserAccountController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @GetMapping
     public ResponseEntity<List<UserAccount>> getUserAccounts(RequestEntity<Map<String, String>> requestEntity) {
         Map<String, String> queryParams = requestEntity.getBody();
@@ -80,7 +80,7 @@ public class UserAccountController {
     }
 
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @GetMapping(path = "{id}")
     public ResponseEntity<UserAccount> getUserAccountById(@PathVariable("id") Long id) {
 
@@ -143,7 +143,7 @@ public class UserAccountController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @PutMapping(path = "{id}")
     public ResponseEntity<UserAccount> putUserAccount(
             @PathVariable("id") Long id,
@@ -163,7 +163,7 @@ public class UserAccountController {
     }
 
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @DeleteMapping(path = "{id}")
     public ResponseEntity<?> deleteUserAccount(@PathVariable("id") Long id){
 

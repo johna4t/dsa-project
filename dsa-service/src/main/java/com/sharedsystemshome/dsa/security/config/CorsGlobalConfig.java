@@ -10,25 +10,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableWebMvc
 public class CorsGlobalConfig {
 
-    private static final String OPTIONS = "OPTIONS";
-    private static final String GET = "GET";
-    private static final String POST = "POST";
-    private static final String PUT = "PUT";
-    private static final String PATCH = "PATCH";
-    private static final String DELETE = "DELETE";
-
     @Bean
-    public WebMvcConfigurer corsGlobalConfigurer() {
+    public WebMvcConfigurer corsGlobalConfigurer(CorsGlobalConfigProperties corsConfig) {
+
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedMethods(OPTIONS, GET, POST, PUT, PATCH, DELETE)
-                        .allowedHeaders("*")
-//                        .allowedOriginPatterns("*")
-                        .allowedOrigins("http://localhost:4200")
-                        .maxAge(3600)
-                        .allowCredentials(true);
+                registry.addMapping(corsConfig.addMapping())
+                        .allowedMethods(corsConfig.allowedMethods().toArray(new String[0]))
+                        .allowedHeaders(corsConfig.allowedHeaders().toArray(new String[0]))
+                        .allowedOrigins(corsConfig.allowedOrigins().toArray(new String[0]))
+                        .maxAge(corsConfig.maxAge())
+                        .allowCredentials(corsConfig.allowCredentials());
             }
         };
     }

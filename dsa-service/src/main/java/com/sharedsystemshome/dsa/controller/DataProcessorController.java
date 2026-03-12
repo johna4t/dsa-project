@@ -30,7 +30,7 @@ public class DataProcessorController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @PostMapping
     public ResponseEntity<Long> postDataProcessor(RequestEntity<DataProcessor> request){
 
@@ -43,7 +43,7 @@ public class DataProcessorController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @GetMapping
     public ResponseEntity<List<DataProcessor>> geDataProcessors(RequestEntity<Map<String, String>> requestEntity) {
         Map<String, String> queryParams = requestEntity.getBody();
@@ -67,7 +67,7 @@ public class DataProcessorController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @GetMapping(path = "{id}")
     public ResponseEntity<DataProcessor> getDataProcessorById(@PathVariable("id") Long id) {
 
@@ -81,7 +81,7 @@ public class DataProcessorController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @PutMapping(path = "{id}")
     public ResponseEntity<DataProcessor> putDataProcessor(
             @PathVariable("id") Long id,
@@ -106,7 +106,7 @@ public class DataProcessorController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @DeleteMapping(path = "{id}")
     public ResponseEntity<DataProcessor> deleteDataContentDefinition(@PathVariable("id") Long id){
 

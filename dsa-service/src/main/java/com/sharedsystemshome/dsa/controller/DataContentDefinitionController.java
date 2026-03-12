@@ -30,7 +30,7 @@ public class DataContentDefinitionController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @PostMapping
     public ResponseEntity<Long> postDataContentDefinition(RequestEntity<DataContentDefinition> request){
 
@@ -43,7 +43,7 @@ public class DataContentDefinitionController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @GetMapping
     public ResponseEntity<List<DataContentDefinition>> getDataContentDefinitions(RequestEntity<Map<String, String>> requestEntity) {
         Map<String, String> queryParams = requestEntity.getBody();
@@ -67,7 +67,7 @@ public class DataContentDefinitionController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @GetMapping(path = "{id}")
     public ResponseEntity<DataContentDefinition> getDataContentDefinitionById(@PathVariable("id") Long id) {
 
@@ -81,7 +81,7 @@ public class DataContentDefinitionController {
         }
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @PutMapping(path = "{id}")
     public ResponseEntity<DataContentDefinition> putDataContentDefinition(
             @PathVariable("id") Long id,
@@ -107,7 +107,7 @@ public class DataContentDefinitionController {
     }
 
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @DeleteMapping(path = "{id}")
     public ResponseEntity<DataContentDefinition> deleteDataContentDefinition(@PathVariable("id") Long id){
 

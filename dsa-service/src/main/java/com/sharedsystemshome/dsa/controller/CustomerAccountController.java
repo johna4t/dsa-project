@@ -27,7 +27,7 @@ public class CustomerAccountController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @PostMapping
     public ResponseEntity<Long> postCustomerAccount(RequestEntity<CustomerAccount> request){
 
@@ -39,7 +39,7 @@ public class CustomerAccountController {
     }
 
     //public ResponseEntity<List<CustomerAccount>> getDataSharingAgreements(RequestEntity<Map<String, String>> requestEntity)
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @GetMapping
     public ResponseEntity<List<CustomerAccount>> getCustomerAccounts(@RequestParam Map<String,String> params) {
 
@@ -63,7 +63,7 @@ public class CustomerAccountController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @GetMapping(path = "{id}")
     public ResponseEntity<CustomerAccount> getCustomerAccountById(@PathVariable("id") Long id) {
 
@@ -79,7 +79,7 @@ public class CustomerAccountController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @PutMapping
     public ResponseEntity<CustomerAccount> putCustomerAccount(RequestEntity<CustomerAccount> request) {
 
@@ -88,7 +88,7 @@ public class CustomerAccountController {
         return ResponseEntity.status(204).build();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @PatchMapping(path = "{id}")
     public ResponseEntity<CustomerAccount> patchCustomerAccount(
             @PathVariable("id") Long id,
@@ -105,7 +105,7 @@ public class CustomerAccountController {
         return ResponseEntity.status(204).build();
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @DeleteMapping(path = "{id}")
     public ResponseEntity<CustomerAccount> deleteCustomerAccount(@PathVariable("id") Long id){
         this.customerService.deleteCustomerAccount(id);
