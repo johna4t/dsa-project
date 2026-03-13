@@ -2,29 +2,33 @@ name: Backend CI
 
 on:
   push:
-    branches: [ "feature/*", "development" ]
+    branches: [ "development", "feature/**" ]
     paths:
       - "dsa-service/**"
       - ".github/workflows/backend-ci.yml"
   pull_request:
-    branches: [ "development" ]
+    branches: [ "development", "main" ]
     paths:
       - "dsa-service/**"
       - ".github/workflows/backend-ci.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
-    env:
-      DOCKER_HOST: unix:///var/run/docker.sock
-      TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
-      TESTCONTAINERS_RYUK_DISABLED: "true"
-
     defaults:
       run:
         working-directory: dsa-service
         shell: bash
+
+    env:
+      DOCKER_HOST: unix:///var/run/docker.sock
+      TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE: /var/run/docker.sock
+      TESTCONTAINERS_RYUK_DISABLED: "true"
 
     steps:
       - uses: actions/checkout@v4
