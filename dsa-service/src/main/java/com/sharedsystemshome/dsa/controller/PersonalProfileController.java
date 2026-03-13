@@ -25,7 +25,7 @@ public class PersonalProfileController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @GetMapping(path = "{id}")
     public ResponseEntity<UserAccount> getPersonalProfileById(@PathVariable("id") Long id) {
 
@@ -43,7 +43,7 @@ public class PersonalProfileController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:4200")
+    
     @PutMapping
     public ResponseEntity<UserAccount> putPersonalProfile(
             RequestEntity<PersonalProfileUpdate> request){

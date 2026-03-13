@@ -37,3 +37,19 @@ management:
     web:
       exposure:
         include: health
+
+
+com:
+  sharedsystemshome:
+    dsa:
+      security:
+        config:
+          cors-global-config:
+            add-mapping: /**
+            allowed-methods: [OPTIONS, GET, POST, PUT, PATCH, DELETE]
+            allowed-headers: ["*"]
+            allowed-origins:
+              - http://localhost:4200
+              - https://dev.sharedsystems.app
+            max-age: 3600
+            allow-credentials: true
