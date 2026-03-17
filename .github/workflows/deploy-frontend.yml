@@ -26,6 +26,9 @@ jobs:
     env:
       AWS_REGION: eu-west-2
       S3_BUCKET: sharedsystems-web-dev
+      CF_ORIGIN_VERIFY_HEADER_NAME: X-Origin-Verify
+      CF_ORIGIN_VERIFY_HEADER_VALUE: ${{ secrets.CF_ORIGIN_VERIFY_HEADER_VALUE }}
+      APP_RUNNER_ORIGIN_ID: apprunner-backend-origin
 
     steps:
       - uses: actions/checkout@v4
@@ -51,6 +54,45 @@ jobs:
 
       - name: Deploy to S3
         run: aws s3 sync dist/dsa-client "s3://${S3_BUCKET}/" --delete
+
+      - name: Update CloudFront App Runner origin header
+        if: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID != '' }}
+        run: |
+          set -euo pipefail
+
+          aws cloudfront get-distribution-config \
+            --id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" \
+            --output json > /tmp/cf-config.json
+
+          ETAG=$(jq -r '.ETag' /tmp/cf-config.json)
+
+          jq \
+            --arg ORIGIN_ID "${APP_RUNNER_ORIGIN_ID}" \
+            --arg HEADER_NAME "${CF_ORIGIN_VERIFY_HEADER_NAME}" \
+            --arg HEADER_VALUE "${CF_ORIGIN_VERIFY_HEADER_VALUE}" \
+            '
+            .DistributionConfig.Origins.Items |= map(
+              if .Id == $ORIGIN_ID then
+                .CustomHeaders = {
+                  Quantity: 1,
+                  Items: [
+                    {
+                      HeaderName: $HEADER_NAME,
+                      HeaderValue: $HEADER_VALUE
+                    }
+                  ]
+                }
+              else
+                .
+              end
+            )
+            | .DistributionConfig
+            ' /tmp/cf-config.json > /tmp/cf-config-updated.json
+
+          aws cloudfront update-distribution \
+            --id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" \
+            --if-match "$ETAG" \
+            --distribution-config file:///tmp/cf-config-updated.json
 
       - name: Invalidate CloudFront
         if: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID != '' }}
