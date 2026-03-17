@@ -1,7 +1,8 @@
 package com.sharedsystemshome.dsa.security.config;
 
+import com.sharedsystemshome.dsa.security.filters.JwtAuthenticationFilter;
+import com.sharedsystemshome.dsa.security.filters.OriginVerificationFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
 
 import static com.sharedsystemshome.dsa.security.enums.PermissionType.*;
 import static com.sharedsystemshome.dsa.security.enums.RoleType.*;
@@ -70,6 +70,7 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
+    private final OriginVerificationFilter originVerificationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSec) throws Exception {
@@ -101,7 +102,8 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(this.authenticationProvider)
-                .addFilterBefore(this.jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(this.originVerificationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(this.jwtAuthenticationFilter, OriginVerificationFilter.class);
 
         return httpSec.build();
 

@@ -1,6 +1,5 @@
-package com.sharedsystemshome.dsa.security.config;
+package com.sharedsystemshome.dsa.security.filters;
 
-import com.sharedsystemshome.dsa.security.repository.TokenRepository;
 import com.sharedsystemshome.dsa.security.service.JwtService;
 import com.sharedsystemshome.dsa.security.service.UserContextService;
 import com.sharedsystemshome.dsa.model.UserAccount;
