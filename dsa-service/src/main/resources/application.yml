@@ -39,17 +39,29 @@ management:
         include: health
 
 
-com:
-  sharedsystemshome:
-    dsa:
-      security:
-        config:
-          cors-global-config:
-            add-mapping: /**
-            allowed-methods: [OPTIONS, GET, POST, PUT, PATCH, DELETE]
-            allowed-headers: ["*"]
-            allowed-origins:
-              - http://localhost:4200
-              - https://dev.sharedsystems.app
-            max-age: 3600
-            allow-credentials: true
+
+security:
+  config:
+    cors-global-config:
+      add-mapping: /**
+      allowed-methods: [ OPTIONS, GET, POST, PUT, PATCH, DELETE ]
+      allowed-headers: [ "*" ]
+      allowed-origins:
+        - http://localhost:4200
+        - https://dev.sharedsystems.app
+      max-age: 3600
+      allow-credentials: true
+  filters:
+    origin-verification:
+      # enabled for remote deployment
+      enabled: ${SECURITY_FILTERS_ORIGIN_VERIFICATION_ENABLED:true}
+      # matches CloudFront header
+      header-name: X-Origin-Verify
+      # injected from App Runner secret
+      header-value: ${SECURITY_FILTERS_ORIGIN_VERIFICATION_FILTER_HEADER_VALUE:}
+      # lets App Runner health check work
+      exempt-paths:
+        - /actuator/health
+
+
+
