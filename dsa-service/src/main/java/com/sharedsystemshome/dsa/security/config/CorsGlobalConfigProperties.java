@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.util.List;
 
-@ConfigurationProperties(prefix = "com.sharedsystemshome.dsa.security.config.cors-global-config")
+@ConfigurationProperties(prefix = "security.config.cors-global-config")
 public record CorsGlobalConfigProperties(
         String addMapping,
         List<String> allowedMethods,

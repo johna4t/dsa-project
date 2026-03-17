@@ -22,3 +22,9 @@ management:
     web:
       exposure:
         include: health
+
+security:
+  filters:
+    origin-verification:
+      # disabled for local deployment
+      enabled: ${SECURITY_FILTERS_ORIGIN_VERIFICATION_ENABLED:false}
