@@ -6,11 +6,6 @@ on:
     paths:
       - "dsa-service/**"
       - ".github/workflows/backend-ci.yml"
-  pull_request:
-    branches: [ "development", "main" ]
-    paths:
-      - "dsa-service/**"
-      - ".github/workflows/backend-ci.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
